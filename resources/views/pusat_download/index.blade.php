@@ -101,6 +101,25 @@
                             <button type="submit" name="format" value="pdf" class="flex-1 px-4 py-3 bg-rose-50 hover:bg-rose-100 text-rose-700 text-[11px] font-black uppercase tracking-wider rounded-xl border border-rose-200 transition-colors shadow-sm text-center">📄 PDF</button>
                         </form>
                     </div>
+
+                    {{-- Card: Rekap Absensi Harian QR --}}
+                    <div class="bg-white rounded-[2rem] p-6 shadow-xl shadow-slate-200/40 border border-slate-100 flex flex-col justify-between hover:-translate-y-1 hover:shadow-2xl hover:shadow-indigo-200/40 transition-all duration-300 group relative overflow-hidden">
+                        <div class="absolute right-0 top-0 w-32 h-32 bg-rose-50 rounded-full blur-3xl opacity-60 -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+                        <div>
+                            <div class="w-14 h-14 rounded-[1rem] bg-gradient-to-br from-rose-100 to-rose-50 flex items-center justify-center text-3xl mb-5 shadow-sm border border-rose-100 group-hover:scale-110 transition-transform">⏱️</div>
+                            <h4 class="font-black text-slate-900 text-lg tracking-tight mb-2">Rekap Absensi Harian (QR)</h4>
+                            <p class="text-[11px] font-medium text-slate-500 leading-relaxed h-12">Unduh hasil scan QR Code harian siswa (Hadir/Terlambat/Pulang) berdasarkan rentang tanggal.</p>
+                        </div>
+                        <form action="{{ route('pusat_download.rekap_absensi_qr') }}" method="GET" target="_blank" class="flex flex-col gap-2 mt-6 pt-6 border-t border-slate-100">
+                            @csrf
+                            <input type="date" name="tanggal_mulai" required value="{{ date('Y-m-d') }}" class="w-full text-xs font-bold text-slate-700 rounded-xl border-slate-200 focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10 bg-slate-50 py-2">
+                            <input type="date" name="tanggal_akhir" required value="{{ date('Y-m-d') }}" class="w-full text-xs font-bold text-slate-700 rounded-xl border-slate-200 focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10 bg-slate-50 py-2 mb-2">
+                            <div class="flex gap-2">
+                                <button type="submit" name="format" value="excel" class="flex-1 px-2 py-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase tracking-wider rounded-xl border border-emerald-200 transition-colors shadow-sm text-center">📊 Excel</button>
+                                <button type="submit" name="format" value="pdf" class="flex-1 px-2 py-3 bg-rose-50 hover:bg-rose-100 text-rose-700 text-[10px] font-black uppercase tracking-wider rounded-xl border border-rose-200 transition-colors shadow-sm text-center">📄 PDF</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
 
@@ -112,8 +131,33 @@
                     </div>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     
+                    {{-- Card: Cetak Kartu Siswa & QR Code --}}
+                    <div class="bg-white rounded-[2rem] p-6 shadow-xl shadow-slate-200/40 border border-slate-100 flex flex-col justify-between hover:-translate-y-1 hover:shadow-2xl hover:shadow-emerald-200/30 transition-all duration-300 relative overflow-hidden group">
+                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-emerald-400"></div>
+                        <div class="pl-2">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="text-3xl">🪪</span>
+                                <h4 class="font-black text-slate-900 text-base leading-tight">Kartu Siswa & QR Absen</h4>
+                            </div>
+                            <p class="text-[11px] font-medium text-slate-500 leading-relaxed mb-6 h-8">Cetak ID Card Terpadu Kemendikdasmen (NISN & QR Code Absensi).</p>
+                            
+                            <form action="{{ route('pusat_download.kartu_siswa_cetak') }}" method="GET" target="_blank" class="space-y-4">
+                                @csrf
+                                <select name="kelas_id" required class="w-full text-sm font-bold text-slate-700 rounded-xl border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 bg-slate-50 py-3 shadow-inner">
+                                    <option value="">-- Pilih Ruang Kelas --</option>
+                                    @foreach($daftarKelas as $kelas)
+                                        <option value="{{ $kelas->id }}">{{ $kelas->tingkat }} - {{ $kelas->nama_kelas }}</option>
+                                    @endforeach
+                                </select>
+                                <button type="submit" class="w-full px-3 py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-black uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-emerald-500/30 hover:-translate-y-0.5 flex justify-center items-center gap-2">
+                                    <span>🖨️</span> Cetak Kartu Kelas
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
                     {{-- Card: Absensi Kelas --}}
                     <div class="bg-white rounded-[2rem] p-6 shadow-xl shadow-slate-200/40 border border-slate-100 flex flex-col justify-between hover:-translate-y-1 hover:shadow-2xl hover:shadow-emerald-200/30 transition-all duration-300 relative overflow-hidden group">
                         <div class="absolute left-0 top-0 bottom-0 w-2 bg-emerald-400"></div>

@@ -426,4 +426,56 @@ class PusatDownloadController extends Controller
         
         return view('pusat_download.exports.data_siswa_lengkap', $data);
     }
+
+    // =========================================================================
+    // FITUR 11: REKAP ABSENSI HARIAN (QR)
+    // =========================================================================
+    public function downloadRekapAbsensiQr(Request $request)
+    {
+        $request->validate([
+            'tanggal_mulai' => 'required|date',
+            'tanggal_akhir' => 'required|date|after_or_equal:tanggal_mulai',
+            'format' => 'required|in:excel,pdf'
+        ]);
+
+        $tanggalMulai = $request->tanggal_mulai;
+        $tanggalAkhir = $request->tanggal_akhir;
+
+        $absensi = \App\Models\AbsensiHarian::with(['siswa.kelas'])
+            ->whereBetween('tanggal', [$tanggalMulai, $tanggalAkhir])
+            ->orderBy('tanggal', 'asc')
+            ->orderBy('waktu_masuk', 'asc')
+            ->get();
+
+        $data = [
+            'nama_sekolah' => 'SMPN 4 CIBITUNG',
+            'tanggal_mulai' => \Carbon\Carbon::parse($tanggalMulai)->translatedFormat('d F Y'),
+            'tanggal_akhir' => \Carbon\Carbon::parse($tanggalAkhir)->translatedFormat('d F Y'),
+            'absensi' => $absensi
+        ];
+
+        if ($request->format === 'excel') {
+            return back()->with('success', 'Fitur Export Excel Rekap Absensi QR belum tersedia, segera di-update.');
+        }
+
+        return view('pusat_download.exports.rekap_absensi_qr', $data);
+    }
+
+    // =========================================================================
+    // FITUR 12: CETAK KARTU SISWA TERPADU
+    // =========================================================================
+    public function cetakKartuSiswa(Request $request)
+    {
+        $request->validate([
+            'kelas_id' => 'required|exists:kelas,id',
+        ]);
+
+        $kelas = \App\Models\Kelas::findOrFail($request->kelas_id);
+        $siswa = \App\Models\Siswa::where('kelas_id', $kelas->id)
+                      ->where('status_siswa', 'Aktif')
+                      ->orderBy('nama_lengkap', 'asc')
+                      ->get();
+
+        return view('kesiswaan.kartu_siswa.cetak', compact('kelas', 'siswa'));
+    }
 }

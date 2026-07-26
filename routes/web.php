@@ -97,6 +97,10 @@ Route::post('/daftar-ekskul', [\App\Http\Controllers\Ekskul\EkstrakurikulerContr
 // API AJAX untuk Dropdown Siswa
 Route::get('/api/siswa-ekskul/{ekskul_id}/{kelas_id}', [\App\Http\Controllers\Ekskul\EkstrakurikulerController::class, 'getSiswaByKelasAndEkskul']);
 
+// Scanner QR Code (Publik, tanpa login agar praktis untuk alat scanner di gerbang)
+Route::get('/absensi-qr', [\App\Http\Controllers\Kesiswaan\AbsensiQrController::class, 'scanner'])->name('publik.absensi-qr.scanner');
+Route::post('/absensi-qr/scan', [\App\Http\Controllers\Kesiswaan\AbsensiQrController::class, 'processScan'])->name('publik.absensi-qr.scan');
+
 /*
 |--------------------------------------------------------------------------
 | Protected Routes - Halaman Internal (Wajib Login)
@@ -284,6 +288,11 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         Route::post('/kelas/anggota/kelulusan', [KelasController::class, 'prosesKelulusan'])->name('kelas.anggota.kelulusan');
         Route::delete('/kelas/anggota/{id}/remove', [KelasController::class, 'removeSiswa'])->name('kelas.anggota.remove');
         Route::get('kelas/{id}/jadwal', [KelasController::class, 'showJadwal'])->name('kelas.jadwal');
+
+        // (Route Cetak Kartu Siswa telah dipindahkan ke Pusat Download)
+        
+        // Route dipindahkan ke area publik (di luar grup middleware ini)
+        // Scanner QR Code -> ada di bagian rute publik (baris ~100)
 
                 // ====================================================================
         // Domain: Master Kelompok Wali (Bimbingan), Detail & Manajemen Anggota
@@ -590,6 +599,8 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         Route::get('/jadwal-global', [\App\Http\Controllers\PusatDownloadController::class, 'downloadJadwalGlobal'])->name('jadwal_global');
         Route::get('/daftar-nilai', [\App\Http\Controllers\PusatDownloadController::class, 'downloadDaftarNilai'])->name('daftar-nilai');
         Route::get('/hasil-skm', [\App\Http\Controllers\PusatDownloadController::class, 'downloadHasilSkm'])->name('hasil_skm');
+        Route::get('/rekap-absensi-qr', [\App\Http\Controllers\PusatDownloadController::class, 'downloadRekapAbsensiQr'])->name('rekap_absensi_qr');
+        Route::get('/kartu-siswa-cetak', [\App\Http\Controllers\PusatDownloadController::class, 'cetakKartuSiswa'])->name('kartu_siswa_cetak');
     });
     
     /*
