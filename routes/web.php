@@ -82,8 +82,10 @@ Route::get('/contact', [KontakPublikController::class, 'index'])->name('publik.k
 Route::post('/contact', [KontakPublikController::class, 'store'])->name('publik.kontak.store');
 
 // Diletakkan DI LUAR grup BK karena ini form yang diisi oleh siswa.
-Route::get('/kuesioner-gaya-belajar', [\App\Http\Controllers\BK\GayaBelajarController::class, 'formSiswa'])->name('siswa.gaya_belajar.form');
-Route::post('/kuesioner-gaya-belajar/submit', [\App\Http\Controllers\BK\GayaBelajarController::class, 'submitSiswa'])->name('siswa.gaya_belajar.submit');
+Route::get('/kuesioner-gaya-belajar', function() {
+    return view('utility.closed', ['title' => 'Kuesioner Gaya Belajar']);
+})->name('siswa.gaya_belajar.form');
+// Route::post('/kuesioner-gaya-belajar/submit', [\App\Http\Controllers\BK\GayaBelajarController::class, 'submitSiswa'])->name('siswa.gaya_belajar.submit');
 Route::get('/api/siswa-by-kelas/{kelas_id}', [\App\Http\Controllers\BK\GayaBelajarController::class, 'getSiswaByKelas'])->name('siswa.gaya_belajar.getSiswaByKelas');
 
 // --- Rute Survey Kepuasan Masyarakat (SKM) Publik ---
@@ -92,8 +94,10 @@ Route::post('/survey-kepuasan/submit', [\App\Http\Controllers\SurveyKepuasanCont
 Route::get('/survey-kepuasan/sukses', [\App\Http\Controllers\SurveyKepuasanController::class, 'success'])->name('publik.survey.success');
 
 // Rute Pendaftaran Ekskul untuk Publik/Siswa
-Route::get('/daftar-ekskul', [\App\Http\Controllers\Ekskul\EkstrakurikulerController::class, 'formPendaftaranPublic'])->name('ekskul.pendaftaran.form');
-Route::post('/daftar-ekskul', [\App\Http\Controllers\Ekskul\EkstrakurikulerController::class, 'storePendaftaranPublic'])->name('ekskul.pendaftaran.store');
+Route::get('/daftar-ekskul', function() {
+    return view('utility.closed', ['title' => 'Pendaftaran Ekstrakurikuler']);
+})->name('ekskul.pendaftaran.form');
+// Route::post('/daftar-ekskul', [\App\Http\Controllers\Ekskul\EkstrakurikulerController::class, 'storePendaftaranPublic'])->name('ekskul.pendaftaran.store');
 // API AJAX untuk Dropdown Siswa
 Route::get('/api/siswa-ekskul/{ekskul_id}/{kelas_id}', [\App\Http\Controllers\Ekskul\EkstrakurikulerController::class, 'getSiswaByKelasAndEkskul']);
 
