@@ -137,19 +137,19 @@ class Siswa extends Model
     // =====================================================
     public function provinsi_relasi()
     {
-        return $this->belongsTo(\Laravolt\Indonesia\Models\Province::class, 'provinsi', 'code');
+        return $this->belongsTo(\Laravolt\Indonesia\Models\Province::class, 'provinsi', 'id');
     }
     public function kota_relasi()
     {
-        return $this->belongsTo(\Laravolt\Indonesia\Models\City::class, 'kota', 'code');
+        return $this->belongsTo(\Laravolt\Indonesia\Models\City::class, 'kota', 'id');
     }
     public function kecamatan_relasi()
     {
-        return $this->belongsTo(\Laravolt\Indonesia\Models\District::class, 'kecamatan', 'code');
+        return $this->belongsTo(\Laravolt\Indonesia\Models\District::class, 'kecamatan', 'id');
     }
     public function kelurahan_relasi()
     {
-        return $this->belongsTo(\Laravolt\Indonesia\Models\Village::class, 'kelurahan_desa', 'code');
+        return $this->belongsTo(\Laravolt\Indonesia\Models\Village::class, 'kelurahan_desa', 'id');
     }
 
     // =====================================================
