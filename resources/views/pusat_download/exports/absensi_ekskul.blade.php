@@ -96,5 +96,45 @@
         </tbody>
     </table>
 
+    <!-- Tabel Materi / Kegiatan -->
+    <div style="margin-top: 25px;">
+        <div style="font-weight: bold; font-size: 13px; margin-bottom: 5px;">Jurnal Materi / Kegiatan Ekstrakurikuler</div>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 30px;">PERTEMUAN</th>
+                    <th style="width: 120px;">TANGGAL</th>
+                    <th>MATERI / KEGIATAN</th>
+                    <th style="width: 150px;">KETERANGAN</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for($i = 1; $i <= 5; $i++)
+                <tr>
+                    <td style="text-align: center; height: 30px;">Ke-{{ $i }}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                @endfor
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Tanda Tangan Pembina -->
+    <div style="margin-top: 30px; display: flex; justify-content: flex-end;">
+        <div style="width: 280px; text-align: center; font-size: 13px;">
+            <p style="margin: 3px 0;">Cibitung, .................................... {{ date('Y') }}</p>
+            <p style="margin: 3px 0;">Pembina Ekstrakurikuler,</p>
+            <br><br><br><br>
+            <p style="margin: 3px 0; font-weight: bold;">
+                <u>{{ $ekskul->pembina->nama_lengkap ?? '......................................................' }}</u>
+            </p>
+            <p style="margin: 3px 0;">
+                NIP. {{ $ekskul->pembina->nip ?? '....................................' }}
+            </p>
+        </div>
+    </div>
+
 </body>
 </html>
