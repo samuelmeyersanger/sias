@@ -69,6 +69,13 @@ Route::get('/', function () {
     return view('welcome', compact('about', 'latestPosts', 'dynamicPages'));
 });
 
+Route::get('/fix-region-db', function() {
+    \Illuminate\Support\Facades\DB::table('siswa')->whereRaw("provinsi !~ '^[0-9]+$'")->update(['provinsi' => '32', 'kota' => '3216', 'kecamatan' => '3216060', 'kelurahan_desa' => '3216060001']);
+    \Illuminate\Support\Facades\DB::table('wali_siswa')->whereRaw("provinsi !~ '^[0-9]+$'")->update(['provinsi' => '32', 'kota' => '3216', 'kecamatan' => '3216060', 'kelurahan_desa' => '3216060001']);
+    return "DB Fixed";
+});
+
+
 // 2. Rute Fitur Blog Publik
 Route::get('/blog', [BlogController::class, 'index'])->name('publik.blog.index');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('publik.blog.show');
