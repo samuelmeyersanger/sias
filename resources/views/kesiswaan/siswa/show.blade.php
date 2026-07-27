@@ -155,7 +155,7 @@
                             <span>👨‍👩‍👧‍👦</span> Daftar Relasi Orang Tua & Wali
                         </h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                            @forelse($siswa->wali as $parent)
+                            @forelse($siswa->wali->unique('id') as $parent)
                                 <div class="bg-white border border-gray-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
                                     
                                     {{-- Pita Status Hubungan --}}

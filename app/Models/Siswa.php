@@ -132,28 +132,24 @@ class Siswa extends Model
         return $this->hasMany(SiswaTerlambat::class, 'siswa_id');
     }
 
-        // =====================================================
+    // =====================================================
     // PERBAIKAN RELASI LARAVOLT INDONESIA
     // =====================================================
     public function provinsi_relasi()
     {
-        // Ubah ujungnya dari 'id' menjadi 'name'
-        return $this->belongsTo(\Laravolt\Indonesia\Models\Province::class, 'provinsi', 'name');
+        return $this->belongsTo(\Laravolt\Indonesia\Models\Province::class, 'provinsi', 'code');
     }
     public function kota_relasi()
     {
-        // Ubah ujungnya dari 'id' menjadi 'name'
-        return $this->belongsTo(\Laravolt\Indonesia\Models\City::class, 'kota', 'name');
+        return $this->belongsTo(\Laravolt\Indonesia\Models\City::class, 'kota', 'code');
     }
     public function kecamatan_relasi()
     {
-        // Ubah ujungnya dari 'id' menjadi 'name'
-        return $this->belongsTo(\Laravolt\Indonesia\Models\District::class, 'kecamatan', 'name');
+        return $this->belongsTo(\Laravolt\Indonesia\Models\District::class, 'kecamatan', 'code');
     }
     public function kelurahan_relasi()
     {
-        // Ubah ujungnya dari 'id' menjadi 'name'
-        return $this->belongsTo(\Laravolt\Indonesia\Models\Village::class, 'kelurahan_desa', 'name');
+        return $this->belongsTo(\Laravolt\Indonesia\Models\Village::class, 'kelurahan_desa', 'code');
     }
 
     // =====================================================
