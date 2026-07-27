@@ -4,22 +4,22 @@
     <meta charset="UTF-8">
     <title>Daftar Nilai - {{ $kelas->nama_kelas ?? 'Kelas' }}</title>
     <style>
-        @page { margin: 1cm; size: 8.5in 13in portrait; }
-        body { font-family: "Times New Roman", Times, serif; font-size: 10px; }
+        @page { margin: 0.5cm; size: 8.5in 13in portrait; }
+        body { font-family: "Times New Roman", Times, serif; font-size: 9px; }
         
         /* Layout Kop Atas */
-        .table-header { width: 100%; margin-bottom: 10px; font-weight: bold; }
+        .table-header { width: 100%; margin-bottom: 5px; font-weight: bold; }
         
-        .box-wali { border: 1.5px solid #000; text-align: center; background-color: #fce4d6; padding: 4px; width: 220px; font-size: 11px;}
-        .box-wali-title { border: 1.5px solid #000; text-align: center; background-color: #e2efda; padding: 3px; font-size: 10px; border-bottom: none;}
+        .box-wali { border: 1.5px solid #000; text-align: center; background-color: #fce4d6; padding: 3px; width: 220px; font-size: 10px;}
+        .box-wali-title { border: 1.5px solid #000; text-align: center; background-color: #e2efda; padding: 2px; font-size: 9px; border-bottom: none;}
         
-        .box-kelas { border: 2px solid #000; text-align: center; font-size: 16px; background-color: #fff2cc; padding: 4px; width: 180px; margin: 0 auto; border-bottom: none;}
-        .box-kelas-title { border: 2px solid #000; text-align: center; background-color: #ddebf7; padding: 3px; font-size: 12px;}
+        .box-kelas { border: 2px solid #000; text-align: center; font-size: 14px; background-color: #fff2cc; padding: 3px; width: 180px; margin: 0 auto; border-bottom: none;}
+        .box-kelas-title { border: 2px solid #000; text-align: center; background-color: #ddebf7; padding: 2px; font-size: 11px;}
         
         /* Tabel Data Nilai */
         .table-data { width: 100%; border-collapse: collapse; table-layout: fixed; }
-        .table-data th, .table-data td { border: 1px solid #000; padding: 3px 1px; text-align: center; vertical-align: middle; height: 14px; overflow: hidden; word-wrap: break-word; }
-        .table-data th { background-color: #ddebf7; font-size: 8.5px; }
+        .table-data th, .table-data td { border: 1px solid #000; padding: 1.5px 1px; text-align: center; vertical-align: middle; height: 12px; overflow: hidden; word-wrap: break-word; }
+        .table-data th { background-color: #ddebf7; font-size: 8px; }
         .text-left { text-align: left !important; padding-left: 3px !important; }
         
         /* Styling Border Tebal Spesifik */

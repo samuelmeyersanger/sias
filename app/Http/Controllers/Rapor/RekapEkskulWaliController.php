@@ -36,11 +36,10 @@ class RekapEkskulWaliController extends Controller
             }
             
             // 4. AMBIL SEMUA ANAK DI KELAS TERSEBUT
-            // Tarik beserta SEMUA nilai ekskul yang mereka miliki (beserta relasi ke master ekstrakurikuler-nya)
+            // Tarik beserta SEMUA nilai ekskul dan ekskul yang mereka ikuti
             $siswas = Siswa::where('kelas_id', $kelas_id)
                 ->orderBy('nama_lengkap', 'asc')
-                // Pastikan di model NilaiEkstrakurikuler ada fungsi relasi: public function ekstrakurikuler()
-                ->with(['nilaiEkstrakurikuler.ekstrakurikuler']) 
+                ->with(['ekskulYangDiikuti.ekstrakurikuler', 'nilaiEkstrakurikuler']) 
                 ->get();
         }
 

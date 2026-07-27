@@ -52,7 +52,7 @@
                             <tbody class="divide-y divide-gray-50 text-gray-700">
                                 @forelse($siswas as $index => $siswa)
                                     <!-- Jika Siswa tidak ikut ekskul sama sekali -->
-                                    @if($siswa->nilaiEkstrakurikuler->isEmpty())
+                                    @if($siswa->ekskulYangDiikuti->isEmpty())
                                         <tr class="hover:bg-indigo-50/30 transition-colors group">
                                             <td class="p-5 pl-8 text-center font-bold text-gray-400">{{ $index + 1 }}</td>
                                             <td class="p-5 font-bold text-gray-900">{{ $siswa->nama_lengkap }}</td>
@@ -64,32 +64,41 @@
                                         </tr>
                                     @else
                                         <!-- Looping jika siswa ikut 1 atau lebih Ekskul (Otomatis menggabung baris nama siswa) -->
-                                        @foreach($siswa->nilaiEkstrakurikuler as $i => $nilai)
+                                        @foreach($siswa->ekskulYangDiikuti as $anggota_ekskul)
+                                            @php
+                                                $nilai = $siswa->nilaiEkstrakurikuler->where('ekstrakurikuler_id', $anggota_ekskul->ekstrakurikuler_id)->first();
+                                            @endphp
                                             <tr class="hover:bg-indigo-50/30 transition-colors group">
                                                 
                                                 <!-- Nama Siswa hanya dicetak di baris pertama ekskulnya -->
                                                 @if($loop->first)
-                                                    <td class="p-5 pl-8 text-center font-bold text-gray-400 align-top border-b border-gray-100" rowspan="{{ $siswa->nilaiEkstrakurikuler->count() }}">
+                                                    <td class="p-5 pl-8 text-center font-bold text-gray-400 align-top border-b border-gray-100" rowspan="{{ $siswa->ekskulYangDiikuti->count() }}">
                                                         {{ $index + 1 }}
                                                     </td>
-                                                    <td class="p-5 font-bold text-gray-900 align-top border-b border-gray-100" rowspan="{{ $siswa->nilaiEkstrakurikuler->count() }}">
+                                                    <td class="p-5 font-bold text-gray-900 align-top border-b border-gray-100" rowspan="{{ $siswa->ekskulYangDiikuti->count() }}">
                                                         {{ $siswa->nama_lengkap }}
                                                     </td>
                                                 @endif
                                                 
                                                 <td class="p-5 align-middle border-b border-gray-50">
                                                     <span class="font-bold text-indigo-700 bg-indigo-50 px-3 py-1 rounded-lg border border-indigo-100">
-                                                        🏀 {{ $nilai->ekstrakurikuler->nama ?? 'Ekskul Dihapus' }}
+                                                        🏀 {{ $anggota_ekskul->ekstrakurikuler->nama ?? 'Ekskul Dihapus' }}
                                                     </span>
                                                 </td>
                                                 
                                                 <td class="p-5 text-center align-middle border-b border-gray-50">
-                                                    <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl font-black text-lg shadow-sm
-                                                        {{ $nilai->predikat == 'A' || $nilai->predikat == 'Sangat Baik' ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' : 
-                                                          ($nilai->predikat == 'B' || $nilai->predikat == 'Baik' ? 'bg-blue-100 text-blue-700 border border-blue-200' : 
-                                                          ($nilai->predikat == 'C' || $nilai->predikat == 'Cukup' ? 'bg-amber-100 text-amber-700 border border-amber-200' : 'bg-rose-100 text-rose-700 border border-rose-200')) }}">
-                                                        {{ $nilai->predikat }}
-                                                    </span>
+                                                    @if($nilai)
+                                                        <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl font-black text-lg shadow-sm
+                                                            {{ $nilai->predikat == 'A' || $nilai->predikat == 'Sangat Baik' ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' : 
+                                                              ($nilai->predikat == 'B' || $nilai->predikat == 'Baik' ? 'bg-blue-100 text-blue-700 border border-blue-200' : 
+                                                              ($nilai->predikat == 'C' || $nilai->predikat == 'Cukup' ? 'bg-amber-100 text-amber-700 border border-amber-200' : 'bg-rose-100 text-rose-700 border border-rose-200')) }}">
+                                                            {{ $nilai->predikat }}
+                                                        </span>
+                                                    @else
+                                                        <span class="inline-flex items-center justify-center px-2 py-1 bg-gray-100 text-gray-400 rounded-lg text-xs font-bold border border-gray-200">
+                                                            Belum Dinilai
+                                                        </span>
+                                                    @endif
                                                 </td>
                                                 
                                                 <td class="p-5 pr-8 align-middle text-gray-600 font-medium text-xs leading-relaxed border-b border-gray-50">
