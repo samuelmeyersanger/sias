@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <title>Daftar Hadir Kelas</title>
     <style>
-        @page { margin: 1cm; size: 8.5in 13in portrait; }
+        @page { margin: 0.5cm; size: 8.5in 13in portrait; }
         body { font-family: Arial, sans-serif; font-size: 9px; }
-        .header { text-align: center; margin-bottom: 10px; border-bottom: 2px solid #000; padding-bottom: 5px; }
-        .header h2, .header h3, .header p { margin: 2px 0; }
+        .header { text-align: center; margin-bottom: 5px; border-bottom: 2px solid #000; padding-bottom: 2px; }
+        .header h2, .header h3, .header p { margin: 1px 0; }
         
-        .info-table { width: 100%; margin-bottom: 10px; font-weight: bold; font-size: 10px; }
-        .info-table td { padding: 2px; }
+        .info-table { width: 100%; margin-bottom: 5px; font-weight: bold; font-size: 9px; }
+        .info-table td { padding: 1px; }
         
         .data-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-        .data-table th, .data-table td { border: 1px solid #000; padding: 3px 1px; overflow: hidden; font-size: 8.5px; }
+        .data-table th, .data-table td { border: 1px solid #000; padding: 1.5px 1px; height: 12px; overflow: hidden; font-size: 8px; }
         .data-table th { background-color: #f0f0f0; text-align: center; font-size: 8px; font-weight: bold; }
         
         .text-center { text-align: center; }
