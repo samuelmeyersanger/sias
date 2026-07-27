@@ -36,10 +36,10 @@ Sistem ini berjalan di **PC Server lokal (On-Premise)** menggunakan **Docker**, 
 
 ---
 
-## 🚀 Fitur Lengkap (88 Fitur)
+## 🚀 Fitur Lengkap (90+ Fitur)
 
 <details>
-<summary><b>🌐 Website Publik</b> — 4 fitur</summary>
+<summary><b>🌐 Website Publik</b> — 6 fitur</summary>
 
 | Fitur | Deskripsi |
 |-------|-----------|
@@ -47,6 +47,8 @@ Sistem ini berjalan di **PC Server lokal (On-Premise)** menggunakan **Docker**, 
 | Blog / Berita | Daftar artikel, detail, komentar publik |
 | Halaman Dinamis (CMS) | Halaman statis yang dikelola admin (Visi Misi, Sejarah, dll) |
 | Formulir Kontak | Form kontak untuk orang tua / masyarakat |
+| Scanner QR Absensi | Scanner mandiri untuk mencatat kehadiran harian lewat barcode/QR |
+| Info Ekstrakurikuler | Halaman publik daftar ekskul beserta detail pesertanya |
 
 </details>
 
@@ -149,7 +151,7 @@ Sistem ini berjalan di **PC Server lokal (On-Premise)** menggunakan **Docker**, 
 </details>
 
 <details>
-<summary><b>🏅 Modul Ekstrakurikuler</b> — 4 fitur</summary>
+<summary><b>🏅 Modul Ekstrakurikuler</b> — 5 fitur</summary>
 
 | Fitur | Deskripsi |
 |-------|-----------|
@@ -157,6 +159,7 @@ Sistem ini berjalan di **PC Server lokal (On-Premise)** menggunakan **Docker**, 
 | Anggota Ekskul | Kelola peserta ekskul |
 | Absensi Ekskul | Rekap kehadiran peserta |
 | Prestasi Ekskul | Catat prestasi/juara |
+| Rekap Wali Kelas | Laporan keikutsertaan ekskul khusus untuk pantauan wali kelas |
 
 </details>
 
