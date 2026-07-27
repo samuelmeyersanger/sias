@@ -1713,7 +1713,7 @@
                 // Bangun semua options (selalu dijalankan, termasuk form Create)
                 items.forEach(function(item) {
                     var opt = document.createElement('option');
-                    opt.value       = item[codeKey];
+                    opt.value       = item[nameKey];
                     opt.setAttribute('data-id', item[codeKey]);
                     opt.textContent = item[nameKey];
                     // Hanya set selected jika ada match (mode Edit)

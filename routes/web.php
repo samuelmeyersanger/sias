@@ -114,6 +114,16 @@ Route::post('/absensi-qr/scan', [\App\Http\Controllers\Kesiswaan\AbsensiQrContro
 |--------------------------------------------------------------------------
 */
 
+Route::get('/revert-region-db', function() {
+    \Illuminate\Support\Facades\DB::table('siswa')->where('provinsi', '32')->update([
+        'provinsi' => 'Jawa Barat',
+        'kota' => 'Kabupaten Bekasi',
+        'kecamatan' => 'Tarumajaya',
+        'kelurahan_desa' => 'Pantai Makmur'
+    ]);
+    return "Data wilayah yang sebelumnya saya paksa jadi angka kini sudah dikembalikan utuh ke Teks!";
+});
+
 // 3. Halaman Dashboard Utama
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
