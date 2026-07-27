@@ -6,6 +6,14 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Scanner Absensi - SIAS</title>
     
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Scanner">
+    <!-- End PWA Meta Tags -->
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800,900&display=swap" rel="stylesheet" />
@@ -20,6 +28,31 @@
         <div class="absolute -bottom-[20%] -right-[10%] w-[50vw] h-[50vw] rounded-full bg-cyan-400/20 blur-[120px] mix-blend-multiply animate-pulse" style="animation-delay: 2s;"></div>
         <div class="absolute top-[30%] left-[40%] w-[30vw] h-[30vw] rounded-full bg-emerald-400/10 blur-[100px] mix-blend-multiply animate-bounce" style="animation-duration: 8s;"></div>
         <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PHBhdGggZD0iTTAgMGg0MHY0MEgweiIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik0wIDAuNWg0ME0wIDM5LjVoNDBNMC41IDB2NDBNMzkuNSAwdi00MCIgc3Ryb2tlPSJyZ2JhKDE1LCAyMywgNDIsIDAuMDMpIiBzdHJva2Utd2lkdGg9IjEiLz48L3N2Zz4=')] opacity-50"></div>
+    </div>
+
+    {{-- Modal PWA Install (Custom Pop-up Besar) --}}
+    <div id="pwaInstallModal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl border border-slate-100 text-center relative overflow-hidden transform scale-95 transition-transform duration-300" id="pwaModalContent">
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-indigo-500/20 rounded-full blur-2xl"></div>
+            
+            <div class="w-24 h-24 mx-auto bg-indigo-50 rounded-3xl flex items-center justify-center mb-6 shadow-inner border border-indigo-100 relative z-10">
+                <i class="fa-solid fa-mobile-screen-button text-4xl text-indigo-600 animate-bounce"></i>
+            </div>
+            
+            <h2 class="text-2xl font-black text-slate-900 mb-2 relative z-10">Install Aplikasi Absensi?</h2>
+            <p class="text-slate-500 text-sm mb-8 font-medium leading-relaxed relative z-10">
+                Pasang portal Scanner ini di HP Anda agar lebih cepat diakses dari Layar Utama tanpa perlu mengetik alamat web lagi!
+            </p>
+            
+            <div class="flex flex-col gap-3 relative z-10">
+                <button id="btnInstallPwa" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-lg rounded-xl shadow-lg shadow-indigo-600/30 transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-download"></i> INSTALL SEKARANG
+                </button>
+                <button id="btnCancelPwa" class="w-full py-3 text-slate-400 hover:text-slate-600 font-bold text-sm transition-colors">
+                    Nanti Saja
+                </button>
+            </div>
+        </div>
     </div>
 
     {{-- Kontainer Utama --}}
@@ -253,6 +286,69 @@
             } catch (e) {
                 console.log("Audio not supported");
             }
+        }
+
+        // ==========================================
+        // Logika PWA (Progressive Web App) Install
+        // ==========================================
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then(reg => {
+                    console.log('Service Worker terdaftar!', reg);
+                }).catch(err => {
+                    console.log('Service Worker gagal terdaftar', err);
+                });
+            });
+        }
+
+        let deferredPrompt;
+        const pwaInstallModal = document.getElementById('pwaInstallModal');
+        const pwaModalContent = document.getElementById('pwaModalContent');
+        const btnInstallPwa = document.getElementById('btnInstallPwa');
+        const btnCancelPwa = document.getElementById('btnCancelPwa');
+
+        // Event bawaan Chrome untuk mendeteksi web siap di-install
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Cegah munculnya pita kecil bawaan Google Chrome
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Munculkan Pop-up Besar buatan kita sendiri
+            pwaInstallModal.classList.remove('hidden');
+            setTimeout(() => {
+                pwaInstallModal.classList.remove('opacity-0');
+                pwaModalContent.classList.remove('scale-95');
+                pwaModalContent.classList.add('scale-100');
+            }, 50);
+        });
+
+        // Jika tombol INSTALL dipencet
+        btnInstallPwa.addEventListener('click', async () => {
+            if (deferredPrompt !== null) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    console.log('User menerima instalasi');
+                } else {
+                    console.log('User menolak instalasi');
+                }
+                deferredPrompt = null;
+                hidePwaModal();
+            }
+        });
+
+        // Jika tombol BATAL dipencet
+        btnCancelPwa.addEventListener('click', () => {
+            hidePwaModal();
+        });
+
+        function hidePwaModal() {
+            pwaInstallModal.classList.add('opacity-0');
+            pwaModalContent.classList.remove('scale-100');
+            pwaModalContent.classList.add('scale-95');
+            setTimeout(() => {
+                pwaInstallModal.classList.add('hidden');
+            }, 300);
         }
     </script>
 </body>
