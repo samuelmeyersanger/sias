@@ -35,8 +35,12 @@
 
     <!-- Kop Surat -->
     <div class="kop-surat">
-        <!-- Logo Sekolah (Kiri) - Pastikan gambar logo_sekolah.png ada di folder public/images -->
-        <img src="{{ asset('images/logo_sekolah.png') }}" class="logo-sekolah" alt="Logo Sekolah">
+        <!-- Logo Ekskul (Kiri) -->
+        @if($ekskul->logo_ekskul)
+            <img src="{{ asset('storage/' . $ekskul->logo_ekskul) }}" class="logo-sekolah" style="object-fit: contain;" alt="Logo Ekskul">
+        @else
+            <img src="https://upload.wikimedia.org/wikipedia/commons/9/9e/Logo_Tut_Wuri_Handayani.png" class="logo-sekolah" style="object-fit: contain; width: 80px; height: 80px;" alt="Logo Tut Wuri Handayani">
+        @endif
         
         <div class="teks-tengah">
             <h2 style="margin: 0; font-size: 18px;">DAFTAR HADIR EKSTRAKURIKULER</h2>
@@ -44,13 +48,8 @@
             <p style="margin: 0; font-size: 12px;">Semester: Ganjil / Genap &nbsp;&nbsp;|&nbsp;&nbsp; Tahun Ajaran: 2026/2027</p>
         </div>
         
-        <!-- Logo Ekskul (Kanan) -->
-        @if($ekskul->logo_ekskul)
-            <img src="{{ asset('storage/' . $ekskul->logo_ekskul) }}" class="logo-ekskul" alt="Logo Ekskul">
-        @else
-            <!-- Jika tidak ada logo ekskul, buat kotak kosong penyimbang -->
-            <div style="width: 70px; height: 70px;"></div> 
-        @endif
+        <!-- Kotak Kosong (Kanan) agar teks tetap pas di tengah -->
+        <div style="width: 80px; height: 80px;"></div>
     </div>
 
     <!-- Informasi Pembina -->
