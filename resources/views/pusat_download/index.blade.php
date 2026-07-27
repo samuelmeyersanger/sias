@@ -307,7 +307,7 @@
                                 <select name="ekskul_id" required class="w-full text-sm font-bold text-slate-700 rounded-xl border-slate-200 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 bg-slate-50 py-3 shadow-inner">
                                     <option value="">-- Pilih Program Ekstrakurikuler --</option>
                                     @foreach($daftarEkskul as $ekskul)
-                                        <option value="{{ $ekskul->id }}">{{ $ekskul->nama_ekskul }}</option>
+                                        <option value="{{ $ekskul->id }}">{{ $ekskul->nama }}</option>
                                     @endforeach
                                 </select>
                                 <button type="submit" class="w-full px-4 py-3.5 bg-gradient-to-r from-teal-500 to-teal-400 hover:from-teal-600 hover:to-teal-500 text-white text-[11px] font-black uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-teal-500/30 hover:-translate-y-0.5 flex justify-center items-center gap-2">
