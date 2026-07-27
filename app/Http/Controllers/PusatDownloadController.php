@@ -227,6 +227,9 @@ class PusatDownloadController extends Controller
         $id = $request->ekskul_id;
         $ekskul = Ekstrakurikuler::with(['pembina', 'anggota' => function($query) {
             $query->join('siswa', 'anggota_ekstrakurikuler.siswa_id', '=', 'siswa.id')
+                  ->leftJoin('kelas', 'siswa.kelas_id', '=', 'kelas.id')
+                  ->orderBy('kelas.tingkat', 'asc')
+                  ->orderBy('kelas.nama_kelas', 'asc')
                   ->orderBy('siswa.nama_lengkap', 'asc')
                   ->select('anggota_ekstrakurikuler.*');
         }, 'anggota.siswa.kelas'])->findOrFail($id);
