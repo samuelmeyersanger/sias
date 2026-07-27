@@ -333,8 +333,8 @@ class EkstrakurikulerController extends Controller
             }
         }
         
-        $tahunAjaran = \App\Models\TahunAjaran::where('is_active', true)->first()->nama_tahun_ajaran ?? '2026/2027';
-        $semester = \App\Models\Semester::where('is_active', true)->first()->nama ?? 'Ganjil';
+        $tahunAjaran = \App\Models\TahunAjaran::where('is_aktif', true)->first()->nama_tahun_ajaran ?? '2026/2027';
+        $semester = \App\Models\Semester::where('is_aktif', true)->first()->nama ?? 'Ganjil';
 
         return view('ekskul.info_publik', compact('ekskulList', 'selectedEkskul', 'anggota', 'tahunAjaran', 'semester'));
     }
