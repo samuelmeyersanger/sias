@@ -31,7 +31,15 @@
         /* Tombol Print */
         .print-btn { display: block; width: 120px; margin: 15px auto; padding: 8px; text-align: center; background: #2563eb; color: white; border-radius: 5px; cursor: pointer; border: none; font-weight: bold;}
         .print-btn:hover { background: #1d4ed8; }
-        @media print { .print-btn { display: none; } body { background: white; } }
+        @media print { 
+            .print-btn { display: none; } 
+            body { 
+                background: white; 
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            } 
+        }
     </style>
 </head>
 <body>
