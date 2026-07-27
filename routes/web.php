@@ -101,6 +101,9 @@ Route::get('/daftar-ekskul', function() {
 // API AJAX untuk Dropdown Siswa
 Route::get('/api/siswa-ekskul/{ekskul_id}/{kelas_id}', [\App\Http\Controllers\Ekskul\EkstrakurikulerController::class, 'getSiswaByKelasAndEkskul']);
 
+// Rute Data Ekstrakurikuler (Publik untuk Pembina)
+Route::get('/info-ekskul', [\App\Http\Controllers\Ekskul\EkstrakurikulerController::class, 'infoPublik'])->name('ekskul.info_publik');
+
 // Scanner QR Code (Publik, tanpa login agar praktis untuk alat scanner di gerbang)
 Route::get('/absensi-qr', [\App\Http\Controllers\Kesiswaan\AbsensiQrController::class, 'scanner'])->name('publik.absensi-qr.scanner');
 Route::post('/absensi-qr/scan', [\App\Http\Controllers\Kesiswaan\AbsensiQrController::class, 'processScan'])->name('publik.absensi-qr.scan');

@@ -310,4 +310,32 @@ class EkstrakurikulerController extends Controller
                       
         return response()->json($siswa);
     }
+
+    // 4. Data Publik Untuk Pembina Ekskul
+    public function infoPublik(Request $request)
+    {
+        $ekskulList = Ekstrakurikuler::where('is_aktif', true)->orderBy('nama', 'asc')->get();
+        $selectedEkskul = null;
+        $anggota = [];
+        
+        if ($request->has('ekskul_id')) {
+            $selectedEkskul = Ekstrakurikuler::find($request->ekskul_id);
+            if ($selectedEkskul) {
+                $anggota = \App\Models\AnggotaEkstrakurikuler::with('siswa.kelas')
+                    ->where('ekstrakurikuler_id', $selectedEkskul->id)
+                    ->join('siswa', 'anggota_ekstrakurikuler.siswa_id', '=', 'siswa.id')
+                    ->leftJoin('kelas', 'siswa.kelas_id', '=', 'kelas.id')
+                    ->orderBy('kelas.tingkat', 'asc')
+                    ->orderBy('kelas.nama_kelas', 'asc')
+                    ->orderBy('siswa.nama_lengkap', 'asc')
+                    ->select('anggota_ekstrakurikuler.*')
+                    ->get();
+            }
+        }
+        
+        $tahunAjaran = \App\Models\TahunAjaran::where('is_active', true)->first()->nama_tahun_ajaran ?? '2026/2027';
+        $semester = \App\Models\Semester::where('is_active', true)->first()->nama ?? 'Ganjil';
+
+        return view('ekskul.info_publik', compact('ekskulList', 'selectedEkskul', 'anggota', 'tahunAjaran', 'semester'));
+    }
 }
