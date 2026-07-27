@@ -89,7 +89,7 @@
             <tr>
                 <td style="text-align: center;">{{ $index + 1 }}</td>
                 <td style="font-weight: bold;">{{ $anggota->siswa->nama_lengkap ?? '-' }}</td>
-                <td style="text-align: center;">{{ $anggota->siswa->nomor_hp ?? '-' }}</td>
+                <td style="text-align: center;">{{ $anggota->nomor_hp ?? '-' }}</td>
                 <td style="text-align: center;">{{ $anggota->siswa->kelas->nama_kelas ?? '-' }}</td>
                 <!-- Kolom Kosong untuk di-ceklis manual pakai pulpen -->
                 <td></td><td></td><td></td><td></td><td></td>
