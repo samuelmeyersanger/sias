@@ -68,7 +68,7 @@
                                             <tr class="hover:bg-indigo-50/30 transition-colors group">
                                                 
                                                 <!-- Nama Siswa hanya dicetak di baris pertama ekskulnya -->
-                                                @if($i === 0)
+                                                @if($loop->first)
                                                     <td class="p-5 pl-8 text-center font-bold text-gray-400 align-top border-b border-gray-100" rowspan="{{ $siswa->nilaiEkstrakurikuler->count() }}">
                                                         {{ $index + 1 }}
                                                     </td>
