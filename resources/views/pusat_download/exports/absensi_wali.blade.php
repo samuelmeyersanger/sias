@@ -4,24 +4,24 @@
     <meta charset="UTF-8">
     <title>Daftar Hadir Bulanan Wali Kelas - {{ $kelas->nama_kelas }}</title>
     <style>
-        @page { margin: 0.3cm; size: 8.5in 13in portrait; }
-        body { font-family: Arial, sans-serif; font-size: 8px; }
-        .header { text-align: center; margin-bottom: 4px; border-bottom: 2px solid #000; padding-bottom: 2px; }
+        @page { margin: 0.4cm; size: 13in 8.5in landscape; }
+        body { font-family: Arial, sans-serif; font-size: 8.5px; }
+        .header { text-align: center; margin-bottom: 5px; border-bottom: 2px solid #000; padding-bottom: 2px; }
         
-        .info-table { width: 100%; margin-bottom: 5px; font-weight: bold; font-size: 8.5px; }
+        .info-table { width: 100%; margin-bottom: 6px; font-weight: bold; font-size: 9px; }
         .info-table td { padding: 1px 2px; }
         
         .data-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-        .data-table th, .data-table td { border: 1px solid #000; padding: 1.5px 0.5px; height: 12px; overflow: hidden; font-size: 7px; }
-        .data-table th { background-color: #f0f0f0; text-align: center; font-size: 7px; font-weight: bold; }
+        .data-table th, .data-table td { border: 1px solid #000; padding: 2px 1px; height: 13px; overflow: hidden; font-size: 8px; }
+        .data-table th { background-color: #f0f0f0; text-align: center; font-size: 7.5px; font-weight: bold; }
         
         .text-center { text-align: center; }
-        .text-left { text-align: left; padding-left: 3px !important; }
+        .text-left { text-align: left; padding-left: 4px !important; }
         
-        .nama-siswa { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 7.5px; }
+        .nama-siswa { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 8.5px; }
         
-        .footer { margin-top: 10px; width: 100%; font-size: 8.5px; }
-        .ttd { float: right; width: 220px; text-align: center; }
+        .footer { margin-top: 15px; width: 100%; font-size: 9.5px; }
+        .ttd { float: right; width: 260px; text-align: center; }
         .clearfix::after { content: ""; clear: both; display: table; }
 
         /* Menyembunyikan tombol saat dicetak */
@@ -31,9 +31,9 @@
 <body>
 
     <!-- Tombol Bantuan Cetak -->
-    <div class="btn-print" style="text-align: right; margin-bottom: 12px;">
-        <button onclick="window.print()" style="padding: 10px 20px; background: #0d9488; color: white; border: none; cursor: pointer; border-radius: 8px; font-weight: bold; font-size: 13px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
-            🖨️ Cetak / Simpan PDF (Potret 31 Hari)
+    <div class="btn-print" style="text-align: right; margin-bottom: 15px;">
+        <button onclick="window.print()" style="padding: 10px 20px; background: #0d9488; color: white; border: none; cursor: pointer; border-radius: 8px; font-weight: bold; font-size: 14px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+            🖨️ Cetak / Simpan PDF (Lanskap 31 Hari)
         </button>
     </div>
 
@@ -81,22 +81,22 @@
     <table class="data-table">
         <thead>
             <tr>
-                <th rowspan="2" style="width: 2.5%;">No</th>
-                <th rowspan="2" style="width: 8%;">NISN</th>
-                <th rowspan="2" style="width: 19.5%;">Nama Lengkap Siswa</th>
-                <th rowspan="2" style="width: 2.5%;">L/P</th>
+                <th rowspan="2" style="width: 2.2%;">No</th>
+                <th rowspan="2" style="width: 7.5%;">NISN</th>
+                <th rowspan="2" style="width: 18%;">Nama Lengkap Siswa</th>
+                <th rowspan="2" style="width: 2.2%;">L/P</th>
                 <th rowspan="2" style="width: 3.5%;">Gaya<br>Belajar</th>
                 <th colspan="31">Tanggal ( 1 s.d 31 )</th>
                 <th colspan="4">Rekapitulasi</th>
             </tr>
             <tr>
                 @for($d = 1; $d <= 31; $d++)
-                    <th style="width: 1.7%;">{{ $d }}</th>
+                    <th style="width: 1.8%;">{{ $d }}</th>
                 @endfor
-                <th style="width: 1.7%; background-color: #fee2e2;">S</th>
-                <th style="width: 1.7%; background-color: #fef3c7;">I</th>
-                <th style="width: 1.7%; background-color: #fce7f3;">A</th>
-                <th style="width: 1.7%; background-color: #e0e7ff;">T</th>
+                <th style="width: 1.8%; background-color: #fee2e2;">S</th>
+                <th style="width: 1.8%; background-color: #fef3c7;">I</th>
+                <th style="width: 1.8%; background-color: #fce7f3;">A</th>
+                <th style="width: 1.8%; background-color: #e0e7ff;">T</th>
             </tr>
         </thead>
         <tbody>
