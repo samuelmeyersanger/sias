@@ -155,6 +155,117 @@ class PusatDownloadController extends Controller
     }
 
     // =========================================================================
+    // FITUR 1C: DOWNLOAD ABSENSI BULANAN WALI KELAS (31 HARI) - SEMUA SISWA
+    // =========================================================================
+    public function downloadAbsensiWali(Request $request)
+    {
+        $request->validate([
+            'kelas_id' => 'required|exists:kelas,id',
+            'format' => 'required|in:excel,pdf'
+        ]);
+        $kelas = Kelas::with('waliKelas')->findOrFail($request->kelas_id);
+        $semesterAktif = Semester::with('tahunAjaran')->where('is_aktif', true)->first();
+        
+        $anggota = AnggotaKelas::with('siswa')
+            ->where('kelas_id', $kelas->id)
+            ->where('semester_id', $semesterAktif->id ?? null)
+            ->orderBy('id', 'asc') 
+            ->get();
+            
+        $nama_sekolah = 'SMPN 4 CIBITUNG'; 
+        $tahun_ajaran = $semesterAktif && $semesterAktif->tahunAjaran 
+                        ? $semesterAktif->tahunAjaran->nama_tahun_ajaran 
+                        : 'Belum Diset';
+                        
+        $data = [
+            'kelas' => $kelas,
+            'anggota' => $anggota,
+            'nama_sekolah' => $nama_sekolah,
+            'tahun_ajaran' => $tahun_ajaran,
+            'laki_laki' => $anggota->whereIn('siswa.jenis_kelamin', ['Laki-Laki', 'Laki-laki', 'L'])->count(),
+            'perempuan' => $anggota->whereIn('siswa.jenis_kelamin', ['Perempuan', 'P'])->count(),
+        ];
+        
+        return view('pusat_download.exports.absensi_wali', $data);
+    }
+
+    // =========================================================================
+    // FITUR 1D: DOWNLOAD ABSENSI BULANAN WALI KELAS (31 HARI) - PEREMPUAN
+    // =========================================================================
+    public function downloadAbsensiWaliPerempuan(Request $request)
+    {
+        $request->validate([
+            'kelas_id' => 'required|exists:kelas,id',
+            'format' => 'required|in:excel,pdf'
+        ]);
+        $kelas = Kelas::with('waliKelas')->findOrFail($request->kelas_id);
+        $semesterAktif = Semester::with('tahunAjaran')->where('is_aktif', true)->first();
+        
+        $anggota = AnggotaKelas::with('siswa')
+            ->whereHas('siswa', function($q) {
+                $q->whereIn('jenis_kelamin', ['Perempuan', 'P']);
+            })
+            ->where('kelas_id', $kelas->id)
+            ->where('semester_id', $semesterAktif->id ?? null)
+            ->orderBy('id', 'asc') 
+            ->get();
+            
+        $nama_sekolah = 'SMPN 4 CIBITUNG'; 
+        $tahun_ajaran = $semesterAktif && $semesterAktif->tahunAjaran 
+                        ? $semesterAktif->tahunAjaran->nama_tahun_ajaran 
+                        : 'Belum Diset';
+                        
+        $data = [
+            'kelas' => $kelas,
+            'anggota' => $anggota,
+            'nama_sekolah' => $nama_sekolah,
+            'tahun_ajaran' => $tahun_ajaran,
+            'laki_laki' => 0,
+            'perempuan' => $anggota->count(),
+        ];
+        
+        return view('pusat_download.exports.absensi_wali', $data);
+    }
+
+    // =========================================================================
+    // FITUR 1E: DOWNLOAD ABSENSI BULANAN WALI KELAS (31 HARI) - LAKI-LAKI
+    // =========================================================================
+    public function downloadAbsensiWaliLakilaki(Request $request)
+    {
+        $request->validate([
+            'kelas_id' => 'required|exists:kelas,id',
+            'format' => 'required|in:excel,pdf'
+        ]);
+        $kelas = Kelas::with('waliKelas')->findOrFail($request->kelas_id);
+        $semesterAktif = Semester::with('tahunAjaran')->where('is_aktif', true)->first();
+        
+        $anggota = AnggotaKelas::with('siswa')
+            ->whereHas('siswa', function($q) {
+                $q->whereIn('jenis_kelamin', ['Laki-Laki', 'Laki-laki', 'L']);
+            })
+            ->where('kelas_id', $kelas->id)
+            ->where('semester_id', $semesterAktif->id ?? null)
+            ->orderBy('id', 'asc') 
+            ->get();
+            
+        $nama_sekolah = 'SMPN 4 CIBITUNG'; 
+        $tahun_ajaran = $semesterAktif && $semesterAktif->tahunAjaran 
+                        ? $semesterAktif->tahunAjaran->nama_tahun_ajaran 
+                        : 'Belum Diset';
+                        
+        $data = [
+            'kelas' => $kelas,
+            'anggota' => $anggota,
+            'nama_sekolah' => $nama_sekolah,
+            'tahun_ajaran' => $tahun_ajaran,
+            'laki_laki' => $anggota->count(),
+            'perempuan' => 0,
+        ];
+        
+        return view('pusat_download.exports.absensi_wali', $data);
+    }
+
+    // =========================================================================
     // FITUR 2: DOWNLOAD JADWAL PELAJARAN PERKELAS
     // =========================================================================
         public function downloadJadwal(Request $request)

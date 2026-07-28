@@ -47,7 +47,7 @@ Sistem ini berjalan di **PC Server lokal (On-Premise)** menggunakan **Docker**, 
 | Blog / Berita | Daftar artikel, detail, komentar publik |
 | Halaman Dinamis (CMS) | Halaman statis yang dikelola admin (Visi Misi, Sejarah, dll) |
 | Formulir Kontak | Form kontak untuk orang tua / masyarakat |
-| Scanner QR Absensi | Scanner mandiri untuk mencatat kehadiran harian lewat barcode/QR |
+| Scanner QR Absensi | Scanner mandiri harian via barcode/QR + terintegrasi Aplikasi Android Hybrid (Native ZXing Scanner) |
 | Info Ekstrakurikuler | Halaman publik daftar ekskul beserta detail pesertanya |
 
 </details>
@@ -229,7 +229,7 @@ Sistem ini berjalan di **PC Server lokal (On-Premise)** menggunakan **Docker**, 
 | Menu Sidebar Dinamis | Kustomisasi urutan, ikon, permission |
 | Log Aktivitas | Audit trail seluruh aksi CRUD |
 | Backup & Restore | Backup database (Spatie Backup) |
-| Pusat Download | Download PDF: absensi, jadwal, absensi ekskul |
+| Pusat Download | Unduh PDF & Excel: Absensi Guru (16 Pertemuan), Absensi Wali Kelas (31 Hari Bulanan), jadwal, absensi ekskul, kartu siswa terpadu |
 
 </details>
 
@@ -524,12 +524,17 @@ sias-akademik/
 
 ## 🔗 Integrasi Ekosistem (SSO & E-Antrian)
 
-SIAS dirancang bukan hanya sebagai aplikasi mandiri, tetapi juga sebagai **Pusat Identitas (SSO Provider)** untuk aplikasi ekosistem sekolah lainnya, salah satunya adalah **Aplikasi E-Antrian**.
+SIAS dirancang bukan hanya sebagai aplikasi mandiri, tetapi juga sebagai **Pusat Identitas (SSO Provider)** dan backend untuk aplikasi ekosistem sekolah lainnya, seperti **Aplikasi E-Antrian** dan **Aplikasi Mobile Android Absensi (AbsensiSiswaFourbit)**.
 
-### Fungsi SIAS dalam Ekosistem:
-1. **Single Sign-On (SSO):** Petugas atau Admin e-Antrian tidak perlu mendaftar akun baru. Mereka dapat login ke e-Antrian menggunakan kredensial (Email & Password) dari SIAS.
-2. **Sinkronisasi Sesi Chat:** Fitur *Ruang Obrolan* pada e-Antrian terhubung langsung dengan modul Chat internal SIAS.
-3. **Pusat Data Pegawai:** Semua manajemen data petugas dan loket terpusat di dalam database SIAS.
+### 1. Aplikasi Mobile Android (AbsensiSiswaFourbit):
+- **Hybrid Native Scanner:** Menggunakan WebView + ZXing Native Scanner untuk membypass kendala HTTP/non-SSL.
+- **Kamera Speed & Focus:** Kecepatan dan fokus pemindaian tinggi langsung dari kamera HP.
+- **Pembersihan Cache Otomatis:** WebView dipaksa mengambil tampilan web paling segar dari server secara *real-time*.
+
+### 2. Aplikasi E-Antrian:
+1. **Single Sign-On (SSO):** Petugas atau Admin e-Antrian dapat login menggunakan kredensial SIAS.
+2. **Sinkronisasi Sesi Chat:** Fitur *Ruang Obrolan* e-Antrian terhubung langsung dengan modul Chat SIAS.
+3. **Pusat Data Pegawai:** Semua manajemen data petugas terpusat di database SIAS.
 
 ### Konfigurasi Penting (Bagi Pengembang):
 Untuk memastikan aplikasi eksternal (seperti e-Antrian) dapat terhubung dengan SIAS, pastikan SIAS dapat diakses melalui IP Publik atau Domain yang sama. Pada file `.env` aplikasi eksternal, biasanya diperlukan URL Publik SIAS, contoh:

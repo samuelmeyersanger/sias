@@ -597,6 +597,9 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         Route::get('/absensi', [\App\Http\Controllers\PusatDownloadController::class, 'downloadAbsensi'])->name('absensi');
         Route::get('/absensi-perempuan', [\App\Http\Controllers\PusatDownloadController::class, 'downloadAbsensiPerempuan'])->name('absensi-perempuan');
         Route::get('/absensi-lakilaki', [\App\Http\Controllers\PusatDownloadController::class, 'downloadAbsensiLakilaki'])->name('absensi-lakilaki');
+        Route::get('/absensi-wali', [\App\Http\Controllers\PusatDownloadController::class, 'downloadAbsensiWali'])->name('absensi_wali');
+        Route::get('/absensi-wali-perempuan', [\App\Http\Controllers\PusatDownloadController::class, 'downloadAbsensiWaliPerempuan'])->name('absensi_wali_perempuan');
+        Route::get('/absensi-wali-lakilaki', [\App\Http\Controllers\PusatDownloadController::class, 'downloadAbsensiWaliLakilaki'])->name('absensi_wali_lakilaki');
         Route::get('/jadwal', [\App\Http\Controllers\PusatDownloadController::class, 'downloadJadwal'])->name('jadwal');
         Route::get('/data-siswa-lengkap', [\App\Http\Controllers\PusatDownloadController::class, 'downloadDataSiswaLengkap'])->name('data_siswa_lengkap');
         Route::get('/cetak-absensi', [\App\Http\Controllers\PusatDownloadController::class, 'cetakAbsensiEkskul'])->name('cetak_absensi_ekskul');

@@ -158,15 +158,15 @@
                         </div>
                     </div>
 
-                    {{-- Card: Absensi Kelas --}}
+                    {{-- Card 1: Absensi Guru Pengampu (16 Pertemuan) --}}
                     <div class="bg-white rounded-[2rem] p-6 shadow-xl shadow-slate-200/40 border border-slate-100 flex flex-col justify-between hover:-translate-y-1 hover:shadow-2xl hover:shadow-emerald-200/30 transition-all duration-300 relative overflow-hidden group">
                         <div class="absolute left-0 top-0 bottom-0 w-2 bg-emerald-400"></div>
                         <div class="pl-2">
                             <div class="flex items-center gap-3 mb-4">
                                 <span class="text-3xl">📝</span>
-                                <h4 class="font-black text-slate-900 text-base leading-tight">Daftar Hadir (Absensi) Kelas</h4>
+                                <h4 class="font-black text-slate-900 text-base leading-tight">Absensi Guru (16 Pertemuan)</h4>
                             </div>
-                            <p class="text-[11px] font-medium text-slate-500 leading-relaxed mb-6 h-8">Cetak lembar rekapitulasi absensi harian kosong untuk guru pengampu.</p>
+                            <p class="text-[11px] font-medium text-slate-500 leading-relaxed mb-6 h-8">Cetak lembar rekapitulasi absensi per-pertemuan (16 kolom) untuk guru pengampu.</p>
                             
                             <form action="{{ route('pusat_download.absensi') }}" method="GET" target="_blank" class="space-y-4">
                                 @csrf
@@ -196,6 +196,48 @@
                                         <div class="flex gap-2">
                                             <button type="submit" formaction="{{ route('pusat_download.absensi-perempuan') }}" name="format" value="excel" class="flex-1 px-3 py-2 bg-pink-500 hover:bg-pink-600 text-white text-[10px] font-black uppercase tracking-wider rounded-xl transition-colors shadow-md text-center cursor-pointer">📊 Excel</button>
                                             <button type="submit" formaction="{{ route('pusat_download.absensi-perempuan') }}" name="format" value="pdf" class="flex-1 px-3 py-2 bg-pink-500 hover:bg-pink-600 text-white text-[10px] font-black uppercase tracking-wider rounded-xl transition-colors shadow-md text-center cursor-pointer">📄 PDF</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    {{-- Card 2: Absensi Wali Kelas Bulanan (31 Hari) --}}
+                    <div class="bg-white rounded-[2rem] p-6 shadow-xl shadow-slate-200/40 border border-slate-100 flex flex-col justify-between hover:-translate-y-1 hover:shadow-2xl hover:shadow-teal-200/30 transition-all duration-300 relative overflow-hidden group">
+                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-teal-500"></div>
+                        <div class="pl-2">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="text-3xl">🗓️</span>
+                                <h4 class="font-black text-slate-900 text-base leading-tight">Absensi Wali Kelas (31 Hari)</h4>
+                            </div>
+                            <p class="text-[11px] font-medium text-slate-500 leading-relaxed mb-6 h-8">Cetak format presensi bulanan lanskap (31 hari) lengkap dengan rekap S, I, A, T.</p>
+                            
+                            <form action="{{ route('pusat_download.absensi_wali') }}" method="GET" target="_blank" class="space-y-4">
+                                @csrf
+                                <select name="kelas_id" required class="w-full text-sm font-bold text-slate-700 rounded-xl border-slate-200 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 bg-slate-50 py-3 shadow-inner mb-4">
+                                    <option value="">-- Pilih Ruang Kelas --</option>
+                                    @foreach($daftarKelas as $kelas)
+                                        <option value="{{ $kelas->id }}">{{ $kelas->tingkat }} - {{ $kelas->nama_kelas }}</option>
+                                    @endforeach
+                                </select>
+                                <div class="space-y-3">
+                                    <div>
+                                        <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Semua Siswa</div>
+                                        <div class="flex gap-2">
+                                            <button type="submit" formaction="{{ route('pusat_download.absensi_wali') }}" name="format" value="pdf" class="w-full px-3 py-2 bg-teal-700 hover:bg-teal-800 text-white text-[10px] font-black uppercase tracking-wider rounded-xl transition-colors shadow-md text-center cursor-pointer">📄 Cetak PDF 31 Hari</button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="text-[10px] font-bold text-indigo-500 uppercase tracking-widest mb-1.5 flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span> Laki-laki Saja</div>
+                                        <div class="flex gap-2">
+                                            <button type="submit" formaction="{{ route('pusat_download.absensi_wali_lakilaki') }}" name="format" value="pdf" class="w-full px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-black uppercase tracking-wider rounded-xl transition-colors shadow-md text-center cursor-pointer">📄 Cetak Laki-Laki</button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="text-[10px] font-bold text-pink-500 uppercase tracking-widest mb-1.5 flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-pink-400"></span> Perempuan Saja</div>
+                                        <div class="flex gap-2">
+                                            <button type="submit" formaction="{{ route('pusat_download.absensi_wali_perempuan') }}" name="format" value="pdf" class="w-full px-3 py-2 bg-pink-500 hover:bg-pink-600 text-white text-[10px] font-black uppercase tracking-wider rounded-xl transition-colors shadow-md text-center cursor-pointer">📄 Cetak Perempuan</button>
                                         </div>
                                     </div>
                                 </div>
