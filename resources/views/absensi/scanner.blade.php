@@ -119,8 +119,17 @@
 
             <div class="bg-white/80 backdrop-blur-2xl rounded-[3rem] p-6 md:p-10 shadow-2xl shadow-slate-200/50 border border-white/60 relative overflow-hidden group">
                 
-                <!-- Tempat Scanner Kamera -->
+                <!-- Tempat Scanner Kamera HTML5 -->
                 <div id="reader" class="w-full rounded-3xl overflow-hidden shadow-inner bg-white border-2 border-slate-100 relative z-10 p-2"></div>
+                
+                <!-- Tombol Scanner Khusus Native Android (Tersembunyi secara default) -->
+                <div id="native-scanner-container" class="hidden text-center relative z-10 py-6">
+                    <button id="btnNativeScan" onclick="AndroidScanner.startScan()" class="w-full py-6 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xl rounded-2xl shadow-xl shadow-indigo-600/30 transition-all flex items-center justify-center gap-4 border-4 border-indigo-500/50">
+                        <i class="fa-solid fa-camera text-3xl animate-pulse"></i>
+                        MULAI PEMINDAIAN
+                    </button>
+                    <p class="text-sm font-bold text-slate-500 mt-4">Ketuk tombol di atas untuk menyalakan Kamera HP</p>
+                </div>
                 
                 <div class="mt-8 text-center relative z-10">
                     <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 flex items-center justify-center gap-3">
@@ -251,12 +260,27 @@
             // Abaikan error saat tidak ada QR yang terdeteksi
         }
 
-        // Inisialisasi Kamera HTML5 QR Code
-        let html5QrcodeScanner = new Html5QrcodeScanner(
-            "reader",
-            { fps: 10, qrbox: {width: 250, height: 250} },
-            /* verbose= */ false);
-        html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+        // Inisialisasi Kamera (Deteksi apakah di Web biasa atau Android App)
+        if (typeof window.AndroidScanner !== 'undefined') {
+            // Kita sedang berada di dalam Aplikasi Android Native!
+            // Sembunyikan scanner HTML5 yang bikin error
+            document.getElementById('reader').style.display = 'none';
+            // Munculkan tombol scanner Native
+            document.getElementById('native-scanner-container').classList.remove('hidden');
+        } else {
+            // Kita berada di Web Browser biasa (Chrome PC/Safari)
+            let html5QrcodeScanner = new Html5QrcodeScanner(
+                "reader",
+                { fps: 10, qrbox: {width: 250, height: 250} },
+                /* verbose= */ false);
+            html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+        }
+
+        // Fungsi Jembatan (Bridge) yang akan dipanggil oleh Java Android Studio
+        window.handleNativeScan = function(scannedNisn) {
+            // Ini akan otomatis terpanggil setelah kamera Android sukses memindai barcode!
+            processScan(scannedNisn);
+        };
 
         // Tangkap input dari Scanner USB
         document.getElementById('manual_nisn').addEventListener('keypress', function (e) {
