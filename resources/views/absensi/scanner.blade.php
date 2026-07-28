@@ -157,7 +157,7 @@
                 <div class="absolute -right-20 -bottom-20 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-indigo-500/20 transition-colors duration-700"></div>
             </div>
             
-            <div class="mt-10 text-center">
+            <div id="btn-beranda" class="mt-10 text-center">
                 <a href="/" class="inline-flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl text-sm font-black uppercase tracking-widest text-slate-600 hover:text-indigo-600 transition-all shadow-sm hover:shadow-md">
                     <i class="fa-solid fa-arrow-left"></i> Kembali ke Beranda
                 </a>
@@ -268,6 +268,8 @@
             document.getElementById('reader').style.display = 'none';
             // Munculkan tombol scanner Native
             document.getElementById('native-scanner-container').classList.remove('hidden');
+            // Sembunyikan tombol kembali ke beranda (Khusus Android App)
+            document.getElementById('btn-beranda').style.display = 'none';
         } else {
             // Kita berada di Web Browser biasa (Chrome PC/Safari)
             let html5QrcodeScanner = new Html5QrcodeScanner(
