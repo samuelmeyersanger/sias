@@ -189,7 +189,8 @@
             document.getElementById('alert-title').innerText = 'Memverifikasi Data...';
             document.getElementById('alert-message').innerText = 'Mohon tunggu sebentar.';
 
-            fetch('{{ route("publik.absensi-qr.scan") }}', {
+            // Menggunakan relative URL agar otomatis menyesuaikan dengan IP Server (tidak jadi localhost)
+            fetch('/absensi-qr/scan', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
