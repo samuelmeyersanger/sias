@@ -29,14 +29,21 @@ class SuratKeluarController extends Controller
     {
         $request->validate([
             'jenis_surat_id'    => 'required|exists:jenis_surat,id',
-            'tujuan_surat'      => 'required|string',
             'perihal'           => 'required|string',
-            'isi_surat'         => 'nullable|string',
+            'tujuan_surat'      => 'required|string',
             'tanggal_surat'     => 'required|date',
             'metode_ttd'        => 'required|in:Digital,Basah',
             'penandatangan_id'  => 'required|exists:users,id',
             'file_dokumen'      => 'nullable|mimes:pdf,doc,docx,xlsx,xls|max:10240',
-            'file_excel'        => 'nullable|mimes:xlsx,xls' // Lampiran opsional saat buat draf
+            'file_excel'        => 'nullable|mimes:xlsx,xls'
+        ], [
+            'jenis_surat_id.required'   => 'Klasifikasi Format Surat wajib dipilih.',
+            'perihal.required'          => 'Perihal Surat wajib diisi.',
+            'tujuan_surat.required'     => 'Tujuan Surat / Kepada Yth. wajib diisi.',
+            'tanggal_surat.required'    => 'Tanggal Surat wajib dipilih.',
+            'penandatangan_id.required' => 'Penandatangan Kepala Sekolah wajib dipilih.',
+            'file_dokumen.mimes'        => 'File dokumen harus berformat PDF, Word (.doc/.docx), atau Excel.',
+            'file_dokumen.max'          => 'Ukuran file dokumen maksimal 10 MB.'
         ]);
 
         $filePath = null;

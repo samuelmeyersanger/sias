@@ -274,9 +274,14 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block font-bold text-gray-700 mb-1">Tujuan Surat / Kepada Yth. *</label>
-                            <input type="text" name="tujuan_surat" required placeholder="Contoh: Bapak/Ibu Orang Tua / Wali Murid" class="w-full rounded-xl border-gray-300 text-xs font-semibold py-2.5">
+                            <label class="block font-bold text-gray-700 mb-1">Perihal Surat *</label>
+                            <input type="text" name="perihal" required placeholder="Contoh: Surat Keterangan Siswa Aktif / SK Pembagian Tugas" class="w-full rounded-xl border-gray-300 text-xs font-semibold py-2.5">
                         </div>
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-gray-700 mb-1">Tujuan Surat / Kepada Yth. *</label>
+                        <input type="text" name="tujuan_surat" required placeholder="Contoh: Bapak/Ibu Orang Tua / Wali Murid / Polsek Cibitung" class="w-full rounded-xl border-gray-300 text-xs font-semibold py-2.5">
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -371,7 +376,7 @@
                             </div>
                         </div>
 
-                        <input type="hidden" name="isi_surat" x-ref="hiddenIsiSurat" required>
+                        <input type="hidden" name="isi_surat" x-ref="hiddenIsiSurat">
                         <div x-ref="editorContainer" class="bg-white rounded-b-xl border border-gray-300 min-h-[180px] text-sm"></div>
                     </div>
 
