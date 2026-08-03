@@ -191,7 +191,7 @@ class SuratKeluarController extends Controller
         if ($zip->open($fullPath) === TRUE) {
             $xmlContent = $zip->getFromName('word/document.xml');
             if ($xmlContent) {
-                // 1. Bersihkan tag pemeriksa ejaan (spellcheck/proofErr) bawaan MS Word yang memecah kata
+                // 1. Bersihkan tag pemeriksa ejaan & pembagi style bawaan MS Word
                 $xmlContent = preg_replace('/<w:proofErr[^>]*\/>/', '', $xmlContent);
                 $xmlContent = preg_replace('/<w:noProof[^>]*\/>/', '', $xmlContent);
                 $xmlContent = preg_replace('/<w:lang[^>]*\/>/', '', $xmlContent);
@@ -201,17 +201,18 @@ class SuratKeluarController extends Controller
                     return '[' . strip_tags($matches[1]) . ']';
                 }, $xmlContent);
 
-                // 3. Lakukan penggantian tag secara presisi & fleksibel (Case-Insensitive Regex Fallback)
+                // 3. Lakukan penggantian tag secara presisi & super fleksibel
                 foreach ($replacements as $search => $replace) {
                     $replaceXml = str_replace("\n", '</w:t><w:br/><w:t>', htmlspecialchars($replace, ENT_QUOTES, 'UTF-8'));
                     
                     // Ganti string langsung
                     $xmlContent = str_replace($search, $replaceXml, $xmlContent);
 
-                    // Regex fallback untuk mengantisipasi variasi spasi / huruf kapital bawaan Word
+                    // Regex fallback fleksibel (Mendukung spasi, _ , maupun kombinasi keduanya)
                     $cleanSearch = trim($search, '[]');
+                    $spacePattern = str_replace('_', '[\s_]+', preg_quote($cleanSearch, '/'));
                     $xmlContent = preg_replace(
-                        '/\[\s*' . preg_quote($cleanSearch, '/') . '\s*\]/i',
+                        '/\[\s*' . $spacePattern . '\s*\]/i',
                         $replaceXml,
                         $xmlContent
                     );
