@@ -134,21 +134,28 @@ class SuratKeluarController extends Controller
         );
 
         $namaKepsek = $surat->penandatangan ? $surat->penandatangan->name : 'Siti Nurchayati, M.Pd';
+        $nipKepsek = '197307152000032007';
+        $pangkatKepsek = 'Pembina Utama Muda, IV/c';
+        $blokTtd = $namaKepsek . "\n" . $pangkatKepsek . "\nNIP. " . $nipKepsek;
 
         $replacements = [
-            '[kode]'             => $jenis->kode_klasifikasi,
-            '[nomor]'            => $strNoUrut,
-            '[bulan]'            => $bulanRomawi,
-            '[tahun]'            => $tahun,
-            '[KODE]'             => $jenis->kode_klasifikasi,
-            '[NOMOR]'            => $strNoUrut,
-            '[BULAN]'            => $bulanRomawi,
-            '[TAHUN]'            => $tahun,
-            '[tanggal_surat]'    => $tglIndo,
-            '[tanggal]'          => $tglIndo,
-            '[penandatangan_id]' => $namaKepsek,
-            '[penandatangan]'    => $namaKepsek,
-            '[nama_kepsek]'      => $namaKepsek,
+            '[kode]'                   => $jenis->kode_klasifikasi,
+            '[nomor]'                  => $strNoUrut,
+            '[bulan]'                  => $bulanRomawi,
+            '[tahun]'                  => $tahun,
+            '[KODE]'                   => $jenis->kode_klasifikasi,
+            '[NOMOR]'                  => $strNoUrut,
+            '[BULAN]'                  => $bulanRomawi,
+            '[TAHUN]'                  => $tahun,
+            '[tanggal_surat]'          => $tglIndo,
+            '[tanggal]'                => $tglIndo,
+            '[penandatangan_id]'       => $blokTtd,
+            '[penandatangan]'          => $blokTtd,
+            '[nama_kepsek]'            => $namaKepsek,
+            '[nip_kepsek]'             => $nipKepsek,
+            '[pangkat_kepsek]'          => $pangkatKepsek,
+            '[pangkat_golongan_kepsek]' => $pangkatKepsek,
+            '[golongan_kepsek]'        => $pangkatKepsek,
         ];
 
         // Jika surat berbasis file Word (.docx), ganti tag di dalam file Word
@@ -159,7 +166,7 @@ class SuratKeluarController extends Controller
         // Ganti tag di isi_surat jika mengetik lewat editor
         $newIsiSurat = $surat->isi_surat;
         foreach ($replacements as $search => $replace) {
-            $newIsiSurat = str_replace($search, $replace, $newIsiSurat);
+            $newIsiSurat = str_replace($search, nl2br($replace), $newIsiSurat);
         }
 
         $surat->update([
@@ -190,7 +197,8 @@ class SuratKeluarController extends Controller
                 }, $xmlContent);
 
                 foreach ($replacements as $search => $replace) {
-                    $xmlContent = str_replace($search, htmlspecialchars($replace, ENT_QUOTES, 'UTF-8'), $xmlContent);
+                    $replaceXml = str_replace("\n", '</w:t><w:br/><w:t>', htmlspecialchars($replace, ENT_QUOTES, 'UTF-8'));
+                    $xmlContent = str_replace($search, $replaceXml, $xmlContent);
                 }
                 $zip->addFromString('word/document.xml', $xmlContent);
             }
@@ -208,21 +216,28 @@ class SuratKeluarController extends Controller
         $tglIndo = Carbon::parse($surat->tanggal_surat)->locale('id')->isoFormat('D MMMM YYYY');
         $strNoUrut = sprintf("%03d", $surat->no_urut ?? 1);
         $namaKepsek = $surat->penandatangan ? $surat->penandatangan->name : 'Siti Nurchayati, M.Pd';
+        $nipKepsek = '197307152000032007';
+        $pangkatKepsek = 'Pembina Utama Muda, IV/c';
+        $blokTtd = $namaKepsek . "\n" . $pangkatKepsek . "\nNIP. " . $nipKepsek;
 
         $replacements = [
-            '[kode]'             => $jenis->kode_klasifikasi ?? '400.3.5.6',
-            '[nomor]'            => $strNoUrut,
-            '[bulan]'            => $bulanRomawi,
-            '[tahun]'            => $tahun,
-            '[KODE]'             => $jenis->kode_klasifikasi ?? '400.3.5.6',
-            '[NOMOR]'            => $strNoUrut,
-            '[BULAN]'            => $bulanRomawi,
-            '[TAHUN]'            => $tahun,
-            '[tanggal_surat]'    => $tglIndo,
-            '[tanggal]'          => $tglIndo,
-            '[penandatangan_id]' => $namaKepsek,
-            '[penandatangan]'    => $namaKepsek,
-            '[nama_kepsek]'      => $namaKepsek,
+            '[kode]'                   => $jenis->kode_klasifikasi ?? '400.3.5.6',
+            '[nomor]'                  => $strNoUrut,
+            '[bulan]'                  => $bulanRomawi,
+            '[tahun]'                  => $tahun,
+            '[KODE]'                   => $jenis->kode_klasifikasi ?? '400.3.5.6',
+            '[NOMOR]'                  => $strNoUrut,
+            '[BULAN]'                  => $bulanRomawi,
+            '[TAHUN]'                  => $tahun,
+            '[tanggal_surat]'          => $tglIndo,
+            '[tanggal]'                => $tglIndo,
+            '[penandatangan_id]'       => $blokTtd,
+            '[penandatangan]'          => $blokTtd,
+            '[nama_kepsek]'            => $namaKepsek,
+            '[nip_kepsek]'             => $nipKepsek,
+            '[pangkat_kepsek]'          => $pangkatKepsek,
+            '[pangkat_golongan_kepsek]' => $pangkatKepsek,
+            '[golongan_kepsek]'        => $pangkatKepsek,
         ];
 
         // Jika surat berasal dari file unggahan (Word / PDF / Excel), langsung buka / unduh berkas aslinya
