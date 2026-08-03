@@ -196,14 +196,17 @@ class SuratKeluarController extends Controller
                 $xmlContent = preg_replace('/<w:noProof[^>]*\/>/', '', $xmlContent);
                 $xmlContent = preg_replace('/<w:lang[^>]*\/>/', '', $xmlContent);
 
-                // 2. Gabungkan tag XML yang terpisah di dalam kurung siku [...]
+                // 2. Tambahkan atribut preserve spasi & multi-line pada tag elemen Word
+                $xmlContent = preg_replace('/<w:t(?:\s[^>]*)?>/', '<w:t xml:space="preserve">', $xmlContent);
+
+                // 3. Gabungkan tag XML yang terpisah di dalam kurung siku [...]
                 $xmlContent = preg_replace_callback('/\[(.*?)\]/s', function($matches) {
                     return '[' . strip_tags($matches[1]) . ']';
                 }, $xmlContent);
 
-                // 3. Lakukan penggantian tag secara presisi & super fleksibel
+                // 4. Lakukan penggantian tag secara presisi & super fleksibel
                 foreach ($replacements as $search => $replace) {
-                    $replaceXml = str_replace("\n", '</w:t><w:br/><w:t>', htmlspecialchars($replace, ENT_QUOTES, 'UTF-8'));
+                    $replaceXml = str_replace("\n", '</w:t><w:br/><w:t xml:space="preserve">', htmlspecialchars($replace, ENT_QUOTES, 'UTF-8'));
                     
                     // Ganti string langsung
                     $xmlContent = str_replace($search, $replaceXml, $xmlContent);
