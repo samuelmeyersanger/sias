@@ -18,7 +18,7 @@
     <script>
         function suratKeluarApp() {
             return {
-                openCreate: false,
+                openCreate: {{ $errors->any() ? 'true' : 'false' }},
                 quill: null,
                 daftarPegawai: @json($daftarPegawai),
                 daftarSiswa: @json($daftarSiswa),
@@ -165,7 +165,26 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-4">
             
             @if(session('success'))
-                <div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold rounded-xl flex items-center gap-2">✅ {{ session('success') }}</div>
+                <div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold rounded-xl flex items-center gap-2 shadow-sm">
+                    ✅ {{ session('success') }}
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="p-4 bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold rounded-xl flex items-center gap-2 shadow-sm">
+                    ❌ {{ session('error') }}
+                </div>
+            @endif
+
+            @if($errors->any())
+                <div class="p-4 bg-rose-50 border border-rose-200 text-rose-800 text-xs rounded-xl space-y-1 shadow-sm">
+                    <div class="font-bold flex items-center gap-2">⚠️ Gagal menyimpan usulan surat:</div>
+                    <ul class="list-disc list-inside text-[11px] space-y-0.5 font-medium">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
             @endif
 
             <div class="bg-white p-4 rounded-xl border border-gray-200 flex justify-between items-center shadow-sm">
