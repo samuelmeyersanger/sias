@@ -289,30 +289,48 @@ class SuratKeluarController extends Controller
 
         $request->validate([
             'jenis_surat_id'    => 'required|exists:jenis_surat,id',
-            'tujuan_surat'      => 'required|string',
             'perihal'           => 'required|string',
-            'isi_surat'         => 'required|string',
+            'tujuan_surat'      => 'required|string',
             'tanggal_surat'     => 'required|date',
             'metode_ttd'        => 'required|in:Digital,Basah',
             'penandatangan_id'  => 'required|exists:users,id',
+            'file_dokumen'      => 'nullable|mimes:pdf,doc,docx,xlsx,xls|max:10240',
             'file_excel'        => 'nullable|mimes:xlsx,xls'
+        ], [
+            'jenis_surat_id.required'   => 'Klasifikasi Format Surat wajib dipilih.',
+            'perihal.required'          => 'Perihal Surat wajib diisi.',
+            'tujuan_surat.required'     => 'Tujuan Surat / Kepada Yth. wajib diisi.',
+            'tanggal_surat.required'    => 'Tanggal Surat wajib dipilih.',
+            'penandatangan_id.required' => 'Penandatangan Kepala Sekolah wajib dipilih.',
         ]);
 
-        $surat->update([
+        $data = [
             'jenis_surat_id'   => $request->jenis_surat_id,
-            'tujuan_surat'     => $request->tujuan_surat,
             'perihal'          => $request->perihal,
-            'isi_surat'        => $request->isi_surat,
+            'tujuan_surat'     => $request->tujuan_surat,
             'tanggal_surat'    => $request->tanggal_surat,
             'metode_ttd'       => $request->metode_ttd,
             'penandatangan_id' => $request->penandatangan_id,
-        ]);
+        ];
+
+        if ($request->filled('isi_surat') && $request->isi_surat !== '<p><br></p>') {
+            $data['isi_surat'] = $request->isi_surat;
+        }
+
+        if ($request->hasFile('file_dokumen')) {
+            if ($surat->file_final && \Illuminate\Support\Facades\Storage::disk('public')->exists($surat->file_final)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($surat->file_final);
+            }
+            $data['file_final'] = $request->file('file_dokumen')->store('surat_keluar_files', 'public');
+        }
+
+        $surat->update($data);
 
         if ($request->hasFile('file_excel')) {
             $this->prosesImportExcel($request->file('file_excel'), $surat->id);
         }
 
-        return redirect()->back()->with('success', 'Draf surat keluar berhasil diperbarui!');
+        return redirect()->back()->with('success', 'Data surat keluar berhasil diperbarui!');
     }
 
     public function tolak($id)
@@ -326,10 +344,13 @@ class SuratKeluarController extends Controller
     public function destroy($id)
     {
         $surat = SuratKeluar::findOrFail($id);
+        if ($surat->file_final && \Illuminate\Support\Facades\Storage::disk('public')->exists($surat->file_final)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($surat->file_final);
+        }
         SuratKeluarLampiran::where('surat_keluar_id', $id)->delete();
         $surat->delete();
 
-        return redirect()->back()->with('success', 'Draf surat keluar berhasil dihapus.');
+        return redirect()->back()->with('success', 'Surat keluar berhasil dihapus!');
     }
 
     private function getRomawi($bulan) {

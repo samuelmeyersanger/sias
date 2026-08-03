@@ -19,11 +19,17 @@
         function suratKeluarApp() {
             return {
                 openCreate: {{ $errors->any() ? 'true' : 'false' }},
+                openEdit: false,
+                editItem: {},
                 quill: null,
                 daftarPegawai: @json($daftarPegawai),
                 daftarSiswa: @json($daftarSiswa),
                 selectedPegawaiId: '',
                 selectedSiswaId: '',
+                openEditModal(item) {
+                    this.editItem = item;
+                    this.openEdit = true;
+                },
                 initQuill() {
                     if (!this.quill && this.$refs.editorContainer) {
                         this.quill = new Quill(this.$refs.editorContainer, {
@@ -226,7 +232,7 @@
                                 <td class="p-4 text-center">
                                     <span class="px-2 py-0.5 text-[10px] font-bold rounded-full {{ $item->status == 'Disetujui' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800' }}">{{ $item->status }}</span>
                                 </td>
-                                <td class="p-4 text-center space-x-1">
+                                <td class="p-4 text-center space-x-1 whitespace-nowrap">
                                     @if($item->file_final)
                                         <a href="{{ asset('storage/' . $item->file_final) }}" target="_blank" class="px-2.5 py-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-lg inline-block shadow-sm" title="Lihat/Unduh File Dokumen SK">📁 File Berkas</a>
                                     @endif
@@ -238,6 +244,16 @@
                                     @elseif($item->status == 'Disetujui')
                                         <a href="{{ route('surat.keluar.cetak', $item->id) }}" target="_blank" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg block sm:inline shadow-sm">🖨️ Cetak PDF</a>
                                     @endif
+
+                                    {{-- Tombol Edit --}}
+                                    <button type="button" @click="openEditModal({{ json_encode($item) }})" class="px-2.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg inline-block shadow-sm cursor-pointer" title="Edit Surat">✏️ Edit</button>
+
+                                    {{-- Tombol Hapus --}}
+                                    <form action="{{ route('surat.keluar.destroy', $item->id) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus surat ini?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="px-2 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-lg shadow-sm cursor-pointer" title="Hapus Surat">🗑️ Hapus</button>
+                                    </form>
                                 </td>
                             </tr>
                         @empty
@@ -390,6 +406,82 @@
                         <button type="button" @click="openCreate = false" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-xs transition-colors cursor-pointer">Batal</button>
                         <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md text-xs transition-colors cursor-pointer flex items-center gap-2">
                             <span>🚀</span> Kirim Usulan Draf Surat
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {{-- Modal Edit Surat --}}
+        <div x-show="openEdit" class="fixed inset-0 z-50 bg-gray-900/50 backdrop-blur-xs flex items-center justify-center p-4" style="display: none;" x-transition>
+            <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] shadow-2xl border border-gray-100 overflow-hidden flex flex-col" @click.away="openEdit = false">
+                
+                <div class="px-6 py-4 border-b border-gray-100 bg-blue-50/70 flex justify-between items-center shrink-0">
+                    <div>
+                        <h3 class="text-sm font-black text-blue-900 uppercase">✏️ Edit Draf Surat Keluar</h3>
+                        <p class="text-[11px] font-medium text-blue-600 mt-0.5">Ubah perihal, tujuan, tanggal, atau ganti file dokumen terlampir.</p>
+                    </div>
+                    <button type="button" @click="openEdit = false" class="text-gray-400 hover:text-rose-500 font-bold text-2xl cursor-pointer">&times;</button>
+                </div>
+                
+                <form :action="'{{ url('/surat/keluar') }}/' + editItem.id" method="POST" enctype="multipart/form-data" class="p-6 overflow-y-auto space-y-4 text-xs bg-white flex-1 custom-scrollbar">
+                    @csrf
+                    @method('PUT')
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block font-bold text-gray-700 mb-1">Klasifikasi Format *</label>
+                            <select name="jenis_surat_id" x-model="editItem.jenis_surat_id" required class="w-full rounded-xl border-gray-300 text-xs font-semibold py-2.5">
+                                <option value="">-- Pilih Format Klasifikasi --</option>
+                                @foreach($jenisSurat as $js)
+                                    <option value="{{ $js->id }}">{{ $js->kode_klasifikasi }} - {{ $js->nama_jenis }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-gray-700 mb-1">Perihal Surat *</label>
+                            <input type="text" name="perihal" x-model="editItem.perihal" required class="w-full rounded-xl border-gray-300 text-xs font-semibold py-2.5">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-gray-700 mb-1">Tujuan Surat / Kepada Yth. *</label>
+                        <input type="text" name="tujuan_surat" x-model="editItem.tujuan_surat" required class="w-full rounded-xl border-gray-300 text-xs font-semibold py-2.5">
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block font-bold text-gray-700 mb-1">Tanggal Surat *</label>
+                            <input type="date" name="tanggal_surat" x-model="editItem.tanggal_surat" required class="w-full rounded-xl border-gray-300 text-xs font-semibold py-2.5">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-gray-700 mb-1">Metode TTD *</label>
+                            <select name="metode_ttd" x-model="editItem.metode_ttd" required class="w-full rounded-xl border-gray-300 text-xs font-semibold py-2.5">
+                                <option value="Digital">Digital (Stempel & TTD Otomatis)</option>
+                                <option value="Basah">Basah (Manual Fisik)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-gray-700 mb-1">Penandatangan *</label>
+                            <select name="penandatangan_id" x-model="editItem.penandatangan_id" required class="w-full rounded-xl border-gray-300 text-xs font-semibold py-2.5">
+                                @foreach($daftarKepsek as $user)
+                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    {{-- Re-upload File Dokumen / Word --}}
+                    <div class="p-4 bg-amber-50/70 border border-amber-200 rounded-xl space-y-1.5">
+                        <label class="block font-bold text-amber-900 text-xs">📁 Ganti File Berkas SK / Word (Opsional)</label>
+                        <input type="file" name="file_dokumen" class="w-full text-xs text-gray-500 file:mr-4 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-amber-100 file:text-amber-800 hover:file:bg-amber-200 cursor-pointer">
+                        <p class="text-[11px] text-amber-700">Kosongkan jika tidak ingin mengganti file Word/PDF yang sudah diunggah sebelumnya.</p>
+                    </div>
+
+                    <div class="pt-3 flex justify-end gap-2 border-t sticky bottom-0 bg-white py-2 z-20">
+                        <button type="button" @click="openEdit = false" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-xs transition-colors cursor-pointer">Batal</button>
+                        <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md text-xs transition-colors cursor-pointer flex items-center gap-2">
+                            <span>💾</span> Simpan Perubahan
                         </button>
                     </div>
                 </form>
