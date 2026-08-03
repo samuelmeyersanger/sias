@@ -20,7 +20,9 @@
             return {
                 openCreate: {{ $errors->any() ? 'true' : 'false' }},
                 openEdit: false,
+                openDelete: false,
                 editItem: {},
+                deleteItem: {},
                 quill: null,
                 daftarPegawai: @json($daftarPegawai),
                 daftarSiswa: @json($daftarSiswa),
@@ -29,6 +31,10 @@
                 openEditModal(item) {
                     this.editItem = item;
                     this.openEdit = true;
+                },
+                confirmDelete(item) {
+                    this.deleteItem = item;
+                    this.openDelete = true;
                 },
                 initQuill() {
                     if (!this.quill && this.$refs.editorContainer) {
@@ -248,12 +254,8 @@
                                     {{-- Tombol Edit --}}
                                     <button type="button" @click="openEditModal({{ json_encode($item) }})" class="px-2.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg inline-block shadow-sm cursor-pointer" title="Edit Surat">✏️ Edit</button>
 
-                                    {{-- Tombol Hapus --}}
-                                    <form action="{{ route('surat.keluar.destroy', $item->id) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus surat ini?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="px-2 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-lg shadow-sm cursor-pointer" title="Hapus Surat">🗑️ Hapus</button>
-                                    </form>
+                                    {{-- Tombol Hapus dengan Modal Kustom --}}
+                                    <button type="button" @click="confirmDelete({{ json_encode($item) }})" class="px-2.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-lg shadow-sm cursor-pointer" title="Hapus Surat">🗑️ Hapus</button>
                                 </td>
                             </tr>
                         @empty
@@ -485,6 +487,34 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+
+        {{-- Modal Konfirmasi Hapus Surat Bergaya Modern --}}
+        <div x-show="openDelete" class="fixed inset-0 z-50 bg-gray-900/50 backdrop-blur-xs flex items-center justify-center p-4" style="display: none;" x-transition>
+            <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-100 space-y-4 text-center" @click.away="openDelete = false">
+                <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto text-2xl font-bold">
+                    🗑️
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-gray-900">Konfirmasi Hapus Surat</h3>
+                    <p class="text-xs text-gray-500 mt-1">Apakah Anda yakin ingin menghapus arsip surat ini? Tindakan ini tidak dapat dibatalkan.</p>
+                    <div class="p-3 bg-gray-50 rounded-xl mt-3 text-left border border-gray-200 space-y-1">
+                        <div class="text-[10px] font-bold text-gray-400 uppercase">Perihal / Tujuan Surat:</div>
+                        <div class="text-xs font-bold text-gray-900" x-text="deleteItem.perihal || 'Surat Keluar'"></div>
+                        <div class="text-[11px] text-gray-600 font-medium" x-text="'Kepada: ' + (deleteItem.tujuan_surat || '-')"></div>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2 pt-2 border-t">
+                    <button type="button" @click="openDelete = false" class="w-1/2 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-xs transition-colors cursor-pointer">Batal</button>
+                    <form :action="'{{ url('/surat/keluar') }}/' + deleteItem.id" method="POST" class="w-1/2">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl shadow-md text-xs transition-colors cursor-pointer">
+                            Hapus Surat
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
