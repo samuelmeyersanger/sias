@@ -31,31 +31,43 @@ class SuratKeluarController extends Controller
             'jenis_surat_id'    => 'required|exists:jenis_surat,id',
             'tujuan_surat'      => 'required|string',
             'perihal'           => 'required|string',
-            'isi_surat'         => 'required|string',
+            'isi_surat'         => 'nullable|string',
             'tanggal_surat'     => 'required|date',
             'metode_ttd'        => 'required|in:Digital,Basah',
             'penandatangan_id'  => 'required|exists:users,id',
+            'file_dokumen'      => 'nullable|mimes:pdf,doc,docx,xlsx,xls|max:10240',
             'file_excel'        => 'nullable|mimes:xlsx,xls' // Lampiran opsional saat buat draf
         ]);
+
+        $filePath = null;
+        if ($request->hasFile('file_dokumen')) {
+            $filePath = $request->file('file_dokumen')->store('surat_keluar_files', 'public');
+        }
+
+        $isiSurat = $request->isi_surat;
+        if ((!$isiSurat || $isiSurat === '<p><br></p>') && $filePath) {
+            $isiSurat = '<p style="text-align: center;"><strong>📄 Dokumen Berkas SK / Surat Resmi Diunggah Langsung (File Terlampir)</strong></p>';
+        }
 
         $surat = SuratKeluar::create([
             'jenis_surat_id'   => $request->jenis_surat_id,
             'tujuan_surat'     => $request->tujuan_surat,
             'perihal'          => $request->perihal,
-            'isi_surat'        => $request->isi_surat,
+            'isi_surat'        => $isiSurat ?? '-',
             'tanggal_surat'    => $request->tanggal_surat,
             'metode_ttd'       => $request->metode_ttd,
             'penandatangan_id' => $request->penandatangan_id,
+            'file_final'       => $filePath,
             'status'           => 'Menunggu Persetujuan',
             'pembuat_id'       => auth()->id(),
         ]);
 
-        // Jika user langsung mengunggah file Excel lampiran
+        // Jika user mengunggah file Excel lampiran
         if ($request->hasFile('file_excel')) {
             $this->prosesImportExcel($request->file('file_excel'), $surat->id);
         }
 
-        return redirect()->back()->with('success', 'Draf surat & lampiran berhasil diajukan!');
+        return redirect()->back()->with('success', 'Usulan draf surat / dokumen berhasil diajukan!');
     }
 
     /**

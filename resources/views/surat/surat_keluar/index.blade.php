@@ -208,6 +208,9 @@
                                     <span class="px-2 py-0.5 text-[10px] font-bold rounded-full {{ $item->status == 'Disetujui' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800' }}">{{ $item->status }}</span>
                                 </td>
                                 <td class="p-4 text-center space-x-1">
+                                    @if($item->file_final)
+                                        <a href="{{ asset('storage/' . $item->file_final) }}" target="_blank" class="px-2.5 py-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-lg inline-block shadow-sm" title="Lihat/Unduh File Dokumen SK">📁 File Berkas</a>
+                                    @endif
                                     @if($item->status == 'Menunggu Persetujuan')
                                         <form action="{{ route('surat.keluar.setujui', $item->id) }}" method="POST" class="inline">
                                             @csrf
@@ -311,6 +314,13 @@
                                 </button>
                             </div>
                         </div>
+                    </div>
+
+                    {{-- Pilihan Opsi: Upload File Berkas SK / Surat Resmi (PDF / Word) --}}
+                    <div class="p-4 bg-amber-50/70 border border-amber-200 rounded-xl space-y-1.5">
+                        <label class="block font-bold text-amber-900 text-xs">📁 Upload File Berkas SK / Surat Jadi (Opsional - PDF / Word / Excel)</label>
+                        <input type="file" name="file_dokumen" class="w-full text-xs text-gray-500 file:mr-4 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-amber-100 file:text-amber-800 hover:file:bg-amber-200 cursor-pointer">
+                        <p class="text-[11px] text-amber-700">Jika Bapak/Staf TU sudah membuat dokumen SK dalam bentuk <strong>Word (.docx)</strong> atau <strong>PDF</strong> lengkap, Bapak cukup mengunggah filenya di sini tanpa perlu mengetik ulang isi surat di bawah!</p>
                     </div>
 
                     {{-- Quill Rich Text Editor Container --}}

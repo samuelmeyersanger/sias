@@ -4,20 +4,22 @@
     <meta charset="utf-8">
     <title>Surat Resmi Sekolah</title>
     <style>
-        body { font-family: 'Times New Roman', Times, serif; font-size: 12pt; line-height: 1.5; color: #000; padding: 10px; }
-        .kop-container { width: 100%; text-align: center; margin-bottom: 25px; }
+        @page { margin: 0.6in 0.8in; }
+        body { font-family: 'Times New Roman', Times, serif; font-size: 11pt; line-height: 1.4; color: #000; }
+        .kop-container { width: 100%; text-align: center; margin-bottom: 15px; }
         .gambar-kop { width: 100%; max-height: 140px; object-fit: contain; }
         .garis-pembatas { border-bottom: 3px double #000; margin-top: 5px; }
-        .tabel-atribut { width: 100%; margin-bottom: 25px; }
+        .tabel-atribut { width: 100%; margin-bottom: 20px; }
         .tabel-atribut td { vertical-align: top; }
-        .isi-surat { text-align: justify; margin-bottom: 40px; min-height: 200px; }
-        .isi-surat table { width: 100%; border-collapse: collapse; margin: 8px 0; }
+        .isi-surat { text-align: justify; margin-bottom: 30px; min-height: 150px; }
+        .isi-surat table { width: 100%; border-collapse: collapse; margin: 8px 0; table-layout: fixed; }
+        .isi-surat td, .isi-surat th { word-wrap: break-word; overflow-wrap: break-word; }
         .isi-surat table:not([border="1"]) td, 
         .isi-surat table:not([border="1"]) th { border: none !important; padding: 2px 0; }
         .isi-surat table[border="1"] td, 
         .isi-surat table[border="1"] th { border: 1px solid #000 !important; padding: 4px 6px; }
 
-        .ttd-section { float: right; width: 280px; text-align: center; }
+        .ttd-section { float: right; width: 260px; text-align: center; }
         .space-ttd { height: 90px; position: relative; }
         .img-ttd { height: 75px; z-index: 1; }
         .img-stempel { height: 85px; position: absolute; left: 25px; top: -5px; opacity: 0.85; z-index: 2; }
