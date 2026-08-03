@@ -217,9 +217,9 @@
         {{-- MODAL TAMBAH DATA (CREATE)                     --}}
         {{-- ============================================== --}}
         <div x-show="openCreate" class="fixed inset-0 z-[100] overflow-y-auto bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 sm:p-6" style="display: none;" x-transition>
-            <div class="bg-white rounded-[2rem] max-w-3xl w-full shadow-2xl border border-slate-100 overflow-hidden flex flex-col" @click.away="openCreate = false">
+            <div class="bg-white rounded-[2.5rem] max-w-3xl w-full max-h-[90vh] shadow-2xl border border-slate-100 overflow-hidden flex flex-col" @click.away="openCreate = false">
                 
-                <div class="px-6 md:px-8 py-5 border-b border-slate-100 bg-emerald-50/80 flex justify-between items-center relative overflow-hidden">
+                <div class="px-6 md:px-8 py-4 border-b border-slate-100 bg-emerald-50/80 flex justify-between items-center relative overflow-hidden shrink-0">
                     <div class="absolute right-0 top-0 w-32 h-32 bg-emerald-200 rounded-full blur-3xl opacity-50 -translate-y-1/2 translate-x-1/2"></div>
                     <h3 class="text-base font-black text-emerald-900 uppercase tracking-wide flex items-center gap-2 relative z-10">
                         ✨ Registrasi Aset Baru
@@ -229,7 +229,7 @@
                     </button>
                 </div>
 
-                <form action="{{ route('sarpras.gedung.storeInventaris', $ruangan->id) }}" method="POST" enctype="multipart/form-data" class="p-6 md:p-8 space-y-6 bg-white relative z-10">
+                <form action="{{ route('sarpras.gedung.storeInventaris', $ruangan->id) }}" method="POST" enctype="multipart/form-data" class="overflow-y-auto p-6 md:p-8 space-y-5 bg-white relative z-10 flex-1 custom-scrollbar">
                     @csrf
                     
                     {{-- Sektor Identitas --}}
@@ -299,7 +299,7 @@
                         <textarea name="deskripsi" placeholder="Cth: Digantung di plafon tengah ruangan, remote disimpan di meja guru..." rows="2" class="w-full text-sm font-medium text-slate-800 rounded-xl border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 bg-slate-50 py-3 px-4 shadow-inner resize-y"></textarea>
                     </div>
 
-                    <div class="pt-4 flex justify-end gap-3 border-t border-slate-100 mt-6">
+                    <div class="sticky bottom-0 bg-white/95 backdrop-blur-md pt-4 pb-2 flex justify-end gap-3 border-t border-slate-100 -mx-6 md:-mx-8 -mb-6 md:-mb-8 px-6 md:px-8 shadow-[0_-10px_20px_rgba(0,0,0,0.05)] z-20">
                         <button type="button" @click="openCreate = false" class="px-5 py-3 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold rounded-xl transition-colors cursor-pointer shadow-sm text-sm">Batal</button>
                         <button type="submit" class="px-6 py-3 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white font-black rounded-xl shadow-lg shadow-emerald-500/30 transition-all hover:-translate-y-0.5 cursor-pointer text-sm flex items-center justify-center gap-2">
                             <span>💾</span> Simpan Aset Baru
@@ -313,9 +313,9 @@
         {{-- MODAL UBAH DATA (EDIT)                         --}}
         {{-- ============================================== --}}
         <div x-show="openEdit" class="fixed inset-0 z-[100] overflow-y-auto bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 sm:p-6" style="display: none;" x-transition>
-            <div class="bg-white rounded-[2rem] max-w-3xl w-full shadow-2xl border border-slate-100 overflow-hidden flex flex-col" @click.away="openEdit = false">
+            <div class="bg-white rounded-[2.5rem] max-w-3xl w-full max-h-[90vh] shadow-2xl border border-slate-100 overflow-hidden flex flex-col" @click.away="openEdit = false">
                 
-                <div class="px-6 md:px-8 py-5 border-b border-slate-100 bg-amber-50/80 flex justify-between items-center relative overflow-hidden">
+                <div class="px-6 md:px-8 py-4 border-b border-slate-100 bg-amber-50/80 flex justify-between items-center relative overflow-hidden shrink-0">
                     <div class="absolute right-0 top-0 w-32 h-32 bg-amber-200 rounded-full blur-3xl opacity-50 -translate-y-1/2 translate-x-1/2"></div>
                     <h3 class="text-base font-black text-amber-900 uppercase tracking-wide flex items-center gap-2 relative z-10">
                         📝 Pembaruan Data Aset
@@ -325,7 +325,7 @@
                     </button>
                 </div>
 
-                <form :action="editActionUrl" method="POST" enctype="multipart/form-data" class="p-6 md:p-8 space-y-6 bg-white relative z-10">
+                <form :action="editActionUrl" method="POST" enctype="multipart/form-data" class="overflow-y-auto p-6 md:p-8 space-y-5 bg-white relative z-10 flex-1 custom-scrollbar">
                     @csrf
                     @method('PUT')
                     
@@ -397,7 +397,7 @@
                         <textarea x-model="editDeskripsi" name="deskripsi" rows="2" class="w-full text-sm font-medium text-slate-800 rounded-xl border-slate-200 focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 bg-slate-50 py-3 px-4 shadow-inner resize-y"></textarea>
                     </div>
 
-                    <div class="pt-4 flex justify-end gap-3 border-t border-slate-100 mt-6">
+                    <div class="sticky bottom-0 bg-white/95 backdrop-blur-md pt-4 pb-2 flex justify-end gap-3 border-t border-slate-100 -mx-6 md:-mx-8 -mb-6 md:-mb-8 px-6 md:px-8 shadow-[0_-10px_20px_rgba(0,0,0,0.05)] z-20">
                         <button type="button" @click="openEdit = false" class="px-5 py-3 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold rounded-xl transition-colors cursor-pointer shadow-sm text-sm">Batal</button>
                         <button type="submit" class="px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-black rounded-xl shadow-lg shadow-amber-500/30 transition-all hover:-translate-y-0.5 cursor-pointer text-sm flex items-center justify-center gap-2">
                             <span>🔄</span> Terapkan Revisi
