@@ -121,6 +121,7 @@ class SuratKeluarController extends Controller
 
         $tahun = Carbon::parse($surat->tanggal_surat)->year;
         $bulanRomawi = $this->getRomawi(Carbon::parse($surat->tanggal_surat)->format('m'));
+        $tglIndo = Carbon::parse($surat->tanggal_surat)->locale('id')->isoFormat('D MMMM YYYY');
 
         $noUrutTerakhir = SuratKeluar::whereYear('tanggal_surat', $tahun)->whereNotNull('no_urut')->max('no_urut') ?? 0;
         $noUrutBaru = $noUrutTerakhir + 1;
@@ -132,13 +133,69 @@ class SuratKeluarController extends Controller
             $jenis->format_nomor
         );
 
+        $namaKepsek = $surat->penandatangan ? $surat->penandatangan->name : 'Siti Nurchayati, M.Pd';
+
+        $replacements = [
+            '[kode]'             => $jenis->kode_klasifikasi,
+            '[nomor]'            => $strNoUrut,
+            '[bulan]'            => $bulanRomawi,
+            '[tahun]'            => $tahun,
+            '[KODE]'             => $jenis->kode_klasifikasi,
+            '[NOMOR]'            => $strNoUrut,
+            '[BULAN]'            => $bulanRomawi,
+            '[TAHUN]'            => $tahun,
+            '[tanggal_surat]'    => $tglIndo,
+            '[tanggal]'          => $tglIndo,
+            '[penandatangan_id]' => $namaKepsek,
+            '[penandatangan]'    => $namaKepsek,
+            '[nama_kepsek]'      => $namaKepsek,
+        ];
+
+        // Jika surat berbasis file Word (.docx), ganti tag di dalam file Word
+        if ($surat->file_final && str_contains(strtolower($surat->file_final), '.docx')) {
+            $this->prosesTemplateDocx($surat->file_final, $replacements);
+        }
+
+        // Ganti tag di isi_surat jika mengetik lewat editor
+        $newIsiSurat = $surat->isi_surat;
+        foreach ($replacements as $search => $replace) {
+            $newIsiSurat = str_replace($search, $replace, $newIsiSurat);
+        }
+
         $surat->update([
             'no_urut'     => $noUrutBaru,
             'nomor_surat' => $nomorSuratFinal,
+            'isi_surat'   => $newIsiSurat,
             'status'      => 'Disetujui'
         ]);
 
         return redirect()->back()->with('success', 'Surat disetujui! Nomor: ' . $nomorSuratFinal);
+    }
+
+    /**
+     * Engine Pengganti Tag Otomatis untuk File Word (.docx)
+     */
+    private function prosesTemplateDocx($filePath, $replacements)
+    {
+        $fullPath = storage_path('app/public/' . $filePath);
+        if (!file_exists($fullPath)) return;
+
+        $zip = new \ZipArchive;
+        if ($zip->open($fullPath) === TRUE) {
+            $xmlContent = $zip->getFromName('word/document.xml');
+            if ($xmlContent) {
+                // Strip XML node splitters inside brackets [xxx]
+                $xmlContent = preg_replace_callback('/\[(.*?)\]/s', function($matches) {
+                    return '[' . strip_tags($matches[1]) . ']';
+                }, $xmlContent);
+
+                foreach ($replacements as $search => $replace) {
+                    $xmlContent = str_replace($search, htmlspecialchars($replace, ENT_QUOTES, 'UTF-8'), $xmlContent);
+                }
+                $zip->addFromString('word/document.xml', $xmlContent);
+            }
+            $zip->close();
+        }
     }
 
     public function cetakPdf($id)
