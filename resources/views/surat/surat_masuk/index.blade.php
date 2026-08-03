@@ -8,7 +8,9 @@
     <div x-data="{ 
             openCreate: false, 
             openEdit: false, 
-            editData: { id: '', nomor_surat: '', asal_instansi: '', perihal: '', tanggal_surat: '', tanggal_terima: '', sifat: '' } 
+            openDelete: false,
+            editData: { id: '', nomor_surat: '', asal_instansi: '', perihal: '', tanggal_surat: '', tanggal_terima: '', sifat: '' },
+            deleteData: { id: '', perihal: '', asal_instansi: '' }
          }" 
          class="py-6 bg-slate-100 min-h-[calc(100vh-64px)]">
          
@@ -68,9 +70,9 @@
                                             {{ $item->sifat }}
                                         </span>
                                     </td>
-                                    <td class="p-4 text-center space-x-1">
-                                        <a href="{{ route('surat.masuk.show', $item->id) }}" class="text-indigo-600 hover:text-indigo-900 font-bold bg-indigo-50 hover:bg-indigo-100 px-2 py-1 rounded">
-                                            Buka
+                                    <td class="p-4 text-center space-x-1 whitespace-nowrap">
+                                        <a href="{{ route('surat.masuk.show', $item->id) }}" class="px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-lg inline-block shadow-sm">
+                                            🔍 Buka
                                         </a>
 
                                         <button @click="editData = { 
@@ -82,14 +84,13 @@
                                                     tanggal_terima: '{{ $item->tanggal_terima }}', 
                                                     sifat: '{{ $item->sifat }}' 
                                                 }; openEdit = true" 
-                                                class="text-amber-600 hover:text-amber-900 font-bold bg-amber-50 hover:bg-amber-100 px-2 py-1 rounded cursor-pointer">
-                                            Edit
+                                                class="px-2.5 py-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-lg inline-block shadow-sm cursor-pointer">
+                                            ✏️ Edit
                                         </button>
                                         
-                                        <form action="{{ route('surat.masuk.destroy', $item->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Hapus seluruh arsip surat masuk ini beserta berkas digitalnya?')">
-                                            @csrf @method('DELETE')
-                                            <button type="submit" class="text-rose-600 hover:text-rose-900 font-bold p-1">&times;</button>
-                                        </form>
+                                        <button type="button" @click="deleteData = { id: '{{ $item->id }}', perihal: '{{ addslashes($item->perihal) }}', asal_instansi: '{{ addslashes($item->asal_instansi) }}' }; openDelete = true" class="px-2.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-lg shadow-sm cursor-pointer">
+                                            🗑️ Hapus
+                                        </button>
                                     </td>
                                 </tr>
                             @empty
@@ -215,6 +216,34 @@
                         <button type="submit" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-lg shadow-sm">💾 Perbarui Data</button>
                     </div>
                 </form>
+            </div>
+        </div>
+
+        {{-- Modal Konfirmasi Hapus Surat Masuk Bergaya Modern --}}
+        <div x-show="openDelete" class="fixed inset-0 z-50 bg-gray-900/50 backdrop-blur-xs flex items-center justify-center p-4" style="display: none;" x-transition>
+            <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-100 space-y-4 text-center" @click.away="openDelete = false">
+                <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto text-2xl font-bold">
+                    🗑️
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-gray-900">Konfirmasi Hapus Surat Masuk</h3>
+                    <p class="text-xs text-gray-500 mt-1">Apakah Anda yakin ingin menghapus arsip surat masuk ini beserta file digitalnya?</p>
+                    <div class="p-3 bg-gray-50 rounded-xl mt-3 text-left border border-gray-200 space-y-1">
+                        <div class="text-[10px] font-bold text-gray-400 uppercase">Instansi / Perihal:</div>
+                        <div class="text-xs font-bold text-gray-900" x-text="deleteData.asal_instansi"></div>
+                        <div class="text-[11px] text-gray-600 font-medium" x-text="deleteData.perihal"></div>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2 pt-2 border-t">
+                    <button type="button" @click="openDelete = false" class="w-1/2 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-xs transition-colors cursor-pointer">Batal</button>
+                    <form :action="'{{ url('/surat/masuk') }}/' + deleteData.id" method="POST" class="w-1/2">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl shadow-md text-xs transition-colors cursor-pointer">
+                            Hapus Surat
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
 

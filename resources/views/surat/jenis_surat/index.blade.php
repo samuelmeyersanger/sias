@@ -5,7 +5,14 @@
         </h2>
     </x-slot>
 
-    <div x-data="{ openCreate: false, openEdit: false, editData: { id: '', kode_klasifikasi: '', nama_jenis: '', format_nomor: '' } }" class="py-6 bg-slate-100 min-h-[calc(100vh-64px)]">
+    <div x-data="{ 
+            openCreate: false, 
+            openEdit: false, 
+            openDelete: false,
+            editData: { id: '', kode_klasifikasi: '', nama_jenis: '', format_nomor: '' },
+            deleteData: { id: '', nama_jenis: '', kode_klasifikasi: '' }
+         }" 
+         class="py-6 bg-slate-100 min-h-[calc(100vh-64px)]">
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8 space-y-4">
             
             @if(session('success'))
@@ -57,7 +64,7 @@
                             <th class="p-4 w-20">Kode</th>
                             <th class="p-4">Nama Jenis Surat</th>
                             <th class="p-4">Template Format Nomor</th>
-                            <th class="p-4 w-28 text-center">Aksi</th>
+                            <th class="p-4 w-36 text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-50 text-xs text-gray-700">
@@ -66,14 +73,11 @@
                                 <td class="p-4 font-mono font-bold text-indigo-600">{{ $item->kode_klasifikasi }}</td>
                                 <td class="p-4 font-semibold text-gray-900">{{ $item->nama_jenis }}</td>
                                 <td class="p-4 font-mono text-slate-500 bg-slate-50/40">{{ $item->format_nomor }}</td>
-                                <td class="p-4 text-center space-x-1">
+                                <td class="p-4 text-center space-x-1 whitespace-nowrap">
                                     <button @click="editData = { id: '{{ $item->id }}', kode_klasifikasi: '{{ $item->kode_klasifikasi }}', nama_jenis: '{{ $item->nama_jenis }}', format_nomor: '{{ $item->format_nomor }}' }; openEdit = true" 
-                                            class="text-indigo-600 hover:text-indigo-900 font-bold">Edit</button>
-                                    <span class="text-gray-300">|</span>
-                                    <form action="{{ route('surat.jenis.destroy', $item->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Hapus klasifikasi ini?')">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="text-rose-600 hover:text-rose-900 font-bold">Hapus</button>
-                                    </form>
+                                            class="px-2.5 py-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-lg inline-block shadow-sm cursor-pointer">✏️ Edit</button>
+                                    <button type="button" @click="deleteData = { id: '{{ $item->id }}', nama_jenis: '{{ addslashes($item->nama_jenis) }}', kode_klasifikasi: '{{ addslashes($item->kode_klasifikasi) }}' }; openDelete = true" 
+                                            class="px-2.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-lg shadow-sm cursor-pointer">🗑️ Hapus</button>
                                 </td>
                             </tr>
                         @empty
@@ -140,6 +144,33 @@
                         <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow-sm">Perbarui</button>
                     </div>
                 </form>
+            </div>
+        </div>
+
+        {{-- Modal Konfirmasi Hapus Jenis Surat Bergaya Modern --}}
+        <div x-show="openDelete" class="fixed inset-0 z-50 bg-gray-900/50 backdrop-blur-xs flex items-center justify-center p-4" style="display: none;" x-transition>
+            <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-100 space-y-4 text-center" @click.away="openDelete = false">
+                <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto text-2xl font-bold">
+                    🗑️
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-gray-900">Konfirmasi Hapus Klasifikasi</h3>
+                    <p class="text-xs text-gray-500 mt-1">Apakah Anda yakin ingin menghapus klasifikasi jenis surat ini?</p>
+                    <div class="p-3 bg-gray-50 rounded-xl mt-3 text-left border border-gray-200 space-y-1">
+                        <div class="text-[10px] font-bold text-gray-400 uppercase">Kode & Nama Klasifikasi:</div>
+                        <div class="text-xs font-bold text-indigo-600 font-mono" x-text="'[' + deleteData.kode_klasifikasi + ']' + ' ' + deleteData.nama_jenis"></div>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2 pt-2 border-t">
+                    <button type="button" @click="openDelete = false" class="w-1/2 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-xs transition-colors cursor-pointer">Batal</button>
+                    <form :action="'{{ url('/surat/jenis') }}/' + deleteData.id" method="POST" class="w-1/2">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl shadow-md text-xs transition-colors cursor-pointer">
+                            Hapus Format
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
 
