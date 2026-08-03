@@ -106,8 +106,8 @@ class SuratKeluarController extends Controller
         $strNoUrut = sprintf("%03d", $noUrutBaru);
 
         $nomorSuratFinal = str_replace(
-            ['[NOMOR]', '[KODE]', '[BULAN]', '[TAHUN]'],
-            [$strNoUrut, $jenis->kode_klasifikasi, $bulanRomawi, $tahun],
+            ['[kode]', '[nomor]', '[bulan]', '[tahun]', '[KODE]', '[NOMOR]', '[BULAN]', '[TAHUN]'],
+            [$jenis->kode_klasifikasi, $strNoUrut, $bulanRomawi, $tahun, $jenis->kode_klasifikasi, $strNoUrut, $bulanRomawi, $tahun],
             $jenis->format_nomor
         );
 
@@ -129,6 +129,55 @@ class SuratKeluarController extends Controller
         $pdf->setPaper('a4', 'portrait');
         
         return $pdf->stream('surat_' . ($surat->no_urut ?? 'draf') . '.pdf');
+    }
+
+    public function update(Request $request, $id)
+    {
+        $surat = SuratKeluar::findOrFail($id);
+
+        $request->validate([
+            'jenis_surat_id'    => 'required|exists:jenis_surat,id',
+            'tujuan_surat'      => 'required|string',
+            'perihal'           => 'required|string',
+            'isi_surat'         => 'required|string',
+            'tanggal_surat'     => 'required|date',
+            'metode_ttd'        => 'required|in:Digital,Basah',
+            'penandatangan_id'  => 'required|exists:users,id',
+            'file_excel'        => 'nullable|mimes:xlsx,xls'
+        ]);
+
+        $surat->update([
+            'jenis_surat_id'   => $request->jenis_surat_id,
+            'tujuan_surat'     => $request->tujuan_surat,
+            'perihal'          => $request->perihal,
+            'isi_surat'        => $request->isi_surat,
+            'tanggal_surat'    => $request->tanggal_surat,
+            'metode_ttd'       => $request->metode_ttd,
+            'penandatangan_id' => $request->penandatangan_id,
+        ]);
+
+        if ($request->hasFile('file_excel')) {
+            $this->prosesImportExcel($request->file('file_excel'), $surat->id);
+        }
+
+        return redirect()->back()->with('success', 'Draf surat keluar berhasil diperbarui!');
+    }
+
+    public function tolak($id)
+    {
+        $surat = SuratKeluar::findOrFail($id);
+        $surat->update(['status' => 'Ditolak']);
+
+        return redirect()->back()->with('success', 'Draf surat telah ditolak.');
+    }
+
+    public function destroy($id)
+    {
+        $surat = SuratKeluar::findOrFail($id);
+        SuratKeluarLampiran::where('surat_keluar_id', $id)->delete();
+        $surat->delete();
+
+        return redirect()->back()->with('success', 'Draf surat keluar berhasil dihapus.');
     }
 
     private function getRomawi($bulan) {

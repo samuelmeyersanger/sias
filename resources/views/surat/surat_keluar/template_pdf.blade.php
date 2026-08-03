@@ -44,7 +44,7 @@
     <div style="margin-bottom: 20px;">Kepada Yth.<br><strong>{{ $surat->tujuan_surat }}</strong><br>di Tempat</div>
 
     <div class="isi-surat">
-        {!! nl2br(e($surat->isi_surat)) !!}
+        {!! $surat->isi_surat !!}
     </div>
 
     <div class="ttd-section">
