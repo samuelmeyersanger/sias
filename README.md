@@ -189,18 +189,22 @@ Sistem ini berjalan di **PC Server lokal (On-Premise)** menggunakan **Docker**, 
 </details>
 
 <details>
-<summary><b>📬 Modul Persuratan</b> — 8 fitur</summary>
+<summary><b>📬 Modul Persuratan Digital & Disposisi</b> — 12 Fitur Unggulan</summary>
 
 | Fitur | Deskripsi |
 |-------|-----------|
-| Master Jenis Surat | Kelola klasifikasi surat (+ import Excel) |
-| Surat Masuk | Registrasi & kelola surat masuk |
-| Disposisi Surat | Alur disposisi instruksi oleh Kepala Sekolah |
-| Surat Keluar | Buat surat keluar + lampiran |
-| Persetujuan Surat | Alur approve/reject oleh Kepsek |
-| Penomoran Otomatis | Nomor surat otomatis setelah disetujui |
-| Cetak PDF | Generate PDF: kop surat, TTD, lampiran dinamis |
-| Upload Lampiran Excel | Unggah lampiran tabel data via Excel |
+| **Master Jenis Surat & Klasifikasi** | Kelola aturan penomoran otomatis, kode klasifikasi (e.g. `400.3.5.6`), dan template format nomor (+ Import & Export Excel) |
+| **Arsip Surat Masuk** | Registrasi surat dinas luar lengkap dengan upload PDF, sifat surat, dan pencatatan penerima |
+| **Lembar Disposisi Digital** | Alur instruksi pimpinan (Kepala Sekolah ke Guru/Staf) lengkap dengan sifat tugas, catatan instruksi, dan audit log status |
+| **Upload Dokumen (.docx / .pdf)** | Staf TU bebas mengunggah langsung draf surat (.docx Word / .pdf / .xlsx Excel) maupun mengetik via Rich Text Editor Quill |
+| **Engine Tag Auto-Replacement Word (.docx)** | Penggantian otomatis tag `[kode]`, `[nomor]`, `[bulan]`, `[tahun]`, `[tanggal_surat]`, dan `[penandatangan_id]` di dalam XML file Word |
+| **Blok TTD Multi-Baris Kepsek** | Tag `[penandatangan_id]` otomatis mekar menjadi 3 baris resmi: Nama (Bold+Underline), Pangkat/Golongan (Plain), & NIP (Plain) |
+| **Template SPPD 3 Halaman** | Paket Surat Perintah Perjalanan Dinas (SPPD) 3 halaman otomatis (Surat Tugas, Tabel 10 Poin, & Tabel Visum Berangkat/Tiba) |
+| **Lampiran Tabel Excel Dinamis** | Membaca baris pertama Excel sebagai header tabel lampiran peserta/pegawai secara otomatis |
+| **Auto-Fill Pegawai & Siswa** | Tombol cepat untuk memasukkan biodata lengkap pegawai/siswa ke dalam editor surat |
+| **Alur Persetujuan (Approval)** | Alur pengajuan draf oleh Staf TU dan persetujuan resmi oleh Kepala Sekolah |
+| **Edit Draf & Re-Upload Berkas** | Fitur ubah perihal, tujuan, tanggal, penandatangan, atau re-upload file berkas Word/PDF draf surat |
+| **Hapus & Modal Popup Kustom** | Fitur hapus data surat, jenis surat, dan surat masuk dilengkapi modal konfirmasi popup kustom bergaya modern |
 
 </details>
 

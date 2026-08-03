@@ -31,7 +31,7 @@
                                 <h3 class="text-sm font-bold text-gray-900 mt-1.5">{{ $surat->perihal }}</h3>
                             </div>
                             <div class="text-right text-[11px] text-gray-400 font-mono">
-                                <div>Diterima: {{ \Carbon\Carbon::parse($item->tanggal_terima ?? now())->format('d M Y') }}</div>
+                                <div>Diterima: {{ \Carbon\Carbon::parse($surat->tanggal_terima ?? now())->format('d M Y') }}</div>
                             </div>
                         </div>
 
@@ -76,7 +76,7 @@
                             <p class="text-[11px] text-gray-400 mt-0.5">Berikan perintah atau delegasikan tugas surat ini ke guru/staf.</p>
                         </div>
 
-                        <form action="{{ route('surat.surat_masuk.storeDisposisi', $surat->id) }}" method="POST" class="space-y-3 text-xs">
+                        <form action="{{ route('surat.masuk.disposisi', $surat->id) }}" method="POST" class="space-y-3 text-xs">
                             @csrf
                             <div>
                                 <label class="block font-semibold text-gray-700 mb-1">Diteruskan Kepada (Pilih Pejabat/Guru) *</label>
