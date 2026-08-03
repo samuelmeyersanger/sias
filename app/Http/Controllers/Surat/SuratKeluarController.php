@@ -19,8 +19,10 @@ class SuratKeluarController extends Controller
         $suratKeluar = SuratKeluar::with(['jenisSurat', 'penandatangan'])->latest()->get();
         $jenisSurat = JenisSurat::all();
         $daftarKepsek = User::all(); 
+        $daftarPegawai = \App\Models\Pegawai::where('status_keaktifan', 'Aktif')->orderBy('nama_lengkap', 'asc')->get();
+        $daftarSiswa = \App\Models\Siswa::where('status_siswa', 'Aktif')->with(['kelas', 'wali'])->orderBy('nama_lengkap', 'asc')->get();
 
-        return view('surat.surat_keluar.index', compact('suratKeluar', 'jenisSurat', 'daftarKepsek'));
+        return view('surat.surat_keluar.index', compact('suratKeluar', 'jenisSurat', 'daftarKepsek', 'daftarPegawai', 'daftarSiswa'));
     }
 
     public function store(Request $request)

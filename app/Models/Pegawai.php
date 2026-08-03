@@ -38,6 +38,14 @@ class Pegawai extends Model
         'tanggal_pensiun' => 'date',
     ];
 
+    /**
+     * Accessor Jabatan Pegawai (Mengacu ke jenis PTK / Penugasan)
+     */
+    public function getJabatanAttribute()
+    {
+        return $this->attributes['jenis_ptk'] ?? 'Guru / Pegawai';
+    }
+
     // Berelasi ke User (jika pegawai punya akun login)
     public function user(): BelongsTo
     {

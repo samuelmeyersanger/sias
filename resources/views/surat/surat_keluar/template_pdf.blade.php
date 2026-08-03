@@ -35,21 +35,51 @@
         @endif
     </div>
 
-    <table class="tabel-atribut">
-        <tr><td style="width: 12%;">Nomor</td><td style="width: 2%;">:</td><td style="width: 86%; font-family: monospace;">{{ $surat->nomor_surat }}</td></tr>
-        <tr><td>Sifat</td><td>:</td><td>Biasa</td></tr>
-        <tr><td>Perihal</td><td>:</td><td><strong>{{ $surat->perihal }}</strong></td></tr>
-    </table>
+    @php
+        $isSKOrKeterangan = str_contains(strtolower($surat->jenisSurat->nama_jenis ?? ''), 'keputusan') 
+                         || str_contains(strtolower($surat->jenisSurat->nama_jenis ?? ''), 'keterangan')
+                         || str_contains(strtolower($surat->perihal ?? ''), 'sk') 
+                         || str_contains(strtolower($surat->perihal ?? ''), 'keterangan')
+                         || str_contains(strtolower($surat->isi_surat ?? ''), 'surat keputusan')
+                         || str_contains(strtolower($surat->isi_surat ?? ''), 'surat keterangan');
+    @endphp
 
-    <div style="margin-bottom: 20px;">Kepada Yth.<br><strong>{{ $surat->tujuan_surat }}</strong><br>di Tempat</div>
+    @if(!$isSKOrKeterangan)
+        <table class="tabel-atribut">
+            <tr><td style="width: 12%;">Nomor</td><td style="width: 2%;">:</td><td style="width: 86%; font-family: monospace;">{{ $surat->nomor_surat }}</td></tr>
+            <tr><td>Sifat</td><td>:</td><td>Biasa</td></tr>
+            <tr><td>Perihal</td><td>:</td><td><strong>{{ $surat->perihal }}</strong></td></tr>
+        </table>
+
+        <div style="margin-bottom: 20px;">Kepada Yth.<br><strong>{{ $surat->tujuan_surat }}</strong><br>di Tempat</div>
+    @endif
+
+    @php
+        $isSK = str_contains(strtolower($surat->jenisSurat->nama_jenis ?? ''), 'keputusan') 
+             || str_contains(strtolower($surat->perihal ?? ''), 'sk') 
+             || str_contains(strtolower($surat->isi_surat ?? ''), 'surat keputusan');
+
+        $hasCustomSignatureBlock = str_contains(strtolower($surat->isi_surat ?? ''), 'pengawas')
+                                || str_contains(strtolower($surat->isi_surat ?? ''), 'mengetahui,');
+    @endphp
 
     <div class="isi-surat">
         {!! $surat->isi_surat !!}
     </div>
 
-    <div class="ttd-section">
-        <p style="margin-bottom: 5px;">Kabupaten Bekasi, {{ \Carbon\Carbon::parse($surat->tanggal_surat)->translatedFormat('d F Y') }}</p>
-        <p style="margin: 0;">Kepala Sekolah,</p>
+    @if(!$hasCustomSignatureBlock)
+        <div class="ttd-section">
+        @if($isSK)
+            <table style="width: 100%; font-size: 11pt; margin-bottom: 5px; text-align: left;">
+                <tr><td style="width: 45%;">Dikeluarkan di</td><td style="width: 5%;">:</td><td style="width: 50%;">Bekasi</td></tr>
+                <tr><td>Pada tanggal</td><td>:</td><td>{{ \Carbon\Carbon::parse($surat->tanggal_surat)->translatedFormat('d F Y') }}</td></tr>
+            </table>
+            <p style="margin: 0; font-weight: bold;">Kepala Sekolah,</p>
+        @else
+            <p style="margin-bottom: 5px;">Bekasi, {{ \Carbon\Carbon::parse($surat->tanggal_surat)->translatedFormat('d F Y') }}</p>
+            <p style="margin: 0;">Kepala Sekolah,</p>
+        @endif
+
         <div class="space-ttd">
             @if($surat->metode_ttd == 'Digital' && $pengaturan)
                 @if($pengaturan->ttd_dan_stempel)
@@ -66,6 +96,7 @@
         <p style="margin: 0; font-size: 11pt;">NIP. 198503112010011002</p>
     </div>
     <div class="clear"></div>
+    @endif
 
 
     @if($surat->header_1)
