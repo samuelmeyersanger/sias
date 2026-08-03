@@ -202,8 +202,35 @@ class SuratKeluarController extends Controller
     {
         $surat = SuratKeluar::with(['jenisSurat', 'penandatangan', 'lampiran'])->findOrFail($id);
 
+        $jenis = $surat->jenisSurat;
+        $tahun = Carbon::parse($surat->tanggal_surat)->year;
+        $bulanRomawi = $this->getRomawi(Carbon::parse($surat->tanggal_surat)->format('m'));
+        $tglIndo = Carbon::parse($surat->tanggal_surat)->locale('id')->isoFormat('D MMMM YYYY');
+        $strNoUrut = sprintf("%03d", $surat->no_urut ?? 1);
+        $namaKepsek = $surat->penandatangan ? $surat->penandatangan->name : 'Siti Nurchayati, M.Pd';
+
+        $replacements = [
+            '[kode]'             => $jenis->kode_klasifikasi ?? '400.3.5.6',
+            '[nomor]'            => $strNoUrut,
+            '[bulan]'            => $bulanRomawi,
+            '[tahun]'            => $tahun,
+            '[KODE]'             => $jenis->kode_klasifikasi ?? '400.3.5.6',
+            '[NOMOR]'            => $strNoUrut,
+            '[BULAN]'            => $bulanRomawi,
+            '[TAHUN]'            => $tahun,
+            '[tanggal_surat]'    => $tglIndo,
+            '[tanggal]'          => $tglIndo,
+            '[penandatangan_id]' => $namaKepsek,
+            '[penandatangan]'    => $namaKepsek,
+            '[nama_kepsek]'      => $namaKepsek,
+        ];
+
         // Jika surat berasal dari file unggahan (Word / PDF / Excel), langsung buka / unduh berkas aslinya
         if ($surat->file_final && \Illuminate\Support\Facades\Storage::disk('public')->exists($surat->file_final)) {
+            if (str_contains(strtolower($surat->file_final), '.docx')) {
+                $this->prosesTemplateDocx($surat->file_final, $replacements);
+            }
+
             $path = storage_path('app/public/' . $surat->file_final);
             $mime = \Illuminate\Support\Facades\File::mimeType($path);
             if (str_contains($mime, 'pdf')) {
