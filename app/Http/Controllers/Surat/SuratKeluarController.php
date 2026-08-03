@@ -136,7 +136,7 @@ class SuratKeluarController extends Controller
         $namaKepsek = $surat->penandatangan ? $surat->penandatangan->name : 'Siti Nurchayati, M.Pd';
         $nipKepsek = '197307152000032007';
         $pangkatKepsek = 'Pembina Utama Muda, IV/c';
-        $blokTtd = $namaKepsek . "\n" . $pangkatKepsek . "\nNIP. " . $nipKepsek;
+        $blokTtd = $namaKepsek . "\n{{PLAIN}}" . $pangkatKepsek . "\n{{PLAIN}}NIP. " . $nipKepsek;
 
         $replacements = [
             '[kode]'                   => $jenis->kode_klasifikasi,
@@ -166,7 +166,9 @@ class SuratKeluarController extends Controller
         // Ganti tag di isi_surat jika mengetik lewat editor
         $newIsiSurat = $surat->isi_surat;
         foreach ($replacements as $search => $replace) {
-            $newIsiSurat = str_replace($search, nl2br($replace), $newIsiSurat);
+            $cleanHtml = str_replace(["\n{{PLAIN}}", "\n"], ['<br><span style="font-weight: normal; text-decoration: none;">', '<br>'], $replace);
+            if (str_contains($replace, '{{PLAIN}}')) $cleanHtml .= '</span>';
+            $newIsiSurat = str_replace($search, $cleanHtml, $newIsiSurat);
         }
 
         $surat->update([
@@ -206,7 +208,12 @@ class SuratKeluarController extends Controller
 
                 // 4. Lakukan penggantian tag secara presisi & super fleksibel
                 foreach ($replacements as $search => $replace) {
-                    $replaceXml = str_replace("\n", '</w:t><w:br/><w:t xml:space="preserve">', htmlspecialchars($replace, ENT_QUOTES, 'UTF-8'));
+                    $encoded = htmlspecialchars($replace, ENT_QUOTES, 'UTF-8');
+                    $replaceXml = str_replace(
+                        ["\n{{PLAIN}}", "\n"],
+                        ['</w:t></w:r><w:br/><w:r><w:rPr><w:b w:val="0"/><w:u w:val="none"/></w:rPr><w:t xml:space="preserve">', '</w:t><w:br/><w:t xml:space="preserve">'],
+                        $encoded
+                    );
                     
                     // Ganti string langsung
                     $xmlContent = str_replace($search, $replaceXml, $xmlContent);
@@ -239,7 +246,7 @@ class SuratKeluarController extends Controller
         $namaKepsek = $surat->penandatangan ? $surat->penandatangan->name : 'Siti Nurchayati, M.Pd';
         $nipKepsek = '197307152000032007';
         $pangkatKepsek = 'Pembina Utama Muda, IV/c';
-        $blokTtd = $namaKepsek . "\n" . $pangkatKepsek . "\nNIP. " . $nipKepsek;
+        $blokTtd = $namaKepsek . "\n{{PLAIN}}" . $pangkatKepsek . "\n{{PLAIN}}NIP. " . $nipKepsek;
 
         $replacements = [
             '[kode]'                   => $jenis->kode_klasifikasi ?? '400.3.5.6',
