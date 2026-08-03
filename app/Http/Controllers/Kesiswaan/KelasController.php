@@ -141,9 +141,93 @@ class KelasController extends Controller
         // Ambil data master ruangan sekolah
         $daftarRuangan = \App\Models\Ruangan::orderBy('nama_ruangan', 'asc')->get();
 
+        // Ambil list jadwal KBM yang sudah ter-plotting pada kelas ini
+        $jadwalList = \App\Models\JadwalPelajaran::with(['waktuKbm', 'kodeGuru.pegawai', 'kodeGuru.mataPelajarans', 'ruangan'])
+            ->where('kelas_id', $id)
+            ->get()
+            ->sortBy(function($j) {
+                $hariMap = ['Senin' => 1, 'Selasa' => 2, 'Rabu' => 3, 'Kamis' => 4, 'Jumat' => 5, 'Sabtu' => 6];
+                $h = $hariMap[$j->hari] ?? 7;
+                $jam = $j->waktuKbm ? $j->waktuKbm->jam_ke : 99;
+                return sprintf('%02d-%02d', $h, $jam);
+            });
+
         return view('kesiswaan.kelas.show_jadwal', compact(
-            'kelas', 'daftarKodeGuru', 'daftarWaktu', 'daftarRuangan'
+            'kelas', 'daftarKodeGuru', 'daftarWaktu', 'daftarRuangan', 'jadwalList'
         ));
+    }
+
+    /**
+     * Menyimpan Plotting Jadwal KBM Baru ke Kelas
+     */
+    public function storeJadwal(Request $request, $id)
+    {
+        $kelas = Kelas::aksesSesuaiWali(auth()->user())->findOrFail($id);
+
+        $validated = $request->validate([
+            'kode_guru_id'     => 'required|exists:kode_guru,id',
+            'mata_pelajaran_id'=> 'required|exists:mata_pelajaran,id',
+            'waktu_kbm_id'     => 'required|exists:waktu_kbm,id',
+            'ruangan_id'       => 'required|exists:ruangan,id',
+        ], [
+            'kode_guru_id.required'      => 'Guru pengampu wajib dipilih.',
+            'mata_pelajaran_id.required' => 'Mata pelajaran wajib dipilih.',
+            'waktu_kbm_id.required'      => 'Slot waktu KBM wajib dipilih.',
+            'ruangan_id.required'        => 'Lokasi / ruangan wajib dipilih.',
+        ]);
+
+        $waktu = WaktuKbm::findOrFail($request->waktu_kbm_id);
+
+        // Cek 1: Bentrok jam KBM pada kelas ini
+        $bentrokKelas = \App\Models\JadwalPelajaran::where('kelas_id', $id)
+            ->where('waktu_kbm_id', $request->waktu_kbm_id)
+            ->first();
+
+        if ($bentrokKelas) {
+            return redirect()->back()->withInput()->withErrors(['error' => 'Slot jam KBM ' . $waktu->hari . ' Jam ke-' . $waktu->jam_ke . ' di kelas ini sudah terisi.']);
+        }
+
+        // Cek 2: Bentrok guru mengajar di kelas lain pada slot hari & jam yang sama
+        $bentrokGuru = \App\Models\JadwalPelajaran::where('kode_guru_id', $request->kode_guru_id)
+            ->where('waktu_kbm_id', $request->waktu_kbm_id)
+            ->first();
+
+        if ($bentrokGuru) {
+            $kelasBentrok = $bentrokGuru->kelas ? $bentrokGuru->kelas->nama_kelas : 'lain';
+            return redirect()->back()->withInput()->withErrors(['error' => 'Guru yang dipilih sudah mengajar di kelas ' . $kelasBentrok . ' pada slot jam ini.']);
+        }
+
+        try {
+            \App\Models\JadwalPelajaran::create([
+                'kelas_id'     => $id,
+                'hari'         => $waktu->hari,
+                'waktu_kbm_id' => $request->waktu_kbm_id,
+                'kode_guru_id' => $request->kode_guru_id,
+                'ruangan_id'   => $request->ruangan_id,
+            ]);
+
+            return redirect()->route('kesiswaan.kelas.jadwal', $id)
+                ->with('success', 'Jadwal KBM baru berhasil disimpan.');
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->withErrors(['error' => 'Gagal menyimpan jadwal: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Menghapus Jadwal KBM dari Kelas
+     */
+    public function destroyJadwal($id, $jadwal_id)
+    {
+        Kelas::aksesSesuaiWali(auth()->user())->findOrFail($id);
+        $jadwal = \App\Models\JadwalPelajaran::where('kelas_id', $id)->findOrFail($jadwal_id);
+
+        try {
+            $jadwal->delete();
+            return redirect()->route('kesiswaan.kelas.jadwal', $id)
+                ->with('success', 'Jadwal KBM berhasil dihapus.');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'Gagal menghapus jadwal: ' . $e->getMessage()]);
+        }
     }
 
     /**

@@ -80,6 +80,21 @@
                 </div>
             </div>
 
+            {{-- Flash Messages --}}
+            @if(session('success'))
+                <div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl flex items-center gap-3 shadow-sm">
+                    <span class="text-xl">✅</span>
+                    <span class="text-sm font-bold">{{ session('success') }}</span>
+                </div>
+            @endif
+
+            @if($errors->has('error'))
+                <div class="p-4 bg-rose-50 border border-rose-200 text-rose-800 rounded-2xl flex items-center gap-3 shadow-sm">
+                    <span class="text-xl">⚠️</span>
+                    <span class="text-sm font-bold">{{ $errors->first('error') }}</span>
+                </div>
+            @endif
+
             {{-- Tabel Jadwal Pelajaran --}}
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-[2rem] border border-gray-100">
                 <div class="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
@@ -104,14 +119,80 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-50 text-gray-700">
-                            {{-- Placeholder Saat Ini Belum Ada Loop Data dari Controller --}}
-                            <tr>
-                                <td colspan="7" class="p-16 text-center text-gray-400 bg-gray-50/30">
-                                    <span class="text-5xl block mb-4">📭</span>
-                                    <p class="text-base font-bold text-gray-500">Belum ada jadwal pelajaran yang di-plotting untuk kelas ini.</p>
-                                    <p class="text-xs font-medium text-gray-400 mt-1">Silakan klik tombol "Tambah Jadwal KBM" untuk memulai.</p>
-                                </td>
-                            </tr>
+                            @forelse($jadwalList as $jadwal)
+                                <tr class="hover:bg-indigo-50/30 transition-colors">
+                                    <td class="p-5 pl-8 text-center">
+                                        @php
+                                            $badgeColor = match($jadwal->hari) {
+                                                'Senin' => 'bg-indigo-50 text-indigo-700 border-indigo-200',
+                                                'Selasa' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
+                                                'Rabu' => 'bg-amber-50 text-amber-700 border-amber-200',
+                                                'Kamis' => 'bg-sky-50 text-sky-700 border-sky-200',
+                                                'Jumat' => 'bg-rose-50 text-rose-700 border-rose-200',
+                                                default => 'bg-gray-50 text-gray-700 border-gray-200',
+                                            };
+                                        @endphp
+                                        <span class="inline-block px-3 py-1 text-xs font-black rounded-lg border {{ $badgeColor }}">
+                                            {{ $jadwal->hari }}
+                                        </span>
+                                    </td>
+                                    <td class="p-5 text-center font-black text-gray-900">
+                                        Ke-{{ $jadwal->waktuKbm->jam_ke ?? '-' }}
+                                    </td>
+                                    <td class="p-5 text-center font-semibold text-gray-500 text-xs">
+                                        @if($jadwal->waktuKbm)
+                                            {{ \Carbon\Carbon::parse($jadwal->waktuKbm->waktu_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($jadwal->waktuKbm->waktu_selesai)->format('H:i') }}
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
+                                    <td class="p-5 font-bold text-gray-900">
+                                        @php
+                                            $mapelTerpilih = $jadwal->kodeGuru && $jadwal->kodeGuru->mataPelajarans->isNotEmpty() 
+                                                ? $jadwal->kodeGuru->mataPelajarans->first() 
+                                                : null;
+                                        @endphp
+                                        @if($mapelTerpilih)
+                                            <div class="flex items-center gap-2">
+                                                <span class="px-2 py-0.5 bg-indigo-100 text-indigo-800 rounded font-black text-[10px] uppercase">{{ $mapelTerpilih->singkatan_mapel ?? 'MAPEL' }}</span>
+                                                <span>{{ $mapelTerpilih->nama_mapel }}</span>
+                                            </div>
+                                        @else
+                                            <span class="text-gray-400 italic">Mata Pelajaran Tidak Terhubung</span>
+                                        @endif
+                                    </td>
+                                    <td class="p-5 font-medium text-gray-700">
+                                        @if($jadwal->kodeGuru)
+                                            <span class="font-bold text-indigo-600">[{{ $jadwal->kodeGuru->kode }}]</span>
+                                            {{ $jadwal->kodeGuru->pegawai ? $jadwal->kodeGuru->pegawai->nama_lengkap : 'Tanpa Nama' }}
+                                        @else
+                                            <span class="text-gray-400 italic">-</span>
+                                        @endif
+                                    </td>
+                                    <td class="p-5">
+                                        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-gray-100 text-gray-700 rounded-lg text-xs font-bold border border-gray-200">
+                                            🏫 {{ $jadwal->ruangan->nama_ruangan ?? '-' }}
+                                        </span>
+                                    </td>
+                                    <td class="p-5 pr-8 text-center">
+                                        <form action="{{ route('kesiswaan.kelas.jadwal.destroy', [$kelas->id, $jadwal->id]) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus jadwal KBM ini?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer" title="Hapus Jadwal Ini">
+                                                🗑️
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="7" class="p-16 text-center text-gray-400 bg-gray-50/30">
+                                        <span class="text-5xl block mb-4">📭</span>
+                                        <p class="text-base font-bold text-gray-500">Belum ada jadwal pelajaran yang di-plotting untuk kelas ini.</p>
+                                        <p class="text-xs font-medium text-gray-400 mt-1">Silakan klik tombol "Tambah Jadwal KBM" untuk memulai.</p>
+                                    </td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
@@ -130,7 +211,7 @@
                     <button type="button" @click="openCreate = false" class="text-gray-400 hover:text-rose-500 text-2xl font-bold cursor-pointer transition-colors">&times;</button>
                 </div>
                 
-                <form action="#" method="POST">
+                <form action="{{ route('kesiswaan.kelas.jadwal.store', $kelas->id) }}" method="POST">
                     @csrf
                     
                     <div class="p-8 space-y-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
