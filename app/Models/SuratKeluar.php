@@ -13,4 +13,5 @@ class SuratKeluar extends Model
     public function jenisSurat() { return $this->belongsTo(JenisSurat::class, 'jenis_surat_id'); }
     public function penandatangan() { return $this->belongsTo(User::class, 'penandatangan_id'); }
     public function pembuat() { return $this->belongsTo(User::class, 'pembuat_id'); }
+    public function lampiran() { return $this->hasMany(SuratKeluarLampiran::class, 'surat_keluar_id'); }
 }
