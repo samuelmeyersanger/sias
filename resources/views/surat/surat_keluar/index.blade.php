@@ -7,46 +7,56 @@
     <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
 
-    <div x-data="{ 
-        openCreate: false,
-        quill: null,
-        initQuill() {
-            if (!this.quill && this.$refs.editorContainer) {
-                this.quill = new Quill(this.$refs.editorContainer, {
-                    theme: 'snow',
-                    placeholder: 'Ketik isi surat resmi di sini... (Bisa Tebal, Miring, Poin-poin, Paragraf, dll.)',
-                    modules: {
-                        toolbar: [
-                            [{ 'header': [1, 2, 3, false] }],
-                            ['bold', 'italic', 'underline', 'strike'],
-                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                            [{ 'align': [] }],
-                            ['clean']
-                        ]
+    <script>
+        function suratKeluarApp() {
+            return {
+                openCreate: false,
+                quill: null,
+                initQuill() {
+                    if (!this.quill && this.$refs.editorContainer) {
+                        this.quill = new Quill(this.$refs.editorContainer, {
+                            theme: 'snow',
+                            placeholder: 'Ketik isi surat resmi di sini... (Bisa Tebal, Miring, Poin-poin, Paragraf, dll.)',
+                            modules: {
+                                toolbar: [
+                                    [{ 'header': [1, 2, 3, false] }],
+                                    ['bold', 'italic', 'underline', 'strike'],
+                                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                                    [{ 'align': [] }],
+                                    ['clean']
+                                ]
+                            }
+                        });
+                        this.quill.on('text-change', () => {
+                            if (this.$refs.hiddenIsiSurat) {
+                                this.$refs.hiddenIsiSurat.value = this.quill.root.innerHTML;
+                            }
+                        });
                     }
-                });
-                this.quill.on('text-change', () => {
-                    this.$refs.hiddenIsiSurat.value = this.quill.root.innerHTML;
-                });
-            }
-        },
-        insertTemplate(type) {
-            let html = '';
-            if (type === 'sk') {
-                html = '<p style="text-align: center;"><strong>SURAT KEPUTUSAN KEPALA SEKOLAH</strong></p><p style="text-align: center;">TENTANG<br><strong>[PENETAPAN / PERIHAL SK]</strong></p><p><strong>Menimbang:</strong></p><ol><li>bahwa dalam rangka kelancaran kegiatan sekolah...</li><li>bahwa nama yang tercantum dalam keputusan ini dipandang mampu dan memenuhi syarat...</li></ol><p><strong>Mengingat:</strong></p><ol><li>Undang-Undang Nomor 20 Tahun 2003 tentang Sistem Pendidikan Nasional;</li><li>Peraturan Pemerintah Nomor 19 Tahun 2005 tentang Standar Nasional Pendidikan;</li></ol><p style="text-align: center;"><strong>MEMUTUSKAN:</strong></p><p><strong>Menetapkan:</strong></p><p><strong>PERTAMA:</strong> Menugaskan Saudara/i ... sebagai ...</p><p><strong>KEDUA:</strong> Keputusan ini berlaku sejak tanggal ditetapkan dengan ketentuan apabila terdapat kekeliruan akan diperbaiki sebagaimana mestinya.</p>';
-            } else if (type === 'sppd') {
-                html = '<p style="text-align: center;"><strong>SURAT PERINTAH TUGAS (SPPD)</strong></p><p>Yang bertanda tangan di bawah ini Kepala Sekolah, memberi tugas kepada:</p><p><strong>Nama Pegawai:</strong> [Nama Pegawai]<br><strong>NIP:</strong> [NIP Pegawai]<br><strong>Jabatan:</strong> [Jabatan Pegawai]</p><p><strong>Untuk:</strong></p><ol><li>Melaksanakan tugas / menghadiri kegiatan: [Nama Kegiatan]</li><li>Waktu Pelaksanaan: [Tanggal Kegiatan]</li><li>Tempat Tujuan: [Lokasi Tujuan]</li></ol><p>Demikian Surat Perintah Tugas ini dibuat untuk dilaksanakan dengan penuh rasa tanggung jawab.</p>';
-            } else if (type === 'keterangan') {
-                html = '<p style="text-align: center;"><strong>SURAT KETERANGAN SISWA AKTIF</strong></p><p>Yang bertanda tangan di bawah ini Kepala Sekolah, menerangkan bahwa:</p><p><strong>Nama Siswa:</strong> [Nama Siswa]<br><strong>NISN / NIS:</strong> [NISN Siswa]<br><strong>Kelas:</strong> [Kelas Siswa]</p><p>Adalah benar siswa tersebut terdaftar sebagai siswa aktif pada sekolah ini untuk Tahun Ajaran 2026/2027.</p><p>Demikian surat keterangan ini dibuat untuk dipergunakan sebagaimana mestinya.</p>';
-            } else if (type === 'undangan') {
-                html = '<p>Kepada Yth.<br><strong>Bapak/Ibu [Tujuan Undangan]</strong><br>di Tempat</p><p>Dengan hormat,</p><p>Sehubungan dengan agenda kegiatan sekolah, kami mengundang Bapak/Ibu untuk hadir pada acara yang akan dilaksanakan pada:</p><p><strong>Hari / Tanggal:</strong> [Hari, Tanggal]<br><strong>Waktu:</strong> [Waktu WIB]<br><strong>Tempat:</strong> [Lokasi Rapat]<br><strong>Agenda:</strong> [Topik Rapat]</p><p>Demikian surat undangan ini kami sampaikan. Atas perhatian dan kehadiran Bapak/Ibu, kami ucapkan terima kasih.</p>';
-            }
-            if (this.quill) {
-                this.quill.clipboard.dangerouslyPasteHTML(html);
-                this.$refs.hiddenIsiSurat.value = this.quill.root.innerHTML;
-            }
+                },
+                insertTemplate(type) {
+                    let html = '';
+                    if (type === 'sk') {
+                        html = '<p style="text-align: center;"><strong>SURAT KEPUTUSAN KEPALA SEKOLAH</strong></p><p style="text-align: center;">TENTANG<br><strong>[PENETAPAN / PERIHAL SK]</strong></p><p><strong>Menimbang:</strong></p><ol><li>bahwa dalam rangka kelancaran kegiatan sekolah...</li><li>bahwa nama yang tercantum dalam keputusan ini dipandang mampu dan memenuhi syarat...</li></ol><p><strong>Mengingat:</strong></p><ol><li>Undang-Undang Nomor 20 Tahun 2003 tentang Sistem Pendidikan Nasional;</li><li>Peraturan Pemerintah Nomor 19 Tahun 2005 tentang Standar Nasional Pendidikan;</li></ol><p style="text-align: center;"><strong>MEMUTUSKAN:</strong></p><p><strong>Menetapkan:</strong></p><p><strong>PERTAMA:</strong> Menugaskan Saudara/i ... sebagai ...</p><p><strong>KEDUA:</strong> Keputusan ini berlaku sejak tanggal ditetapkan dengan ketentuan apabila terdapat kekeliruan akan diperbaiki sebagaimana mestinya.</p>';
+                    } else if (type === 'sppd') {
+                        html = '<p style="text-align: center;"><strong>SURAT PERINTAH TUGAS (SPPD)</strong></p><p>Yang bertanda tangan di bawah ini Kepala Sekolah, memberi tugas kepada:</p><p><strong>Nama Pegawai:</strong> [Nama Pegawai]<br><strong>NIP:</strong> [NIP Pegawai]<br><strong>Jabatan:</strong> [Jabatan Pegawai]</p><p><strong>Untuk:</strong></p><ol><li>Melaksanakan tugas / menghadiri kegiatan: [Nama Kegiatan]</li><li>Waktu Pelaksanaan: [Tanggal Kegiatan]</li><li>Tempat Tujuan: [Lokasi Tujuan]</li></ol><p>Demikian Surat Perintah Tugas ini dibuat untuk dilaksanakan dengan penuh rasa tanggung jawab.</p>';
+                    } else if (type === 'keterangan') {
+                        html = '<p style="text-align: center;"><strong>SURAT KETERANGAN SISWA AKTIF</strong></p><p>Yang bertanda tangan di bawah ini Kepala Sekolah, menerangkan bahwa:</p><p><strong>Nama Siswa:</strong> [Nama Siswa]<br><strong>NISN / NIS:</strong> [NISN Siswa]<br><strong>Kelas:</strong> [Kelas Siswa]</p><p>Adalah benar siswa tersebut terdaftar sebagai siswa aktif pada sekolah ini untuk Tahun Ajaran 2026/2027.</p><p>Demikian surat keterangan ini dibuat untuk dipergunakan sebagaimana mestinya.</p>';
+                    } else if (type === 'undangan') {
+                        html = '<p>Kepada Yth.<br><strong>Bapak/Ibu [Tujuan Undangan]</strong><br>di Tempat</p><p>Dengan hormat,</p><p>Sehubungan dengan agenda kegiatan sekolah, kami mengundang Bapak/Ibu untuk hadir pada acara yang akan dilaksanakan pada:</p><p><strong>Hari / Tanggal:</strong> [Hari, Tanggal]<br><strong>Waktu:</strong> [Waktu WIB]<br><strong>Tempat:</strong> [Lokasi Rapat]<br><strong>Agenda:</strong> [Topik Rapat]</p><p>Demikian surat undangan ini kami sampaikan. Atas perhatian dan kehadiran Bapak/Ibu, kami ucapkan terima kasih.</p>';
+                    }
+                    if (this.quill) {
+                        this.quill.clipboard.dangerouslyPasteHTML(html);
+                        if (this.$refs.hiddenIsiSurat) {
+                            this.$refs.hiddenIsiSurat.value = this.quill.root.innerHTML;
+                        }
+                    }
+                }
+            };
         }
-    }" 
+    </script>
+
+    <div x-data="suratKeluarApp()" 
     x-init="$watch('openCreate', value => { if (value) setTimeout(() => initQuill(), 100); })"
     class="py-6 bg-slate-100 min-h-[calc(100vh-64px)]">
         
