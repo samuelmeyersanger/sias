@@ -7,6 +7,14 @@
     <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
 
+    <style>
+        .ql-editor table { width: 100%; border-collapse: collapse; margin: 8px 0; }
+        .ql-editor table:not([border="1"]) td, 
+        .ql-editor table:not([border="1"]) th { border: none !important; padding: 2px 0; }
+        .ql-editor table[border="1"] td, 
+        .ql-editor table[border="1"] th { border: 1px solid #000 !important; padding: 4px 6px; }
+    </style>
+
     <script>
         function suratKeluarApp() {
             return {
@@ -54,19 +62,26 @@
                         html = '<p>Kepada Yth.<br><strong>Bapak/Ibu [Tujuan Undangan]</strong><br>di Tempat</p><p>Dengan hormat,</p><p>Sehubungan dengan agenda kegiatan sekolah, kami mengundang Bapak/Ibu untuk hadir pada acara yang akan dilaksanakan pada:</p><p><strong>Hari / Tanggal:</strong> [Hari, Tanggal]<br><strong>Waktu:</strong> [Waktu WIB]<br><strong>Tempat:</strong> [Lokasi Rapat]<br><strong>Agenda:</strong> [Topik Rapat]</p><p>Demikian surat undangan ini kami sampaikan. Atas perhatian dan kehadiran Bapak/Ibu, kami ucapkan terima kasih.</p>';
                     }
                     if (this.quill) {
-                        this.quill.clipboard.dangerouslyPasteHTML(html);
+                        let qlEditor = this.$refs.editorContainer ? this.$refs.editorContainer.querySelector('.ql-editor') : null;
+                        if (qlEditor) {
+                            qlEditor.innerHTML = html;
+                        } else {
+                            this.quill.clipboard.dangerouslyPasteHTML(html);
+                        }
                         if (this.$refs.hiddenIsiSurat) {
-                            this.$refs.hiddenIsiSurat.value = this.quill.root.innerHTML;
+                            this.$refs.hiddenIsiSurat.value = qlEditor ? qlEditor.innerHTML : this.quill.root.innerHTML;
                         }
                     }
                 },
                 insertSelectedPegawai() {
                     if (!this.selectedPegawaiId) return;
                     let p = this.daftarPegawai.find(x => x.id == this.selectedPegawaiId);
-                    if (!p || !this.quill) return;
+                    if (!p) return;
 
-                    let htmlContent = this.quill.root.innerHTML;
+                    let qlEditor = this.$refs.editorContainer ? this.$refs.editorContainer.querySelector('.ql-editor') : null;
+                    let htmlContent = qlEditor ? qlEditor.innerHTML : (this.quill ? this.quill.root.innerHTML : '');
                     let jabatanNama = p.jabatan || p.jenis_ptk || '-';
+
                     if (htmlContent.includes('[Nama Pegawai]') || htmlContent.includes('[NIP Pegawai]')) {
                         htmlContent = htmlContent
                             .replace(/\[Nama Pegawai\]/g, p.nama_lengkap || '-')
@@ -74,19 +89,26 @@
                             .replace(/\[NUPTK Pegawai\]/g, p.nuptk || '-')
                             .replace(/\[Pangkat Pegawai\]/g, p.pangkat_golongan || '-')
                             .replace(/\[Jabatan Pegawai\]/g, jabatanNama);
-                        this.quill.clipboard.dangerouslyPasteHTML(htmlContent);
                     } else {
-                        let textToInsert = `<p><strong>Nama Pegawai:</strong> ${p.nama_lengkap || '-'}<br><strong>NIP:</strong> ${p.nip || '-'}<br><strong>Jabatan:</strong> ${jabatanNama}</p>`;
-                        this.quill.clipboard.dangerouslyPasteHTML(this.quill.getLength() - 1, textToInsert);
+                        htmlContent += `<p><strong>Nama Pegawai:</strong> ${p.nama_lengkap || '-'}<br><strong>NIP:</strong> ${p.nip || '-'}<br><strong>Jabatan:</strong> ${jabatanNama}</p>`;
+                    }
+
+                    if (qlEditor) {
+                        qlEditor.innerHTML = htmlContent;
+                    } else if (this.quill) {
+                        this.quill.clipboard.dangerouslyPasteHTML(htmlContent);
                     }
                     if (this.$refs.hiddenIsiSurat) {
-                        this.$refs.hiddenIsiSurat.value = this.quill.root.innerHTML;
+                        this.$refs.hiddenIsiSurat.value = htmlContent;
                     }
                 },
                 insertSelectedSiswa() {
                     if (!this.selectedSiswaId) return;
                     let s = this.daftarSiswa.find(x => x.id == this.selectedSiswaId);
-                    if (!s || !this.quill) return;
+                    if (!s) return;
+
+                    let qlEditor = this.$refs.editorContainer ? this.$refs.editorContainer.querySelector('.ql-editor') : null;
+                    let htmlContent = qlEditor ? qlEditor.innerHTML : (this.quill ? this.quill.root.innerHTML : '');
 
                     let namaKelas = s.kelas ? s.kelas.nama_kelas : 'Kelas Belum Set';
                     let tempatTglLahir = (s.tempat_lahir ? s.tempat_lahir + ', ' : '') + (s.tanggal_lahir ? new Date(s.tanggal_lahir).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-');
@@ -106,7 +128,6 @@
                     if (s.kecamatan) alamatLengkap += (alamatLengkap ? ' Kec. ' : '') + s.kecamatan;
                     if (!alamatLengkap) alamatLengkap = '-';
 
-                    let htmlContent = this.quill.root.innerHTML;
                     if (htmlContent.includes('[Nama Siswa]') || htmlContent.includes('[NISN Siswa]')) {
                         htmlContent = htmlContent
                             .replace(/\[Nama Siswa\]/g, s.nama_lengkap || '-')
@@ -120,13 +141,17 @@
                             .replace(/\[Pekerjaan Ibu\]/g, pekerjaanIbu)
                             .replace(/\[Alamat Lengkap\]/g, alamatLengkap)
                             .replace(/\[Kelas Siswa\]/g, namaKelas);
-                        this.quill.clipboard.dangerouslyPasteHTML(htmlContent);
                     } else {
-                        let textToInsert = `<p><strong>Nama Siswa:</strong> ${s.nama_lengkap || '-'}<br><strong>Tempat, Tanggal Lahir:</strong> ${tempatTglLahir}<br><strong>NISN / NIS:</strong> ${nipdNisn}<br><strong>Jenis Kelamin:</strong> ${s.jenis_kelamin || '-'}<br><strong>Nama Ayah:</strong> ${namaAyah}<br><strong>Nama Ibu:</strong> ${namaIbu}<br><strong>Alamat:</strong> ${alamatLengkap}<br><strong>Kelas:</strong> ${namaKelas}</p>`;
-                        this.quill.clipboard.dangerouslyPasteHTML(this.quill.getLength() - 1, textToInsert);
+                        htmlContent += `<p><strong>Nama Siswa:</strong> ${s.nama_lengkap || '-'}<br><strong>Tempat, Tanggal Lahir:</strong> ${tempatTglLahir}<br><strong>NISN / NIS:</strong> ${nipdNisn}<br><strong>Jenis Kelamin:</strong> ${s.jenis_kelamin || '-'}<br><strong>Nama Ayah:</strong> ${namaAyah}<br><strong>Nama Ibu:</strong> ${namaIbu}<br><strong>Alamat:</strong> ${alamatLengkap}<br><strong>Kelas:</strong> ${namaKelas}</p>`;
+                    }
+
+                    if (qlEditor) {
+                        qlEditor.innerHTML = htmlContent;
+                    } else if (this.quill) {
+                        this.quill.clipboard.dangerouslyPasteHTML(htmlContent);
                     }
                     if (this.$refs.hiddenIsiSurat) {
-                        this.$refs.hiddenIsiSurat.value = this.quill.root.innerHTML;
+                        this.$refs.hiddenIsiSurat.value = htmlContent;
                     }
                 }
             };

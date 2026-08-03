@@ -11,6 +11,12 @@
         .tabel-atribut { width: 100%; margin-bottom: 25px; }
         .tabel-atribut td { vertical-align: top; }
         .isi-surat { text-align: justify; margin-bottom: 40px; min-height: 200px; }
+        .isi-surat table { width: 100%; border-collapse: collapse; margin: 8px 0; }
+        .isi-surat table:not([border="1"]) td, 
+        .isi-surat table:not([border="1"]) th { border: none !important; padding: 2px 0; }
+        .isi-surat table[border="1"] td, 
+        .isi-surat table[border="1"] th { border: 1px solid #000 !important; padding: 4px 6px; }
+
         .ttd-section { float: right; width: 280px; text-align: center; }
         .space-ttd { height: 90px; position: relative; }
         .img-ttd { height: 75px; z-index: 1; }
