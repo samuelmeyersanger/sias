@@ -191,15 +191,32 @@ class SuratKeluarController extends Controller
         if ($zip->open($fullPath) === TRUE) {
             $xmlContent = $zip->getFromName('word/document.xml');
             if ($xmlContent) {
-                // Strip XML node splitters inside brackets [xxx]
+                // 1. Bersihkan tag pemeriksa ejaan (spellcheck/proofErr) bawaan MS Word yang memecah kata
+                $xmlContent = preg_replace('/<w:proofErr[^>]*\/>/', '', $xmlContent);
+                $xmlContent = preg_replace('/<w:noProof[^>]*\/>/', '', $xmlContent);
+                $xmlContent = preg_replace('/<w:lang[^>]*\/>/', '', $xmlContent);
+
+                // 2. Gabungkan tag XML yang terpisah di dalam kurung siku [...]
                 $xmlContent = preg_replace_callback('/\[(.*?)\]/s', function($matches) {
                     return '[' . strip_tags($matches[1]) . ']';
                 }, $xmlContent);
 
+                // 3. Lakukan penggantian tag secara presisi & fleksibel (Case-Insensitive Regex Fallback)
                 foreach ($replacements as $search => $replace) {
                     $replaceXml = str_replace("\n", '</w:t><w:br/><w:t>', htmlspecialchars($replace, ENT_QUOTES, 'UTF-8'));
+                    
+                    // Ganti string langsung
                     $xmlContent = str_replace($search, $replaceXml, $xmlContent);
+
+                    // Regex fallback untuk mengantisipasi variasi spasi / huruf kapital bawaan Word
+                    $cleanSearch = trim($search, '[]');
+                    $xmlContent = preg_replace(
+                        '/\[\s*' . preg_quote($cleanSearch, '/') . '\s*\]/i',
+                        $replaceXml,
+                        $xmlContent
+                    );
                 }
+
                 $zip->addFromString('word/document.xml', $xmlContent);
             }
             $zip->close();
