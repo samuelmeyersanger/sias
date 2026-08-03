@@ -53,7 +53,7 @@ class SuratKeluarController extends Controller
 
         $isiSurat = $request->isi_surat;
         if ((!$isiSurat || $isiSurat === '<p><br></p>') && $filePath) {
-            $isiSurat = '<p style="text-align: center;"><strong>📄 Dokumen Berkas SK / Surat Resmi Diunggah Langsung (File Terlampir)</strong></p>';
+            $isiSurat = '<p style="text-align: center;"><strong>Dokumen Berkas SK / Surat Resmi Diunggah Langsung (File Terlampir)</strong></p>';
         }
 
         $surat = SuratKeluar::create([
@@ -144,8 +144,19 @@ class SuratKeluarController extends Controller
     public function cetakPdf($id)
     {
         $surat = SuratKeluar::with(['jenisSurat', 'penandatangan', 'lampiran'])->findOrFail($id);
-        $pengaturan = PengaturanLogo::first();
 
+        // Jika surat berasal dari file unggahan (Word / PDF / Excel), langsung buka / unduh berkas aslinya
+        if ($surat->file_final && \Illuminate\Support\Facades\Storage::disk('public')->exists($surat->file_final)) {
+            $path = storage_path('app/public/' . $surat->file_final);
+            $mime = \Illuminate\Support\Facades\File::mimeType($path);
+            if (str_contains($mime, 'pdf')) {
+                return response()->file($path);
+            } else {
+                return response()->download($path);
+            }
+        }
+
+        $pengaturan = PengaturanLogo::first();
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('surat.surat_keluar.template_pdf', compact('surat', 'pengaturan'));
         $pdf->setPaper('a4', 'portrait');
         
