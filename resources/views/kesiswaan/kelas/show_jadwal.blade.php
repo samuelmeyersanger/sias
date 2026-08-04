@@ -186,9 +186,7 @@
                                             </span>
                                         @else
                                             @php
-                                                $mapelTerpilih = $jadwal->kodeGuru && $jadwal->kodeGuru->mataPelajarans->isNotEmpty() 
-                                                    ? $jadwal->kodeGuru->mataPelajarans->first() 
-                                                    : null;
+                                                $mapelTerpilih = $jadwal->mataPelajaran;
                                             @endphp
                                             @if($mapelTerpilih)
                                                 <div class="flex items-center gap-2">

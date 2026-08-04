@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\WaktuKbm;
 use App\Models\Kelas;
 use App\Models\KodeGuru;
+use App\Models\MataPelajaran;
 use App\Models\Ruangan;
 use App\Traits\Loggable;
 
@@ -31,6 +32,7 @@ class JadwalPelajaran extends Model
         'waktu_kbm_id',
         'kelas_id',
         'kode_guru_id',
+        'mata_pelajaran_id',
         'ruangan_id',
     ];
 
@@ -43,6 +45,7 @@ class JadwalPelajaran extends Model
         'waktu_kbm_id' => 'integer',
         'kelas_id' => 'integer',
         'kode_guru_id' => 'integer',
+        'mata_pelajaran_id' => 'integer',
         'ruangan_id' => 'integer',
         'deleted_at' => 'datetime',
     ];
@@ -76,6 +79,15 @@ class JadwalPelajaran extends Model
     public function kodeGuru()
     {
         return $this->belongsTo(KodeGuru::class, 'kode_guru_id');
+    }
+
+    /**
+     * Relasi ke model MataPelajaran.
+     * Jadwal pelajaran spesifik mata pelajaran yang diajarkan.
+     */
+    public function mataPelajaran()
+    {
+        return $this->belongsTo(MataPelajaran::class, 'mata_pelajaran_id');
     }
 
     /**

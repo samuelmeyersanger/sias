@@ -142,7 +142,7 @@ class KelasController extends Controller
         $daftarRuangan = \App\Models\Ruangan::orderBy('nama_ruangan', 'asc')->get();
 
         // Ambil list jadwal KBM yang sudah ter-plotting pada kelas ini
-        $jadwalList = \App\Models\JadwalPelajaran::with(['waktuKbm', 'kodeGuru.pegawai', 'kodeGuru.mataPelajarans', 'ruangan'])
+        $jadwalList = \App\Models\JadwalPelajaran::with(['waktuKbm', 'kodeGuru.pegawai', 'kodeGuru.mataPelajarans', 'ruangan', 'mataPelajaran'])
             ->where('kelas_id', $id)
             ->get()
             ->sortBy(function($j) {
@@ -214,11 +214,12 @@ class KelasController extends Controller
 
         try {
             \App\Models\JadwalPelajaran::create([
-                'kelas_id'     => $id,
-                'hari'         => $waktu->hari,
-                'waktu_kbm_id' => $request->waktu_kbm_id,
-                'kode_guru_id' => empty($request->kode_guru_id) ? null : $request->kode_guru_id,
-                'ruangan_id'   => empty($request->ruangan_id) ? null : $request->ruangan_id,
+                'kelas_id'          => $id,
+                'hari'              => $waktu->hari,
+                'waktu_kbm_id'      => $request->waktu_kbm_id,
+                'kode_guru_id'      => empty($request->kode_guru_id) ? null : $request->kode_guru_id,
+                'mata_pelajaran_id' => empty($request->mata_pelajaran_id) ? null : $request->mata_pelajaran_id,
+                'ruangan_id'        => empty($request->ruangan_id) ? null : $request->ruangan_id,
             ]);
 
             return redirect()->route('kesiswaan.kelas.jadwal', $id)
