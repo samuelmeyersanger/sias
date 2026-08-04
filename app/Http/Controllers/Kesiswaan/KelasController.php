@@ -163,20 +163,33 @@ class KelasController extends Controller
     public function storeJadwal(Request $request, $id)
     {
         $kelas = Kelas::aksesSesuaiWali(auth()->user())->findOrFail($id);
+        $waktu = WaktuKbm::findOrFail($request->waktu_kbm_id);
 
-        $validated = $request->validate([
-            'kode_guru_id'     => 'required|exists:kode_guru,id',
-            'mata_pelajaran_id'=> 'required|exists:mata_pelajaran,id',
-            'waktu_kbm_id'     => 'required|exists:waktu_kbm,id',
-            'ruangan_id'       => 'required|exists:ruangan,id',
-        ], [
-            'kode_guru_id.required'      => 'Guru pengampu wajib dipilih.',
-            'mata_pelajaran_id.required' => 'Mata pelajaran wajib dipilih.',
+        $rules = [
+            'waktu_kbm_id' => 'required|exists:waktu_kbm,id',
+            'ruangan_id'   => 'nullable|exists:ruangan,id',
+        ];
+        
+        $messages = [
             'waktu_kbm_id.required'      => 'Slot waktu KBM wajib dipilih.',
             'ruangan_id.required'        => 'Lokasi / ruangan wajib dipilih.',
-        ]);
+            'kode_guru_id.required'      => 'Guru pengampu wajib dipilih.',
+            'mata_pelajaran_id.required' => 'Mata pelajaran wajib dipilih.',
+        ];
 
-        $waktu = WaktuKbm::findOrFail($request->waktu_kbm_id);
+        if ($waktu->kegiatan === 'KBM') {
+            $rules['kode_guru_id'] = 'required|exists:kode_guru,id';
+            $rules['mata_pelajaran_id'] = 'required|exists:mata_pelajaran,id';
+        } elseif (in_array($waktu->kegiatan, ['G7', 'Korikuler', 'Kokurikuler'])) {
+            $rules['kode_guru_id'] = 'required|exists:kode_guru,id';
+            $rules['mata_pelajaran_id'] = 'nullable';
+        } else {
+            // Istirahat, Upacara, MBG
+            $rules['kode_guru_id'] = 'nullable';
+            $rules['mata_pelajaran_id'] = 'nullable';
+        }
+
+        $validated = $request->validate($rules, $messages);
 
         // Cek 1: Bentrok jam KBM pada kelas ini
         $bentrokKelas = \App\Models\JadwalPelajaran::where('kelas_id', $id)
@@ -187,14 +200,16 @@ class KelasController extends Controller
             return redirect()->back()->withInput()->withErrors(['error' => 'Slot jam KBM ' . $waktu->hari . ' Jam ke-' . $waktu->jam_ke . ' di kelas ini sudah terisi.']);
         }
 
-        // Cek 2: Bentrok guru mengajar di kelas lain pada slot hari & jam yang sama
-        $bentrokGuru = \App\Models\JadwalPelajaran::where('kode_guru_id', $request->kode_guru_id)
-            ->where('waktu_kbm_id', $request->waktu_kbm_id)
-            ->first();
+        // Cek 2: Bentrok guru mengajar di kelas lain pada slot hari & jam yang sama (Hanya jika ada guru)
+        if (!empty($request->kode_guru_id)) {
+            $bentrokGuru = \App\Models\JadwalPelajaran::where('kode_guru_id', $request->kode_guru_id)
+                ->where('waktu_kbm_id', $request->waktu_kbm_id)
+                ->first();
 
-        if ($bentrokGuru) {
-            $kelasBentrok = $bentrokGuru->kelas ? $bentrokGuru->kelas->nama_kelas : 'lain';
-            return redirect()->back()->withInput()->withErrors(['error' => 'Guru yang dipilih sudah mengajar di kelas ' . $kelasBentrok . ' pada slot jam ini.']);
+            if ($bentrokGuru) {
+                $kelasBentrok = $bentrokGuru->kelas ? $bentrokGuru->kelas->nama_kelas : 'lain';
+                return redirect()->back()->withInput()->withErrors(['error' => 'Guru yang dipilih sudah mengajar di kelas ' . $kelasBentrok . ' pada slot jam ini.']);
+            }
         }
 
         try {
@@ -202,8 +217,8 @@ class KelasController extends Controller
                 'kelas_id'     => $id,
                 'hari'         => $waktu->hari,
                 'waktu_kbm_id' => $request->waktu_kbm_id,
-                'kode_guru_id' => $request->kode_guru_id,
-                'ruangan_id'   => $request->ruangan_id,
+                'kode_guru_id' => empty($request->kode_guru_id) ? null : $request->kode_guru_id,
+                'ruangan_id'   => empty($request->ruangan_id) ? null : $request->ruangan_id,
             ]);
 
             return redirect()->route('kesiswaan.kelas.jadwal', $id)

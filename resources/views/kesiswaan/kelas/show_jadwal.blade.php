@@ -24,6 +24,7 @@
         selectedGuruId: '',
         selectedMapelId: '',
         selectedWaktuId: '',
+        selectedWaktuKegiatan: '',
         selectedRuanganId: '',
         
         // Array Penampung Mata Pelajaran (Otomatis terisi via Watcher)
@@ -42,6 +43,28 @@
             
             // Masukkan list mata pelajarans dari relasi Many-to-Many guru tersebut
             this.availableMapels = guru && guru.mata_pelajarans ? guru.mata_pelajarans : [];
+        },
+
+        // Fungsi saat Waktu/Jam KBM dipilih
+        onWaktuChange() {
+            if (!this.selectedWaktuId) {
+                this.selectedWaktuKegiatan = '';
+                return;
+            }
+            let waktu = this.daftarWaktu.find(w => w.id == this.selectedWaktuId);
+            this.selectedWaktuKegiatan = waktu ? waktu.kegiatan : '';
+
+            // Jika kegiatan adalah Istirahat, Upacara, atau MBG -> Kosongkan dan disable guru & mapel
+            if (['Istirahat', 'Upacara', 'MBG'].includes(this.selectedWaktuKegiatan)) {
+                this.selectedGuruId = '';
+                this.selectedMapelId = '';
+                this.availableMapels = [];
+            }
+            
+            // Jika kegiatan adalah G7 atau Kokurikuler -> Mapel dikosongkan dan didisable, tapi Guru tetap wajib
+            if (['G7', 'Kokurikuler', 'Korikuler'].includes(this.selectedWaktuKegiatan)) {
+                this.selectedMapelId = '';
+            }
         }
     }" class="py-10 bg-slate-50 min-h-screen">
         
@@ -148,17 +171,33 @@
                                     </td>
                                     <td class="p-5 font-bold text-gray-900">
                                         @php
-                                            $mapelTerpilih = $jadwal->kodeGuru && $jadwal->kodeGuru->mataPelajarans->isNotEmpty() 
-                                                ? $jadwal->kodeGuru->mataPelajarans->first() 
-                                                : null;
+                                            $keg = $jadwal->waktuKbm->kegiatan ?? 'KBM';
                                         @endphp
-                                        @if($mapelTerpilih)
-                                            <div class="flex items-center gap-2">
-                                                <span class="px-2 py-0.5 bg-indigo-100 text-indigo-800 rounded font-black text-[10px] uppercase">{{ $mapelTerpilih->singkatan_mapel ?? 'MAPEL' }}</span>
-                                                <span>{{ $mapelTerpilih->nama_mapel }}</span>
-                                            </div>
+                                        
+                                        @if($keg === 'Istirahat')
+                                            <span class="px-3 py-1 bg-slate-100 text-slate-700 rounded-lg font-black text-xs border border-slate-200">☕ ISTIRAHAT</span>
+                                        @elseif($keg === 'Upacara')
+                                            <span class="px-3 py-1 bg-rose-100 text-rose-800 rounded-lg font-black text-xs border border-rose-200">🇮🇩 UPACARA BENDERA</span>
+                                        @elseif($keg === 'MBG')
+                                            <span class="px-3 py-1 bg-emerald-100 text-emerald-800 rounded-lg font-black text-xs border border-emerald-200">🍱 MAKAN BERGIZI GRATIS</span>
+                                        @elseif(in_array($keg, ['G7', 'Kokurikuler', 'Korikuler']))
+                                            <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-lg font-black text-xs border border-purple-200">
+                                                {{ $keg === 'G7' ? '🎯 G7 / P5' : '🏀 KOKURIKULER' }}
+                                            </span>
                                         @else
-                                            <span class="text-gray-400 italic">Mata Pelajaran Tidak Terhubung</span>
+                                            @php
+                                                $mapelTerpilih = $jadwal->kodeGuru && $jadwal->kodeGuru->mataPelajarans->isNotEmpty() 
+                                                    ? $jadwal->kodeGuru->mataPelajarans->first() 
+                                                    : null;
+                                            @endphp
+                                            @if($mapelTerpilih)
+                                                <div class="flex items-center gap-2">
+                                                    <span class="px-2 py-0.5 bg-indigo-100 text-indigo-800 rounded font-black text-[10px] uppercase">{{ $mapelTerpilih->singkatan_mapel ?? 'MAPEL' }}</span>
+                                                    <span>{{ $mapelTerpilih->nama_mapel }}</span>
+                                                </div>
+                                            @else
+                                                <span class="text-gray-400 italic">Mata Pelajaran Tidak Terhubung</span>
+                                            @endif
                                         @endif
                                     </td>
                                     <td class="p-5 font-medium text-gray-700">
@@ -166,7 +205,11 @@
                                             <span class="font-bold text-indigo-600">[{{ $jadwal->kodeGuru->kode }}]</span>
                                             {{ $jadwal->kodeGuru->pegawai ? $jadwal->kodeGuru->pegawai->nama_lengkap : 'Tanpa Nama' }}
                                         @else
-                                            <span class="text-gray-400 italic">-</span>
+                                            @if(in_array($jadwal->waktuKbm->kegiatan ?? '', ['Istirahat', 'Upacara', 'MBG']))
+                                                <span class="text-gray-400 italic font-semibold">- Tanpa Guru -</span>
+                                            @else
+                                                <span class="text-gray-400 italic">-</span>
+                                            @endif
                                         @endif
                                     </td>
                                     <td class="p-5">
@@ -219,9 +262,9 @@
                         {{-- Dropdown Guru dengan Watcher --}}
                         <div class="p-5 bg-indigo-50/50 border border-indigo-100 rounded-2xl space-y-5">
                             <div>
-                                <label class="block text-sm font-bold text-indigo-900 mb-2">Guru Pengampu (Kode Guru) <span class="text-rose-500">*</span></label>
-                                <select name="kode_guru_id" x-model="selectedGuruId" @change="onGuruChange()" required class="w-full text-sm font-semibold rounded-xl border-indigo-200 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm bg-white px-4 py-3">
-                                    <option value="">-- Pilih Guru / Kode Pengampu --</option>
+                                <label class="block text-sm font-bold text-indigo-900 mb-2">Guru Pengampu (Kode Guru) <span x-show="!['Istirahat', 'Upacara', 'MBG'].includes(selectedWaktuKegiatan)" class="text-rose-500">*</span></label>
+                                <select name="kode_guru_id" x-model="selectedGuruId" @change="onGuruChange()" :disabled="['Istirahat', 'Upacara', 'MBG'].includes(selectedWaktuKegiatan)" :required="!['Istirahat', 'Upacara', 'MBG'].includes(selectedWaktuKegiatan)" class="w-full text-sm font-semibold rounded-xl border-indigo-200 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm bg-white px-4 py-3 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed">
+                                    <option value="" x-text="['Istirahat', 'Upacara', 'MBG'].includes(selectedWaktuKegiatan) ? '-- Kegiatan Tanpa Guru --' : '-- Pilih Guru / Kode Pengampu --'"></option>
                                     <template x-for="guru in daftarGuru" :key="guru.id">
                                         <option :value="guru.id" x-text="'[' + guru.kode + '] ' + (guru.pegawai ? guru.pegawai.nama_lengkap : 'Tanpa Nama')"></option>
                                     </template>
@@ -229,9 +272,9 @@
                             </div>
 
                             <div>
-                                <label class="block text-sm font-bold text-indigo-900 mb-2">Mata Pelajaran <span class="text-rose-500">*</span></label>
-                                <select name="mata_pelajaran_id" x-model="selectedMapelId" :disabled="!selectedGuruId" required class="w-full text-sm font-bold rounded-xl border-indigo-200 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm bg-white px-4 py-3 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors">
-                                    <option value="">-- Menunggu Guru Dipilih --</option>
+                                <label class="block text-sm font-bold text-indigo-900 mb-2">Mata Pelajaran <span x-show="!['Istirahat', 'Upacara', 'MBG', 'G7', 'Kokurikuler', 'Korikuler'].includes(selectedWaktuKegiatan)" class="text-rose-500">*</span></label>
+                                <select name="mata_pelajaran_id" x-model="selectedMapelId" :disabled="!selectedGuruId || ['Istirahat', 'Upacara', 'MBG', 'G7', 'Kokurikuler', 'Korikuler'].includes(selectedWaktuKegiatan)" :required="!['Istirahat', 'Upacara', 'MBG', 'G7', 'Kokurikuler', 'Korikuler'].includes(selectedWaktuKegiatan)" class="w-full text-sm font-bold rounded-xl border-indigo-200 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm bg-white px-4 py-3 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors">
+                                    <option value="" x-text="['Istirahat', 'Upacara', 'MBG', 'G7', 'Kokurikuler', 'Korikuler'].includes(selectedWaktuKegiatan) ? '-- Tidak Memerlukan Mata Pelajaran --' : '-- Menunggu Guru Dipilih --'"></option>
                                     <template x-for="mapel in availableMapels" :key="mapel.id">
                                         <option :value="mapel.id" x-text="'[' + (mapel.singkatan_mapel || '-') + '] ' + mapel.nama_mapel"></option>
                                     </template>
@@ -250,7 +293,7 @@
                         <div class="grid grid-cols-1 gap-5">
                             <div>
                                 <label class="block text-sm font-bold text-gray-700 mb-2">Slot Hari & Waktu KBM <span class="text-rose-500">*</span></label>
-                                <select name="waktu_kbm_id" x-model="selectedWaktuId" required class="w-full text-sm font-semibold rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm bg-gray-50 px-4 py-3">
+                                <select name="waktu_kbm_id" x-model="selectedWaktuId" @change="onWaktuChange()" required class="w-full text-sm font-semibold rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm bg-gray-50 px-4 py-3">
                                     <option value="">-- Pilih Jadwal Jam Ke --</option>
                                     @foreach($daftarWaktu as $waktu)
                                         <option value="{{ $waktu->id }}">
@@ -277,7 +320,9 @@
                         <button type="button" @click="openCreate = false" class="px-6 py-3 bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 font-bold rounded-xl shadow-sm transition-colors cursor-pointer">
                             Batal
                         </button>
-                        <button type="submit" :disabled="!selectedGuruId || !selectedMapelId || !selectedWaktuId || !selectedRuanganId" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-md transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                        <button type="submit" 
+                            :disabled="(!selectedGuruId && !['Istirahat', 'Upacara', 'MBG'].includes(selectedWaktuKegiatan)) || (!selectedMapelId && !['Istirahat', 'Upacara', 'MBG', 'G7', 'Kokurikuler', 'Korikuler'].includes(selectedWaktuKegiatan)) || !selectedWaktuId || !selectedRuanganId" 
+                            class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-md transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
                             💾 Simpan Jadwal KBM
                         </button>
                     </div>
