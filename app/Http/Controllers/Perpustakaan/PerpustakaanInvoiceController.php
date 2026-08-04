@@ -21,8 +21,8 @@ class PerpustakaanInvoiceController extends Controller
                 $query->where('nomor_invoice', 'like', "%{$search}%")
                       ->orWhere('nama_suplier', 'like', "%{$search}%");
             })
-            ->orderBy('tanggal_invoice', 'desc') // Mengurutkan berdasarkan tanggal pembelian (terbaru di atas)
-            ->orderBy('created_at', 'desc') // Jika tanggal sama, yang baru diinput di atas
+            ->orderBy('tanggal_invoice', 'asc') // Mengurutkan dari tanggal pembelian terlama ke terbaru
+            ->orderBy('created_at', 'desc') 
             ->paginate(15);
 
         return view('perpustakaan.invoice.index', compact('invoices', 'search'));
