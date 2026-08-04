@@ -29,9 +29,26 @@ class NilaiController extends Controller
         } else {
             $pegawai = \App\Models\Pegawai::where('user_id', $user->id)->first();
             if ($pegawai) {
-                // SANGAT BERSIH DAN RAPI:
                 $kelases = \App\Models\Kelas::whereIn('id', $pegawai->getKelasIdsDiampu())->orderBy('tingkat', 'asc')->orderBy('nama_kelas', 'asc')->get();
-                $mapels = \App\Models\MataPelajaran::whereIn('id', $pegawai->getMapelIdsDiampu())->orderBy('nama_mapel', 'asc')->get();
+                
+                if ($kelas_id) {
+                    $kodeGuruIds = \App\Models\KodeGuru::where('pegawai_id', $pegawai->id)->pluck('id');
+                    $mapelIdsDiKelasIni = \App\Models\JadwalPelajaran::where('kelas_id', $kelas_id)
+                                            ->whereIn('kode_guru_id', $kodeGuruIds)
+                                            ->whereNotNull('mata_pelajaran_id')
+                                            ->pluck('mata_pelajaran_id')
+                                            ->unique()
+                                            ->toArray();
+
+                    if (!empty($mapelIdsDiKelasIni)) {
+                        $mapels = \App\Models\MataPelajaran::whereIn('id', $mapelIdsDiKelasIni)->orderBy('nama_mapel', 'asc')->get();
+                    } else {
+                        // Jika belum ada/masih null (jadwal lama), fallback ke semua mapel yang diampu
+                        $mapels = \App\Models\MataPelajaran::whereIn('id', $pegawai->getMapelIdsDiampu())->orderBy('nama_mapel', 'asc')->get();
+                    }
+                } else {
+                    $mapels = \App\Models\MataPelajaran::whereIn('id', $pegawai->getMapelIdsDiampu())->orderBy('nama_mapel', 'asc')->get();
+                }
             } else {
                 $kelases = collect();
                 $mapels = collect();
