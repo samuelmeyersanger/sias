@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex items-center gap-4">
             <h2 class="font-bold text-2xl text-gray-800 leading-tight flex items-center gap-2">
-                <span class="text-3xl">📚</span> {{ __('Invoice Pembelian Buku') }}
+                <span class="text-3xl">📚</span> {{ __('Invoice Penerimaan Buku') }}
             </h2>
         </div>
     </x-slot>
@@ -14,7 +14,7 @@
             <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4">
                 <div>
                     <h3 class="text-lg font-bold text-gray-800">Daftar Nota / Faktur</h3>
-                    <p class="text-sm text-gray-500">Kelola catatan pembelian buku untuk inventaris perpustakaan.</p>
+                    <p class="text-sm text-gray-500">Kelola catatan penerimaan buku untuk inventaris perpustakaan.</p>
                 </div>
                 <div class="flex items-center gap-3 w-full md:w-auto">
                     <form action="{{ route('perpustakaan.invoice.index') }}" method="GET" class="relative w-full md:w-64">
@@ -50,7 +50,7 @@
                         <thead class="bg-gray-50 border-b border-gray-100 text-gray-600 font-bold uppercase text-[11px] tracking-wider">
                             <tr>
                                 <th class="px-6 py-4">Nomor Invoice</th>
-                                <th class="px-6 py-4">Tanggal Pembelian</th>
+                                <th class="px-6 py-4">Tanggal Penerimaan</th>
                                 <th class="px-6 py-4">Suplier / Toko</th>
                                 <th class="px-6 py-4 text-center">Total Item Buku</th>
                                 <th class="px-6 py-4 text-center">Aksi</th>
