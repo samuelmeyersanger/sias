@@ -592,24 +592,6 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         Route::get('/keluar/{id}/cetak', [SuratKeluarController::class, 'cetakPdf'])->name('keluar.cetak');
     });
 
-    // ROUTE SEMENTARA UNTUK AUTO-FIX DATA JADWAL LAMA
-    Route::get('/fix-jadwal-lama', function() {
-        $jadwals = \App\Models\JadwalPelajaran::whereNull('mata_pelajaran_id')
-                    ->whereNotNull('kode_guru_id')
-                    ->get();
-        
-        $count = 0;
-        foreach($jadwals as $jadwal) {
-            $kodeGuru = \App\Models\KodeGuru::with('mataPelajarans')->find($jadwal->kode_guru_id);
-            if ($kodeGuru && $kodeGuru->mataPelajarans->isNotEmpty()) {
-                $jadwal->mata_pelajaran_id = $kodeGuru->mataPelajarans->first()->id;
-                $jadwal->save();
-                $count++;
-            }
-        }
-        return "✅ AUTO-FIX SELESAI: Berhasil memperbarui dan menyelamatkan $count data jadwal pelajaran lama!";
-    });
-
     /*
     |--------------------------------------------------------------------------
     | Modul Manajemen pusat download (SIAS Back-Office)
