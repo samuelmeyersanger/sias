@@ -19,7 +19,7 @@
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full relative z-10">
                     <div>
-                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Tanggal Pembelian</p>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Tanggal Penerimaan</p>
                         <p class="text-lg font-black text-gray-800 mt-1">{{ $invoice->tanggal_invoice->translatedFormat('d F Y') }}</p>
                     </div>
                     <div>
