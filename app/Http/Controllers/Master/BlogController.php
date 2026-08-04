@@ -135,4 +135,48 @@ class BlogController extends Controller
 
         return redirect()->route('master.blog.index')->with('success', 'Artikel berhasil dihapus dari sistem.');
     }
+
+    /**
+     * Menangani unggahan gambar dari TinyMCE Editor
+     */
+    public function uploadImage(Request $request)
+    {
+        if ($request->hasFile('file')) {
+            $request->validate([
+                'file' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048'
+            ]);
+
+            $file = $request->file('file');
+            $filename = time() . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('blogs/content', $filename, 'public');
+
+            return response()->json([
+                'location' => asset('storage/' . $path)
+            ]);
+        }
+
+        return response()->json(['error' => 'Gagal mengunggah gambar.'], 400);
+    }
+
+    /**
+     * Menangani unggahan dokumen/file dari TinyMCE Editor
+     */
+    public function uploadFile(Request $request)
+    {
+        if ($request->hasFile('file')) {
+            $request->validate([
+                'file' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,zip,rar|max:10240' // max 10MB
+            ]);
+
+            $file = $request->file('file');
+            $filename = time() . '_' . Str::slug($file->getClientOriginalName()) . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('blogs/documents', $filename, 'public');
+
+            return response()->json([
+                'location' => asset('storage/' . $path)
+            ]);
+        }
+
+        return response()->json(['error' => 'Gagal mengunggah dokumen.'], 400);
+    }
 }

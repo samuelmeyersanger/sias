@@ -172,6 +172,8 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         
         // 🟢 Modul Portal Berita (Kategori Blog, Blog, & Komentar)
         Route::resource('kategori-blog', KategoriBlogController::class)->names('kategori-blog');
+        Route::post('blog/upload-image', [AdminBlogController::class, 'uploadImage'])->name('blog.upload-image');
+        Route::post('blog/upload-file', [AdminBlogController::class, 'uploadFile'])->name('blog.upload-file');
         Route::resource('blog', AdminBlogController::class)->names('blog');
         
         Route::get('komentar-blog', [AdminKomentarBlogController::class, 'index'])->name('komentar-blog.index');

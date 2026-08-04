@@ -86,6 +86,7 @@
 
                         <button @click="
                             editId = ''; editJudul = ''; editKategoriId = ''; editKonten = ''; editIsPublished = '1';
+                            if(window.tinymce && tinymce.get('tinymce_create')) { tinymce.get('tinymce_create').setContent(''); }
                             openCreate = true;
                         " class="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white font-black text-sm rounded-xl shadow-lg shadow-indigo-500/30 transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto">
                             <span>✍️</span> Tulis Baru
@@ -162,6 +163,7 @@
                                                         editKategoriId = '{{ $blog->kategori_blog_id }}';
                                                         editIsPublished = '{{ $blog->is_published }}';
                                                         editKonten = $el.getAttribute('data-konten');
+                                                        if(window.tinymce && tinymce.get('tinymce_edit')) { tinymce.get('tinymce_edit').setContent(editKonten); }
                                                         openEdit = true;
                                                     " 
                                                     class="inline-flex items-center justify-center w-9 h-9 bg-white border border-slate-200 text-slate-500 hover:text-amber-600 hover:border-amber-300 hover:bg-amber-50 rounded-xl transition-all cursor-pointer shadow-sm hover:shadow-md" title="Edit Artikel">
@@ -230,7 +232,7 @@
                             
                             <div>
                                 <label class="block font-black text-slate-700 text-sm mb-2">Isi Konten Artikel <span class="text-rose-500">*</span></label>
-                                <textarea name="konten" required rows="10" placeholder="Mulai menulis cerita Anda..." class="w-full rounded-xl border-slate-200 text-sm font-medium shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 py-3 px-4 leading-relaxed bg-slate-50 focus:bg-white"></textarea>
+                                <textarea id="tinymce_create" name="konten" rows="10" placeholder="Mulai menulis cerita Anda..." class="tinymce-editor w-full rounded-xl border-slate-200 text-sm font-medium shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 py-3 px-4 leading-relaxed bg-slate-50 focus:bg-white"></textarea>
                             </div>
                         </div>
                         
@@ -299,7 +301,7 @@
                             
                             <div>
                                 <label class="block font-black text-slate-700 text-sm mb-2">Isi Konten Artikel <span class="text-rose-500">*</span></label>
-                                <textarea name="konten" x-model="editKonten" required rows="10" class="w-full rounded-xl border-slate-200 text-sm font-medium shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 py-3 px-4 leading-relaxed bg-slate-50 focus:bg-white"></textarea>
+                                <textarea id="tinymce_edit" name="konten" rows="10" class="tinymce-editor w-full rounded-xl border-slate-200 text-sm font-medium shadow-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 py-3 px-4 leading-relaxed bg-slate-50 focus:bg-white"></textarea>
                             </div>
                         </div>
                         
@@ -377,4 +379,78 @@
         </div>
 
     </div>
+    
+    <x-slot name="scripts">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.3/tinymce.min.js" referrerpolicy="origin"></script>
+        <script>
+            document.addEventListener('alpine:init', () => {
+                tinymce.init({
+                    selector: '.tinymce-editor',
+                    plugins: 'preview importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help charmap quickbars emoticons',
+                    menubar: 'file edit view insert format tools table help',
+                    toolbar: 'undo redo | bold italic underline strikethrough | fontfamily fontsize blocks | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl',
+                    toolbar_sticky: true,
+                    image_advtab: true,
+                    height: 500,
+                    image_title: true,
+                    automatic_uploads: true,
+                    images_upload_url: '{{ route("master.blog.upload-image") }}',
+                    file_picker_types: 'file image media',
+                    file_picker_callback: function (cb, value, meta) {
+                        var input = document.createElement('input');
+                        input.setAttribute('type', 'file');
+                        
+                        if (meta.filetype === 'image') {
+                            input.setAttribute('accept', 'image/*');
+                        } else if (meta.filetype === 'media') {
+                            input.setAttribute('accept', 'video/*,audio/*');
+                        } else {
+                            input.setAttribute('accept', '.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.rar');
+                        }
+
+                        input.onchange = function () {
+                            var file = this.files[0];
+                            var formData = new FormData();
+                            formData.append('file', file);
+                            
+                            // Menentukan endpoint berdasarkan tipe
+                            var uploadUrl = meta.filetype === 'image' 
+                                ? '{{ route("master.blog.upload-image") }}' 
+                                : '{{ route("master.blog.upload-file") }}';
+
+                            // CSRF token
+                            var token = document.querySelector('input[name="_token"]').value;
+
+                            fetch(uploadUrl, {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': token
+                                },
+                                body: formData
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.location) {
+                                    cb(data.location, { title: file.name });
+                                } else {
+                                    alert('Gagal mengunggah file.');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert('Terjadi kesalahan saat mengunggah file.');
+                            });
+                        };
+
+                        input.click();
+                    },
+                    setup: function (editor) {
+                        editor.on('change', function () {
+                            editor.save();
+                        });
+                    }
+                });
+            });
+        </script>
+    </x-slot>
 </x-app-layout>
