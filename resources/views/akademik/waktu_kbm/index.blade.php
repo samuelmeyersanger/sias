@@ -188,7 +188,7 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-bold text-gray-700 mb-2">Jam Ke- <span class="text-rose-500">*</span></label>
-                                <input type="number" name="jam_ke" required min="0" value="1" class="w-full text-base rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm bg-gray-50 px-4 py-3 font-bold text-center">
+                                <input type="text" name="jam_ke" required placeholder="Cth: 1 atau 1-2" class="w-full text-base rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm bg-gray-50 px-4 py-3 font-bold text-center">
                             </div>
                         </div>
 
@@ -244,7 +244,7 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-bold text-gray-700 mb-2">Jam Ke- <span class="text-rose-500">*</span></label>
-                                <input type="number" name="jam_ke" x-model="editJamKe" required min="0" class="w-full text-base rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm bg-gray-50 px-4 py-3 font-bold text-center">
+                                <input type="text" name="jam_ke" x-model="editJamKe" required placeholder="Cth: 1 atau 1-2" class="w-full text-base rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm bg-gray-50 px-4 py-3 font-bold text-center">
                             </div>
                         </div>
 

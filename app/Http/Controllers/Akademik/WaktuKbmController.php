@@ -57,7 +57,7 @@ class WaktuKbmController extends Controller
     {
         $request->validate([
             'hari'          => ['required', Rule::in(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'])],
-            'jam_ke'        => 'required|string|min:0',
+            'jam_ke'        => 'required|string|max:255',
             'waktu_mulai'   => 'required|date_format:H:i',
             'waktu_selesai' => 'required|date_format:H:i|after:waktu_mulai',
             'kegiatan'      => ['required', Rule::in(['Upacara', 'G7', 'Korikuler', 'MBG', 'KBM', 'Istirahat'])],
@@ -88,7 +88,7 @@ class WaktuKbmController extends Controller
 
         $request->validate([
             'hari'          => ['required', Rule::in(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'])],
-            'jam_ke'        => 'required|string|min:0',
+            'jam_ke'        => 'required|string|max:255',
             'waktu_mulai'   => 'required|date_format:H:i',
             'waktu_selesai' => 'required|date_format:H:i|after:waktu_mulai',
             'kegiatan'      => ['required', Rule::in(['Upacara', 'G7', 'Korikuler', 'MBG', 'KBM', 'Istirahat'])],
