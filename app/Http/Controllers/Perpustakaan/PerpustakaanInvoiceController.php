@@ -37,6 +37,11 @@ class PerpustakaanInvoiceController extends Controller
             'tanggal_invoice' => 'required|date',
             'nama_suplier' => 'required|string|max:255',
             'keterangan' => 'nullable|string',
+        ], [
+            'nomor_invoice.unique' => 'Nomor invoice ini sudah pernah digunakan. Harap masukkan nomor yang berbeda.',
+            'nomor_invoice.required' => 'Nomor invoice wajib diisi.',
+            'tanggal_invoice.required' => 'Tanggal invoice wajib diisi.',
+            'nama_suplier.required' => 'Nama suplier wajib diisi.'
         ]);
 
         PerpustakaanInvoice::create($request->all());
@@ -65,6 +70,11 @@ class PerpustakaanInvoiceController extends Controller
             'tanggal_invoice' => 'required|date',
             'nama_suplier' => 'required|string|max:255',
             'keterangan' => 'nullable|string',
+        ], [
+            'nomor_invoice.unique' => 'Nomor invoice ini sudah pernah digunakan. Harap masukkan nomor yang berbeda.',
+            'nomor_invoice.required' => 'Nomor invoice wajib diisi.',
+            'tanggal_invoice.required' => 'Tanggal invoice wajib diisi.',
+            'nama_suplier.required' => 'Nama suplier wajib diisi.'
         ]);
 
         $invoice->update($request->all());

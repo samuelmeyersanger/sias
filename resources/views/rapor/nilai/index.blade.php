@@ -20,7 +20,7 @@
                 <form action="{{ route('rapor.nilai.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block font-bold text-slate-700 text-sm mb-2">Pilih Kelas</label>
-                        <select name="kelas_id" onchange="this.form.submit()" class="w-full px-4 py-3 bg-slate-50 border-slate-200 text-sm font-bold text-indigo-700 rounded-xl focus:border-indigo-500 shadow-inner">
+                        <select name="kelas_id" onchange="this.form.mata_pelajaran_id.value=''; this.form.submit()" class="w-full px-4 py-3 bg-slate-50 border-slate-200 text-sm font-bold text-indigo-700 rounded-xl focus:border-indigo-500 shadow-inner">
                             <option value="">-- Pilih Kelas --</option>
                             @foreach ($kelases as $kelas)
                                 <option value="{{ $kelas->id }}" {{ (isset($kelas_id) && $kelas_id == $kelas->id) ? 'selected' : '' }}>
