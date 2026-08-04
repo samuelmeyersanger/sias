@@ -39,6 +39,7 @@ use App\Http\Controllers\Kepegawaian\PegawaiController;
 use App\Http\Controllers\Kepegawaian\DokumenPegawaiController;
 use App\Http\Controllers\Kepegawaian\KenaikanGajiBerkalaController;
 use App\Http\Controllers\Kepegawaian\KenaikanPangkatController;
+use App\Http\Controllers\Kepegawaian\RekapAbsensiPegawaiController;
 use App\Http\Controllers\Sarpras\GedungController;
 use App\Http\Controllers\Sarpras\PeminjamanSarprasController;
 use App\Http\Controllers\Akademik\MataPelajaranController;
@@ -395,6 +396,9 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         // Kenaikan Pangkat
         Route::post('kenaikan-pangkat', [KenaikanPangkatController::class, 'store'])->name('kenaikan-pangkat.store');
         Route::delete('kenaikan-pangkat/{id}', [KenaikanPangkatController::class, 'destroy'])->name('kenaikan-pangkat.destroy');
+        
+        // Rekap Absensi Pegawai
+        Route::resource('rekap-absensi', RekapAbsensiPegawaiController::class)->except(['create', 'show', 'edit']);
     });
 
     /*
