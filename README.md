@@ -104,7 +104,7 @@ Sistem ini berjalan di **PC Server lokal (On-Premise)** menggunakan **Docker**, 
 </details>
 
 <details>
-<summary><b>👨‍💼 Modul Kepegawaian</b> — 8 fitur</summary>
+<summary><b>👨‍💼 Modul Kepegawaian</b> — 9 fitur</summary>
 
 | Fitur | Deskripsi |
 |-------|-----------|
@@ -116,6 +116,7 @@ Sistem ini berjalan di **PC Server lokal (On-Premise)** menggunakan **Docker**, 
 | Kenaikan Pangkat | Riwayat kenaikan pangkat/golongan |
 | Mutasi Pegawai | Proses mutasi/perpindahan |
 | Pensiun Pegawai | Proses pensiun |
+| Rekap Absensi Pegawai | Auto-fill profil & kalkulasi otomatis total jam kerja harian |
 
 </details>
 
@@ -127,7 +128,7 @@ Sistem ini berjalan di **PC Server lokal (On-Premise)** menggunakan **Docker**, 
 | Master Mata Pelajaran | Kelola daftar mata pelajaran |
 | Kode Guru / Penugasan | Assign guru ke mata pelajaran |
 | Konfigurasi Waktu KBM | Atur slot jam pelajaran |
-| Jadwal Pelajaran per Kelas | Penjadwalan interaktif per kelas per hari |
+| Jadwal Pelajaran (KBM & Non-KBM) | Penjadwalan cerdas untuk KBM reguler maupun kegiatan khusus (Istirahat, Upacara, G7, MBG) |
 | Kalender Akademik | Kelola event/kegiatan akademik |
 | Tahun Ajaran | Master tahun ajaran (aktif/nonaktif) |
 | Semester | Master semester terhubung tahun ajaran |
