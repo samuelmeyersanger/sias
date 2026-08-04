@@ -594,6 +594,18 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
+    | Modul Manajemen Perpustakaan (SIAS Back-Office)
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('perpustakaan')->name('perpustakaan.')->middleware(['permission'])->group(function () {
+        // Invoice / Faktur Pembelian Buku
+        Route::resource('invoice', \App\Http\Controllers\Perpustakaan\PerpustakaanInvoiceController::class);
+        Route::post('invoice/{invoice}/buku', [\App\Http\Controllers\Perpustakaan\PerpustakaanInvoiceController::class, 'storeBuku'])->name('invoice.buku.store');
+        Route::delete('invoice/{invoice}/buku/{buku}', [\App\Http\Controllers\Perpustakaan\PerpustakaanInvoiceController::class, 'destroyBuku'])->name('invoice.buku.destroy');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
     | Modul Manajemen pusat download (SIAS Back-Office)
     |--------------------------------------------------------------------------
     | 🔐 Dikunci menggunakan middleware 'permission' secara tersinkronisasi.
