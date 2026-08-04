@@ -16,9 +16,17 @@
                     <h3 class="text-lg font-bold text-gray-800">Daftar Kehadiran Pegawai</h3>
                     <p class="text-sm text-gray-500">Kelola dan rekapitulasi data absensi jam kerja pegawai.</p>
                 </div>
-                <button @click="openCreate = true" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl shadow-md transition-colors cursor-pointer flex items-center gap-2">
-                    <span>➕</span> Tambah Absensi
-                </button>
+                <div class="flex flex-wrap gap-2 mt-4 md:mt-0">
+                    <a href="{{ route('kepegawaian.rekap-absensi.downloadTemplate') }}" class="px-4 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-bold rounded-xl shadow-sm transition-colors cursor-pointer flex items-center gap-2">
+                        <span>📥</span> Template
+                    </a>
+                    <button @click="openImport = true" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-xl shadow-md transition-colors cursor-pointer flex items-center gap-2">
+                        <span>📄</span> Import
+                    </button>
+                    <button @click="openCreate = true" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl shadow-md transition-colors cursor-pointer flex items-center gap-2">
+                        <span>➕</span> Tambah
+                    </button>
+                </div>
             </div>
 
             {{-- Flash Message --}}
@@ -197,6 +205,29 @@
                 </form>
             </div>
         </div>
+        {{-- MODAL IMPORT EXCEL --}}
+        <div x-show="openImport" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4" style="display: none;" x-transition>
+            <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl overflow-hidden" @click.away="openImport = false">
+                <div class="p-6 bg-emerald-50 border-b border-emerald-100 flex justify-between items-center">
+                    <h3 class="text-lg font-black text-emerald-900">📄 Import Absensi</h3>
+                    <button @click="openImport = false" class="text-emerald-400 hover:text-emerald-600 text-2xl font-bold transition-colors cursor-pointer">&times;</button>
+                </div>
+
+                <form action="{{ route('kepegawaian.rekap-absensi.importExcel') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="p-6">
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Upload File Excel (.xlsx)</label>
+                        <input type="file" name="file_excel" accept=".xlsx, .xls, .csv" required class="w-full text-sm rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 cursor-pointer">
+                        <p class="text-xs text-gray-500 mt-2">Gunakan format template yang telah disediakan. Kolom jam boleh dikosongkan jika absen.</p>
+                    </div>
+                    
+                    <div class="p-6 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
+                        <button type="button" @click="openImport = false" class="px-6 py-3 bg-white border border-gray-300 text-gray-700 font-bold rounded-xl shadow-sm hover:bg-gray-100 transition-colors">Batal</button>
+                        <button type="submit" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-md transition-colors">🚀 Import Data</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -204,6 +235,7 @@
             Alpine.data('absensiApp', () => ({
                 daftarPegawai: @json($pegawais),
                 openCreate: false,
+                openImport: false,
                 isEdit: false,
                 formAction: '{{ route('kepegawaian.rekap-absensi.store') }}',
                 

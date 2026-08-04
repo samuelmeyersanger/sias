@@ -398,6 +398,8 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         Route::delete('kenaikan-pangkat/{id}', [KenaikanPangkatController::class, 'destroy'])->name('kenaikan-pangkat.destroy');
         
         // Rekap Absensi Pegawai
+        Route::get('/rekap-absensi/download-template', [RekapAbsensiPegawaiController::class, 'downloadTemplate'])->name('rekap-absensi.downloadTemplate');
+        Route::post('/rekap-absensi/import-excel', [RekapAbsensiPegawaiController::class, 'importExcel'])->name('rekap-absensi.importExcel');
         Route::resource('rekap-absensi', RekapAbsensiPegawaiController::class)->except(['create', 'show', 'edit']);
     });
 

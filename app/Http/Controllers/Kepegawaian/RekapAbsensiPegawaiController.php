@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\Pegawai;
 use App\Models\RekapAbsensiPegawai;
 use Carbon\Carbon;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\RekapAbsensiPegawaiTemplateExport;
+use App\Imports\RekapAbsensiPegawaiImport;
 
 class RekapAbsensiPegawaiController extends Controller
 {
@@ -114,5 +117,30 @@ class RekapAbsensiPegawaiController extends Controller
         $absensi->delete();
 
         return redirect()->route('kepegawaian.rekap-absensi.index')->with('success', 'Data absensi berhasil dihapus.');
+    }
+
+    /**
+     * Download template Excel untuk import absensi
+     */
+    public function downloadTemplate()
+    {
+        return Excel::download(new RekapAbsensiPegawaiTemplateExport, 'template_rekap_absensi_pegawai.xlsx');
+    }
+
+    /**
+     * Import data absensi dari Excel
+     */
+    public function importExcel(Request $request)
+    {
+        $request->validate([
+            'file_excel' => 'required|mimes:xlsx,xls,csv'
+        ]);
+
+        try {
+            Excel::import(new RekapAbsensiPegawaiImport, $request->file('file_excel'));
+            return redirect()->route('kepegawaian.rekap-absensi.index')->with('success', 'Data absensi berhasil di-import.');
+        } catch (\Exception $e) {
+            return redirect()->route('kepegawaian.rekap-absensi.index')->withErrors(['Terjadi kesalahan saat import: ' . $e->getMessage()]);
+        }
     }
 }
