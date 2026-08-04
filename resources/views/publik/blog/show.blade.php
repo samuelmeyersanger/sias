@@ -57,7 +57,7 @@
             @endif
 
             <div class="prose prose-slate prose-lg md:prose-xl max-w-none text-slate-700 leading-relaxed md:leading-loose relative z-10 prose-headings:font-black prose-a:text-indigo-600 prose-img:rounded-2xl">
-                {!! nl2br(e($post->konten)) !!}
+                {!! $post->konten !!}
             </div>
         </article>
 
