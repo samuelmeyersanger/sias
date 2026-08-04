@@ -113,7 +113,7 @@
                     <button @click="openCreate = false" class="text-indigo-400 hover:text-indigo-600 text-2xl font-bold transition-colors cursor-pointer">&times;</button>
                 </div>
 
-                <form :action="formAction" method="POST">
+                <form :action="formAction" method="POST" @submit="if(isSubmitting) { $event.preventDefault(); return false; } isSubmitting = true;">
                     @csrf
                     <template x-if="isEdit">
                         <input type="hidden" name="_method" value="PUT">
@@ -140,7 +140,7 @@
                     
                     <div class="p-6 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
                         <button type="button" @click="openCreate = false" class="px-6 py-3 bg-white border border-gray-300 text-gray-700 font-bold rounded-xl shadow-sm hover:bg-gray-100 transition-colors">Batal</button>
-                        <button type="submit" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md transition-colors" x-text="isEdit ? '💾 Simpan Perubahan' : '🚀 Tambah Invoice'"></button>
+                        <button type="submit" :disabled="isSubmitting" :class="{'opacity-50 cursor-not-allowed': isSubmitting}" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md transition-colors" x-text="isSubmitting ? 'Menyimpan...' : (isEdit ? '💾 Simpan Perubahan' : '🚀 Tambah Invoice')"></button>
                     </div>
                 </form>
             </div>
@@ -150,14 +150,15 @@
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.data('invoiceApp', () => ({
-                openCreate: false,
+                openCreate: {{ $errors->any() ? 'true' : 'false' }},
                 isEdit: false,
+                isSubmitting: false,
                 formAction: '{{ route('perpustakaan.invoice.store') }}',
                 formData: {
-                    nomor_invoice: '',
-                    tanggal_invoice: '',
-                    nama_suplier: '',
-                    keterangan: ''
+                    nomor_invoice: '{!! addslashes(old('nomor_invoice', '')) !!}',
+                    tanggal_invoice: '{!! addslashes(old('tanggal_invoice', '')) !!}',
+                    nama_suplier: '{!! addslashes(old('nama_suplier', '')) !!}',
+                    keterangan: '{!! addslashes(old('keterangan', '')) !!}'
                 },
                 
                 editData(item) {

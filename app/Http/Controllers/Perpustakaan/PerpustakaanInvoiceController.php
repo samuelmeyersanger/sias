@@ -33,7 +33,10 @@ class PerpustakaanInvoiceController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nomor_invoice' => 'required|unique:perpustakaan_invoice,nomor_invoice',
+            'nomor_invoice' => [
+                'required',
+                \Illuminate\Validation\Rule::unique('perpustakaan_invoice', 'nomor_invoice')->whereNull('deleted_at')
+            ],
             'tanggal_invoice' => 'required|date',
             'nama_suplier' => 'required|string|max:255',
             'keterangan' => 'nullable|string',
@@ -66,7 +69,10 @@ class PerpustakaanInvoiceController extends Controller
         $invoice = PerpustakaanInvoice::findOrFail($id);
         
         $request->validate([
-            'nomor_invoice' => 'required|unique:perpustakaan_invoice,nomor_invoice,' . $id,
+            'nomor_invoice' => [
+                'required',
+                \Illuminate\Validation\Rule::unique('perpustakaan_invoice', 'nomor_invoice')->ignore($id)->whereNull('deleted_at')
+            ],
             'tanggal_invoice' => 'required|date',
             'nama_suplier' => 'required|string|max:255',
             'keterangan' => 'nullable|string',
