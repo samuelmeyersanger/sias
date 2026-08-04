@@ -378,9 +378,6 @@
             </div>
         </div>
 
-    </div>
-    
-    <x-slot name="scripts">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.3/tinymce.min.js" referrerpolicy="origin"></script>
         <script>
             document.addEventListener('alpine:init', () => {
@@ -452,5 +449,4 @@
                 });
             });
         </script>
-    </x-slot>
 </x-app-layout>
