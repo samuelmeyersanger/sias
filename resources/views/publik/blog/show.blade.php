@@ -51,8 +51,8 @@
             </header>
 
             @if(!empty($post->gambar))
-                <div class="rounded-3xl overflow-hidden aspect-[16/9] lg:aspect-[21/9] bg-slate-100 relative z-10 shadow-lg border border-slate-200 mb-10 group-hover:shadow-xl transition-shadow duration-500">
-                    <img src="{{ asset('storage/' . $post->gambar) }}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-1000" alt="{{ $post->judul }}">
+                <div class="rounded-3xl overflow-hidden bg-slate-100 relative z-10 shadow-lg border border-slate-200 mb-10 group-hover:shadow-xl transition-shadow duration-500 flex justify-center">
+                    <img src="{{ asset('storage/' . $post->gambar) }}" class="w-full max-h-[600px] object-contain hover:scale-[1.02] transition-transform duration-1000" alt="{{ $post->judul }}">
                 </div>
             @endif
 
