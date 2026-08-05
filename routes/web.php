@@ -440,6 +440,14 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         Route::put('/peminjaman/{id}', [PeminjamanSarprasController::class, 'update'])->name('peminjaman.update');
         Route::patch('/peminjaman/{id}/kembalikan', [PeminjamanSarprasController::class, 'kembalikan'])->name('peminjaman.kembalikan');
         Route::delete('/peminjaman/{id}', [PeminjamanSarprasController::class, 'destroy'])->name('peminjaman.destroy');
+
+        // --- FITUR INVENTARIS BARANG HABIS PAKAI (Stok In/Out) ---
+        Route::get('/barang-habis-pakai', [\App\Http\Controllers\Sarpras\BarangHabisPakaiController::class, 'index'])->name('barang-habis-pakai.index');
+        Route::post('/barang-habis-pakai', [\App\Http\Controllers\Sarpras\BarangHabisPakaiController::class, 'store'])->name('barang-habis-pakai.store');
+        Route::put('/barang-habis-pakai/{id}', [\App\Http\Controllers\Sarpras\BarangHabisPakaiController::class, 'update'])->name('barang-habis-pakai.update');
+        Route::get('/barang-habis-pakai/{id}', [\App\Http\Controllers\Sarpras\BarangHabisPakaiController::class, 'show'])->name('barang-habis-pakai.show');
+        Route::delete('/barang-habis-pakai/{id}', [\App\Http\Controllers\Sarpras\BarangHabisPakaiController::class, 'destroy'])->name('barang-habis-pakai.destroy');
+        Route::post('/barang-habis-pakai/{id}/transaksi', [\App\Http\Controllers\Sarpras\BarangHabisPakaiController::class, 'storeTransaksi'])->name('barang-habis-pakai.transaksi.store');
     });
 
     /*
