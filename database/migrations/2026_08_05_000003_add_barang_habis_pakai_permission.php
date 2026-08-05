@@ -15,7 +15,8 @@ return new class extends Migration
         // Tambah Permission
         $permissionId = DB::table('permissions')->insertGetId([
             'name' => 'sarpras.barang-habis-pakai.index',
-            'display_name' => 'sarpras.barang-habis-pakai.index',
+            'guard_name' => 'web',
+            'modul' => 'sarpras',
             'description' => 'Mengelola inventaris barang habis pakai',
             'created_at' => now(),
             'updated_at' => now(),
