@@ -136,7 +136,8 @@ class KelasController extends Controller
                                 ELSE 7 
                             END
                         ")
-                        ->orderBy('jam_ke', 'asc')
+                        ->orderBy('waktu_mulai', 'asc')
+                        ->orderBy('waktu_selesai', 'asc')
                         ->get();
 
         // Ambil data master ruangan sekolah

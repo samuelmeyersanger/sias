@@ -62,7 +62,8 @@ class JadwalMengajarController extends Controller
                                         ELSE 7 
                                     END
                                 ")
-                                ->orderBy('jam_ke', 'asc')
+                                ->orderBy('waktu_mulai', 'asc')
+                                ->orderBy('waktu_selesai', 'asc')
                                 ->get();
             }
         }
@@ -110,7 +111,7 @@ class JadwalMengajarController extends Controller
                                         WHEN 'Jumat' THEN 5 WHEN 'Sabtu' THEN 6
                                         ELSE 7 
                                     END
-                                ")->orderBy('jam_ke', 'asc')->get();
+                                ")->orderBy('waktu_mulai', 'asc')->orderBy('waktu_selesai', 'asc')->get();
             }
         }
         // Arahkan ke file cetak
