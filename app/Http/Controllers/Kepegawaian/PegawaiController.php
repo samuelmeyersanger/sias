@@ -31,9 +31,10 @@ class PegawaiController extends Controller
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
             $query->where(function($q) use ($search) {
-                $q->where('nama_lengkap', 'like', "%{$search}%")
-                  ->orWhere('nip', 'like', "%{$search}%")
-                  ->orWhere('nuptk', 'like', "%{$search}%");
+                $searchTerm = '%' . strtolower($search) . '%';
+                $q->whereRaw('LOWER(nama_lengkap) LIKE ?', [$searchTerm])
+                  ->orWhereRaw('LOWER(nip) LIKE ?', [$searchTerm])
+                  ->orWhereRaw('LOWER(nuptk) LIKE ?', [$searchTerm]);
             });
         }
 

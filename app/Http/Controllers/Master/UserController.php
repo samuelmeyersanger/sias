@@ -23,8 +23,9 @@ class UserController extends Controller
         // 2. Filter berdasarkan Pencarian (Nama / Email)
         if ($search && $search != '') {
             $query->where(function($q) use ($search) {
-                $q->where('name', 'like', '%' . $search . '%')
-                ->orWhere('email', 'like', '%' . $search . '%');
+                $searchTerm = '%' . strtolower($search) . '%';
+                $q->whereRaw('LOWER(name) LIKE ?', [$searchTerm])
+                  ->orWhereRaw('LOWER(email) LIKE ?', [$searchTerm]);
             });
         }
 

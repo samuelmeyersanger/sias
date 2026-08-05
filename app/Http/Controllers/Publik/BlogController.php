@@ -25,8 +25,9 @@ class BlogController extends Controller
         if ($request->has('search') && !empty($request->search)) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('judul', 'like', '%' . $search . '%')
-                  ->orWhere('konten', 'like', '%' . $search . '%');
+                $searchTerm = '%' . strtolower($search) . '%';
+                $q->whereRaw('LOWER(judul) LIKE ?', [$searchTerm])
+                  ->orWhereRaw('LOWER(konten) LIKE ?', [$searchTerm]);
             });
         }
 

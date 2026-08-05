@@ -33,8 +33,9 @@ class KelasController extends Controller
 
         if ($search) {
             $query->where(function($q) use ($search) {
-                $q->where('nama_kelas', 'like', "%{$search}%")
-                  ->orWhere('tingkat', 'like', "%{$search}%");
+                $searchTerm = '%' . strtolower($search) . '%';
+                $q->whereRaw('LOWER(nama_kelas) LIKE ?', [$searchTerm])
+                  ->orWhereRaw('LOWER(tingkat) LIKE ?', [$searchTerm]);
             });
         }
 

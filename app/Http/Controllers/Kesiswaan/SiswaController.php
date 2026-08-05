@@ -46,10 +46,11 @@ class SiswaController extends Controller
         // Pencarian multi-kolom
         if ($search) {
             $query->where(function($q) use ($search) {
-                $q->where('nama_lengkap', 'like', "%{$search}%")
-                  ->orWhere('nipd', 'like', "%{$search}%")
-                  ->orWhere('nisn', 'like', "%{$search}%")
-                  ->orWhere('nik', 'like', "%{$search}%");
+                $searchTerm = '%' . strtolower($search) . '%';
+                $q->whereRaw('LOWER(nama_lengkap) LIKE ?', [$searchTerm])
+                  ->orWhereRaw('LOWER(nipd) LIKE ?', [$searchTerm])
+                  ->orWhereRaw('LOWER(nisn) LIKE ?', [$searchTerm])
+                  ->orWhereRaw('LOWER(nik) LIKE ?', [$searchTerm]);
             });
         }
 

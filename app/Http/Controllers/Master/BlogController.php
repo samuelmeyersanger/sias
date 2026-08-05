@@ -25,9 +25,10 @@ class BlogController extends Controller
         // Fitur Pencarian
         if (!empty($search)) {
             $query->where(function($q) use ($search) {
-                $q->where('judul', 'like', '%' . $search . '%')
-                  ->orWhereHas('user', function($userQuery) use ($search) {
-                      $userQuery->where('name', 'like', '%' . $search . '%');
+                $searchTerm = '%' . strtolower($search) . '%';
+                $q->whereRaw('LOWER(judul) LIKE ?', [$searchTerm])
+                  ->orWhereHas('user', function($userQuery) use ($searchTerm) {
+                      $userQuery->whereRaw('LOWER(name) LIKE ?', [$searchTerm]);
                   });
             });
         }
