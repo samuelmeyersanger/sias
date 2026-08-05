@@ -14,12 +14,9 @@
     </x-slot>
 
     <div class="py-8" x-data="{ 
-        openMasukModal: false,
-        openKeluarModal: false,
-        
         stokCurrent: {{ $barang->stok }},
-        jumlahMasuk: 1,
-        jumlahKeluar: 1
+        jumlahMasuk: '',
+        jumlahKeluar: ''
     }">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             
@@ -66,10 +63,10 @@
                 </div>
 
                 <div class="flex flex-col gap-3 justify-center md:border-l md:border-gray-100 md:pl-6 w-full md:w-1/3">
-                    <button @click="openMasukModal = true" class="w-full px-5 py-3 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700 font-bold rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2">
+                    <button @click="$dispatch('open-modal', 'masuk-modal')" class="w-full px-5 py-3 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700 font-bold rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2">
                         <span class="text-lg">⬇️</span> Catat Barang Masuk (Restock)
                     </button>
-                    <button @click="openKeluarModal = true" class="w-full px-5 py-3 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-700 font-bold rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2">
+                    <button @click="$dispatch('open-modal', 'keluar-modal')" class="w-full px-5 py-3 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-700 font-bold rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2">
                         <span class="text-lg">⬆️</span> Catat Barang Keluar (Diambil)
                     </button>
                 </div>
@@ -145,7 +142,7 @@
         </div>
 
         <!-- Modal Barang Masuk -->
-        <x-modal name="masuk-modal" :show="openMasukModal" maxWidth="md">
+        <x-modal name="masuk-modal" :show="false" maxWidth="md">
             <form action="{{ route('sarpras.barang-habis-pakai.transaksi.store', $barang->id) }}" method="POST" class="p-6">
                 @csrf
                 <input type="hidden" name="jenis_transaksi" value="masuk">
@@ -154,7 +151,7 @@
                     <h2 class="text-xl font-bold text-emerald-700 flex items-center gap-2">
                         <span>⬇️</span> Form Barang Masuk
                     </h2>
-                    <button type="button" @click="openMasukModal = false" class="text-gray-400 hover:text-gray-600">
+                    <button type="button" x-on:click="$dispatch('close')" class="text-gray-400 hover:text-gray-600">
                         <span class="text-xl">&times;</span>
                     </button>
                 </div>
@@ -184,7 +181,7 @@
                 </div>
 
                 <div class="mt-6 flex justify-end gap-3 pt-4 border-t border-gray-100">
-                    <button type="button" @click="openMasukModal = false" class="px-5 py-2.5 text-sm font-bold text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">
+                    <button type="button" x-on:click="$dispatch('close')" class="px-5 py-2.5 text-sm font-bold text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">
                         Batal
                     </button>
                     <button type="submit" class="px-5 py-2.5 text-sm font-bold text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 shadow-sm transition-colors">
@@ -195,7 +192,7 @@
         </x-modal>
 
         <!-- Modal Barang Keluar -->
-        <x-modal name="keluar-modal" :show="openKeluarModal" maxWidth="md">
+        <x-modal name="keluar-modal" :show="false" maxWidth="md">
             <form action="{{ route('sarpras.barang-habis-pakai.transaksi.store', $barang->id) }}" method="POST" class="p-6">
                 @csrf
                 <input type="hidden" name="jenis_transaksi" value="keluar">
@@ -204,7 +201,7 @@
                     <h2 class="text-xl font-bold text-amber-700 flex items-center gap-2">
                         <span>⬆️</span> Form Barang Keluar
                     </h2>
-                    <button type="button" @click="openKeluarModal = false" class="text-gray-400 hover:text-gray-600">
+                    <button type="button" x-on:click="$dispatch('close')" class="text-gray-400 hover:text-gray-600">
                         <span class="text-xl">&times;</span>
                     </button>
                 </div>
@@ -245,7 +242,7 @@
                 </div>
 
                 <div class="mt-6 flex justify-end gap-3 pt-4 border-t border-gray-100">
-                    <button type="button" @click="openKeluarModal = false" class="px-5 py-2.5 text-sm font-bold text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">
+                    <button type="button" x-on:click="$dispatch('close')" class="px-5 py-2.5 text-sm font-bold text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">
                         Batal
                     </button>
                     <button type="submit" :disabled="jumlahKeluar > stokCurrent" class="px-5 py-2.5 text-sm font-bold text-white bg-amber-600 rounded-xl hover:bg-amber-700 shadow-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed">

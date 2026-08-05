@@ -16,19 +16,17 @@
 
     <div class="py-8" x-data="{ 
         searchQuery: '',
-        openEditModal: false,
         editData: {},
-        openDeleteModal: false,
         deleteId: null,
         
         editBarang(barang) {
             this.editData = { ...barang };
-            this.openEditModal = true;
+            window.dispatchEvent(new CustomEvent('open-modal', { detail: 'edit-barang-modal' }));
         },
         
         confirmDelete(id) {
             this.deleteId = id;
-            this.openDeleteModal = true;
+            window.dispatchEvent(new CustomEvent('open-modal', { detail: 'delete-barang-modal' }));
         }
     }">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -192,7 +190,7 @@
         </x-modal>
 
         <!-- Edit Modal -->
-        <x-modal name="edit-barang-modal" :show="openEditModal" maxWidth="xl">
+        <x-modal name="edit-barang-modal" :show="false" maxWidth="xl">
             <form :action="'{{ url('sarpras/barang-habis-pakai') }}/' + editData.id" method="POST" class="p-6">
                 @csrf
                 @method('PUT')
@@ -200,7 +198,7 @@
                     <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
                         <span>✏️</span> Edit Barang
                     </h2>
-                    <button type="button" @click="openEditModal = false" class="text-gray-400 hover:text-gray-600">
+                    <button type="button" x-on:click="$dispatch('close')" class="text-gray-400 hover:text-gray-600">
                         <span class="text-xl">&times;</span>
                     </button>
                 </div>
@@ -235,7 +233,7 @@
                 </div>
 
                 <div class="mt-6 flex justify-end gap-3 pt-4 border-t border-gray-100">
-                    <button type="button" @click="openEditModal = false" class="px-5 py-2.5 text-sm font-bold text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">
+                    <button type="button" x-on:click="$dispatch('close')" class="px-5 py-2.5 text-sm font-bold text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">
                         Batal
                     </button>
                     <button type="submit" class="px-5 py-2.5 text-sm font-bold text-white bg-indigo-600 rounded-xl hover:bg-indigo-700 shadow-sm transition-colors">
@@ -246,7 +244,7 @@
         </x-modal>
 
         <!-- Delete Modal -->
-        <x-modal name="delete-barang-modal" :show="openDeleteModal" maxWidth="md">
+        <x-modal name="delete-barang-modal" :show="false" maxWidth="md">
             <div class="p-6">
                 <div class="flex flex-col items-center text-center">
                     <div class="w-16 h-16 bg-rose-100 rounded-full flex items-center justify-center mb-4">
@@ -259,7 +257,7 @@
                 <form :action="'{{ url('sarpras/barang-habis-pakai') }}/' + deleteId" method="POST" class="flex justify-center gap-3">
                     @csrf
                     @method('DELETE')
-                    <button type="button" @click="openDeleteModal = false" class="px-5 py-2.5 text-sm font-bold text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">
+                    <button type="button" x-on:click="$dispatch('close')" class="px-5 py-2.5 text-sm font-bold text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">
                         Batal
                     </button>
                     <button type="submit" class="px-5 py-2.5 text-sm font-bold text-white bg-rose-600 rounded-xl hover:bg-rose-700 shadow-sm transition-colors">
