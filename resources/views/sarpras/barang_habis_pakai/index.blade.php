@@ -1,17 +1,9 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <div>
-                <h2 class="font-bold text-2xl text-gray-800 leading-tight flex items-center gap-2">
-                    <span class="text-3xl">📦</span> {{ __('Inventaris Barang Habis Pakai') }}
-                </h2>
-                <p class="text-sm font-medium text-gray-500 mt-1">Kelola data stok masuk dan keluar untuk barang habis pakai.</p>
-            </div>
-            
-            <button @click="$dispatch('open-modal', 'create-barang-modal')" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl shadow-md transition-colors flex items-center gap-2">
-                <span>➕</span> Tambah Barang Baru
-            </button>
-        </div>
+        <h2 class="font-bold text-2xl text-gray-800 leading-tight flex items-center gap-2">
+            <span class="text-3xl">📦</span> {{ __('Inventaris Barang Habis Pakai') }}
+        </h2>
+        <p class="text-sm font-medium text-gray-500 mt-1">Kelola data stok masuk dan keluar untuk barang habis pakai.</p>
     </x-slot>
 
     <div class="py-8" x-data="{ 
@@ -29,23 +21,22 @@
             window.dispatchEvent(new CustomEvent('open-modal', { detail: 'delete-barang-modal' }));
         }
     }">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
             
             <!-- Alert Messages -->
             @if(session('success'))
-            <div class="mb-6 bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-xl flex items-center gap-3">
-                <span class="text-emerald-500 text-xl">✅</span>
-                <p class="font-medium text-sm">{{ session('success') }}</p>
+            <div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-bold rounded-2xl shadow-sm flex items-center gap-3">
+                <span class="text-2xl">✅</span> {{ session('success') }}
             </div>
             @endif
 
             @if ($errors->any())
-            <div class="mb-6 bg-rose-50 border border-rose-200 text-rose-800 px-4 py-3 rounded-xl">
+            <div class="bg-rose-50 border border-rose-200 text-rose-800 p-4 rounded-2xl shadow-sm">
                 <div class="flex items-center gap-3 mb-2">
-                    <span class="text-rose-500 text-xl">⚠️</span>
+                    <span class="text-rose-500 text-2xl">⚠️</span>
                     <p class="font-bold text-sm">Terjadi kesalahan input:</p>
                 </div>
-                <ul class="list-disc list-inside text-sm font-medium pl-8 space-y-1">
+                <ul class="list-disc list-inside text-sm font-medium pl-9 space-y-1">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
@@ -53,21 +44,22 @@
             </div>
             @endif
 
-            <!-- Table Card -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-2xl border border-gray-100">
-                
-                <!-- Toolbar -->
-                <div class="p-5 border-b border-gray-100 bg-gray-50/50 flex flex-col sm:flex-row justify-between items-center gap-4">
-                    <div class="relative w-full sm:w-96">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <span class="text-gray-400">🔍</span>
-                        </div>
-                        <input x-model="searchQuery" type="text" placeholder="Cari nama barang atau kode..." class="w-full pl-10 pr-4 py-2.5 border-gray-200 rounded-xl text-sm focus:border-indigo-500 focus:ring-indigo-500 shadow-sm transition-colors">
+            <!-- Toolbar -->
+            <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div class="relative w-full sm:w-80">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <span class="text-gray-400 text-lg">🔍</span>
                     </div>
+                    <input x-model="searchQuery" type="text" placeholder="Cari nama barang atau kode..." class="w-full text-sm rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-indigo-500 focus:ring-indigo-500 shadow-inner py-3 pl-12 pr-4 transition-colors">
                 </div>
+                
+                <button @click="$dispatch('open-modal', 'create-barang-modal')" class="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white text-sm font-bold rounded-xl shadow-lg transition-transform transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                    <span class="text-lg">➕</span> Tambah Barang Baru
+                </button>
+            </div>
 
-                <!-- Table -->
-                <div class="overflow-x-auto">
+            <!-- Table Card -->
+            <div class="bg-white overflow-hidden shadow-xl sm:rounded-3xl border border-gray-100">
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-gray-50 border-b border-gray-100">
