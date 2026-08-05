@@ -30,9 +30,24 @@ class JadwalMengajarController extends Controller
             $kodeGuruIds = KodeGuru::where('pegawai_id', $pegawai->id)->pluck('id');
 
             if ($kodeGuruIds->isNotEmpty()) {
-                // 3. Tarik jadwal HANYA yang kode_guru_id-nya milik guru ini
+                // 3. Tarik jadwal HANYA yang kode_guru_id-nya milik guru ini dan urutkan
                 $jadwalPelajaran = JadwalPelajaran::with(['kelas', 'mataPelajaran', 'ruangan'])
-                                    ->whereIn('kode_guru_id', $kodeGuruIds)
+                                    ->leftJoin('waktu_kbm', 'jadwal_pelajaran.waktu_kbm_id', '=', 'waktu_kbm.id')
+                                    ->select('jadwal_pelajaran.*')
+                                    ->whereIn('jadwal_pelajaran.kode_guru_id', $kodeGuruIds)
+                                    ->orderByRaw("
+                                        CASE jadwal_pelajaran.hari 
+                                            WHEN 'Senin' THEN 1
+                                            WHEN 'Selasa' THEN 2
+                                            WHEN 'Rabu' THEN 3
+                                            WHEN 'Kamis' THEN 4
+                                            WHEN 'Jumat' THEN 5
+                                            WHEN 'Sabtu' THEN 6
+                                            ELSE 7 
+                                        END
+                                    ")
+                                    ->orderBy('waktu_kbm.waktu_mulai', 'asc')
+                                    ->orderBy('waktu_kbm.waktu_selesai', 'asc')
                                     ->get();
 
                 // 4. Tarik master waktu untuk grid tabel
@@ -71,7 +86,22 @@ class JadwalMengajarController extends Controller
             if ($kodeGuruIds->isNotEmpty()) {
                 // Relasi disesuaikan dengan kode index() milik Anda
                 $jadwalPelajaran = JadwalPelajaran::with(['kelas', 'mataPelajaran', 'ruangan'])
-                                    ->whereIn('kode_guru_id', $kodeGuruIds)
+                                    ->leftJoin('waktu_kbm', 'jadwal_pelajaran.waktu_kbm_id', '=', 'waktu_kbm.id')
+                                    ->select('jadwal_pelajaran.*')
+                                    ->whereIn('jadwal_pelajaran.kode_guru_id', $kodeGuruIds)
+                                    ->orderByRaw("
+                                        CASE jadwal_pelajaran.hari 
+                                            WHEN 'Senin' THEN 1
+                                            WHEN 'Selasa' THEN 2
+                                            WHEN 'Rabu' THEN 3
+                                            WHEN 'Kamis' THEN 4
+                                            WHEN 'Jumat' THEN 5
+                                            WHEN 'Sabtu' THEN 6
+                                            ELSE 7 
+                                        END
+                                    ")
+                                    ->orderBy('waktu_kbm.waktu_mulai', 'asc')
+                                    ->orderBy('waktu_kbm.waktu_selesai', 'asc')
                                     ->get();
                 $daftarWaktu = WaktuKbm::orderByRaw("
                                     CASE hari 

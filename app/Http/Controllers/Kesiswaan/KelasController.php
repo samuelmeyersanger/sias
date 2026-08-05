@@ -144,14 +144,23 @@ class KelasController extends Controller
 
         // Ambil list jadwal KBM yang sudah ter-plotting pada kelas ini
         $jadwalList = \App\Models\JadwalPelajaran::with(['waktuKbm', 'kodeGuru.pegawai.kelasWali', 'kodeGuru.mataPelajarans', 'ruangan', 'mataPelajaran'])
-            ->where('kelas_id', $id)
-            ->get()
-            ->sortBy(function($j) {
-                $hariMap = ['Senin' => 1, 'Selasa' => 2, 'Rabu' => 3, 'Kamis' => 4, 'Jumat' => 5, 'Sabtu' => 6];
-                $h = $hariMap[$j->hari] ?? 7;
-                $jam = $j->waktuKbm ? $j->waktuKbm->jam_ke : 99;
-                return sprintf('%02d-%02d', $h, $jam);
-            });
+            ->leftJoin('waktu_kbm', 'jadwal_pelajaran.waktu_kbm_id', '=', 'waktu_kbm.id')
+            ->select('jadwal_pelajaran.*')
+            ->where('jadwal_pelajaran.kelas_id', $id)
+            ->orderByRaw("
+                CASE jadwal_pelajaran.hari 
+                    WHEN 'Senin' THEN 1
+                    WHEN 'Selasa' THEN 2
+                    WHEN 'Rabu' THEN 3
+                    WHEN 'Kamis' THEN 4
+                    WHEN 'Jumat' THEN 5
+                    WHEN 'Sabtu' THEN 6
+                    ELSE 7 
+                END
+            ")
+            ->orderBy('waktu_kbm.waktu_mulai', 'asc')
+            ->orderBy('waktu_kbm.waktu_selesai', 'asc')
+            ->get();
 
         return view('kesiswaan.kelas.show_jadwal', compact(
             'kelas', 'daftarKodeGuru', 'daftarWaktu', 'daftarRuangan', 'jadwalList'
