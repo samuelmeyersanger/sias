@@ -79,8 +79,10 @@
                                     
                                     // 1. Nama Mata Pelajaran
                                     $mapel = '';
-                                    if ($jadwal->kodeGuru && $jadwal->kodeGuru->mataPelajarans->count() > 0) {
-                                        $mapel = $jadwal->kodeGuru->mataPelajarans->pluck('nama_mata_pelajaran')->join(', ');
+                                    if ($jadwal->mataPelajaran) {
+                                        $mapel = $jadwal->mataPelajaran->nama_mapel;
+                                    } elseif ($jadwal->kodeGuru && $jadwal->kodeGuru->mataPelajarans->count() > 0) {
+                                        $mapel = $jadwal->kodeGuru->mataPelajarans->pluck('nama_mapel')->join(', ');
                                     }
                                     
                                     // 2. Nama Guru
@@ -89,7 +91,7 @@
                                             : '';
                                             
                                     // 3. Kode Guru
-                                    $kode = $jadwal->kodeGuru ? $jadwal->kodeGuru->kode_guru : '-';
+                                    $kode = $jadwal->kodeGuru ? $jadwal->kodeGuru->kode : '-';
                                     
                                     // 4. Ruangan
                                     $ruangan = $jadwal->ruangan ? $jadwal->ruangan->nama_ruangan : 'Blm Diset'; 

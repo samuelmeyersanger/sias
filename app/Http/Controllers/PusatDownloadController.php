@@ -459,7 +459,20 @@ class PusatDownloadController extends Controller
         
         $data = [
             'nama_sekolah' => 'SMPN 4 CIBITUNG',
-            'jadwal_semua' => \App\Models\JadwalPelajaran::with(['kelas', 'waktuKbm', 'kodeGuru.pegawai'])->get()
+            'jadwal_semua' => \App\Models\JadwalPelajaran::with(['kelas', 'waktuKbm', 'kodeGuru.pegawai', 'mataPelajaran', 'kodeGuru.mataPelajarans'])
+                ->leftJoin('waktu_kbm', 'jadwal_pelajaran.waktu_kbm_id', '=', 'waktu_kbm.id')
+                ->select('jadwal_pelajaran.*')
+                ->orderByRaw("
+                    CASE jadwal_pelajaran.hari 
+                        WHEN 'Senin' THEN 1 WHEN 'Selasa' THEN 2
+                        WHEN 'Rabu' THEN 3 WHEN 'Kamis' THEN 4
+                        WHEN 'Jumat' THEN 5 WHEN 'Sabtu' THEN 6
+                        ELSE 7 
+                    END
+                ")
+                ->orderBy('waktu_kbm.waktu_mulai', 'asc')
+                ->orderBy('waktu_kbm.waktu_selesai', 'asc')
+                ->get()
         ];
         if ($request->format === 'excel') {
             return back()->with('success', 'Fitur Export Excel Jadwal Global belum tersedia, segera di-update.');

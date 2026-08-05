@@ -85,14 +85,14 @@
                                     @php
                                         $nama_mapel = '-';
                                         if($j->mataPelajaran) {
-                                            $nama_mapel = $j->mataPelajaran->nama_pelajaran;
+                                            $nama_mapel = $j->mataPelajaran->nama_mapel;
                                         } elseif($j->kodeGuru && $j->kodeGuru->mataPelajarans->count() > 0) {
-                                            $nama_mapel = $j->kodeGuru->mataPelajarans->first()->nama_pelajaran;
+                                            $nama_mapel = $j->kodeGuru->mataPelajarans->first()->nama_mapel;
                                         }
                                     @endphp
 
                                     <span class="mapel-name">{{ $nama_mapel }}</span> 
-                                    <span class="guru-code">[{{ $j->kodeGuru ? $j->kodeGuru->kode_guru : '-' }}]</span>
+                                    <span class="guru-code">[{{ $j->kodeGuru ? $j->kodeGuru->kode : '-' }}]</span>
                                 </div>
                             @empty
                                 <div style="text-align: center; color: #999; font-style: italic; margin-top: 10px;">Kosong</div>
