@@ -67,6 +67,21 @@
             if (['G7', 'Kokurikuler', 'Korikuler'].includes(this.selectedWaktuKegiatan)) {
                 this.selectedMapelId = '';
             }
+        },
+
+        // Fitur Edit
+        openEdit: false,
+        editActionUrl: '',
+        
+        initEdit(jadwal) {
+            this.editActionUrl = `/kesiswaan/kelas/{{ $kelas->id }}/jadwal/${jadwal.id}`;
+            this.selectedGuruId = jadwal.kode_guru_id || '';
+            this.onGuruChange(); // Trigger untuk ngisi mapels
+            this.selectedMapelId = jadwal.mata_pelajaran_id || (jadwal.is_wali_kelas ? 'wali_kelas' : '');
+            this.selectedWaktuId = jadwal.waktu_kbm_id || '';
+            this.onWaktuChange();
+            this.selectedRuanganId = jadwal.ruangan_id || '';
+            this.openEdit = true;
         }
     }" class="py-10 bg-slate-50 min-h-screen">
         
@@ -223,13 +238,18 @@
                                         </span>
                                     </td>
                                     <td class="p-5 pr-8 text-center">
-                                        <form action="{{ route('kesiswaan.kelas.jadwal.destroy', [$kelas->id, $jadwal->id]) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus jadwal KBM ini?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer" title="Hapus Jadwal Ini">
-                                                🗑️
+                                        <div class="flex items-center justify-center gap-2">
+                                            <button @click="initEdit({{ json_encode(array_merge($jadwal->toArray(), ['is_wali_kelas' => ($jadwal->kodeGuru && $jadwal->kodeGuru->pegawai && $jadwal->kodeGuru->pegawai->kelasWali && $jadwal->kodeGuru->pegawai->kelasWali->id === $kelas->id)])) }})" class="p-2 text-amber-500 hover:text-amber-700 hover:bg-amber-50 rounded-xl transition-colors cursor-pointer" title="Edit Jadwal">
+                                                ✏️
                                             </button>
-                                        </form>
+                                            <form action="{{ route('kesiswaan.kelas.jadwal.destroy', [$kelas->id, $jadwal->id]) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus jadwal KBM ini?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer" title="Hapus Jadwal Ini">
+                                                    🗑️
+                                                </button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
                             @empty
@@ -312,9 +332,9 @@
                             </div>
 
                             <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-2">Lokasi / Ruangan <span class="text-rose-500">*</span></label>
-                                <select name="ruangan_id" x-model="selectedRuanganId" required class="w-full text-sm font-semibold rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm bg-gray-50 px-4 py-3">
-                                    <option value="">-- Pilih Tempat Belajar --</option>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">Lokasi / Ruangan (Opsional)</label>
+                                <select name="ruangan_id" x-model="selectedRuanganId" class="w-full text-sm font-semibold rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm bg-gray-50 px-4 py-3">
+                                    <option value="">-- Bebas Ruangan (Tidak Wajib) --</option>
                                     @foreach($daftarRuangan as $ruangan)
                                         <option value="{{ $ruangan->id }}">🏫 Ruang: {{ $ruangan->nama_ruangan }}</option>
                                     @endforeach
@@ -329,9 +349,94 @@
                             Batal
                         </button>
                         <button type="submit" 
-                            :disabled="(!selectedGuruId && !['Istirahat', 'Upacara', 'MBG'].includes(selectedWaktuKegiatan)) || (!selectedMapelId && !['Istirahat', 'Upacara', 'MBG', 'G7', 'Kokurikuler', 'Korikuler'].includes(selectedWaktuKegiatan)) || !selectedWaktuId || !selectedRuanganId" 
+                            :disabled="(!selectedGuruId && !['Istirahat', 'Upacara', 'MBG'].includes(selectedWaktuKegiatan)) || (!selectedMapelId && !['Istirahat', 'Upacara', 'MBG', 'G7', 'Kokurikuler', 'Korikuler'].includes(selectedWaktuKegiatan)) || !selectedWaktuId" 
                             class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-md transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
                             💾 Simpan Jadwal KBM
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {{-- ================= MODAL FORM: EDIT JADWAL KBM ================= --}}
+        <div x-show="openEdit" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4" style="display: none;" x-transition>
+            <div class="bg-white rounded-3xl max-w-lg w-full shadow-2xl overflow-hidden" @click.away="openEdit = false">
+                
+                <div class="flex justify-between items-center border-b border-gray-100 p-6 bg-gray-50">
+                    <div>
+                        <h3 class="text-lg font-black text-gray-900">✏️ Ubah Jadwal Pelajaran</h3>
+                    </div>
+                    <button type="button" @click="openEdit = false" class="text-gray-400 hover:text-rose-500 text-2xl font-bold cursor-pointer transition-colors">&times;</button>
+                </div>
+                
+                <form :action="editActionUrl" method="POST">
+                    @csrf
+                    @method('PUT')
+                    
+                    <div class="p-8 space-y-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
+                        
+                        {{-- Dropdown Guru dengan Watcher --}}
+                        <div class="p-5 bg-indigo-50/50 border border-indigo-100 rounded-2xl space-y-5">
+                            <div>
+                                <label class="block text-sm font-bold text-indigo-900 mb-2">Guru Pengampu (Kode Guru) <span x-show="!['Istirahat', 'Upacara', 'MBG'].includes(selectedWaktuKegiatan)" class="text-rose-500">*</span></label>
+                                <select name="kode_guru_id" x-model="selectedGuruId" @change="onGuruChange()" :disabled="['Istirahat', 'Upacara', 'MBG'].includes(selectedWaktuKegiatan)" :required="!['Istirahat', 'Upacara', 'MBG'].includes(selectedWaktuKegiatan)" class="w-full text-sm font-semibold rounded-xl border-indigo-200 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm bg-white px-4 py-3 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed">
+                                    <option value="" x-text="['Istirahat', 'Upacara', 'MBG'].includes(selectedWaktuKegiatan) ? '-- Kegiatan Tanpa Guru --' : '-- Pilih Guru / Kode Pengampu --'"></option>
+                                    <template x-for="guru in daftarGuru" :key="guru.id">
+                                        <option :value="guru.id" x-text="'[' + guru.kode + '] ' + (guru.pegawai ? guru.pegawai.nama_lengkap : 'Tanpa Nama')"></option>
+                                    </template>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-bold text-indigo-900 mb-2">Mata Pelajaran <span x-show="!['Istirahat', 'Upacara', 'MBG', 'G7', 'Kokurikuler', 'Korikuler'].includes(selectedWaktuKegiatan)" class="text-rose-500">*</span></label>
+                                <select name="mata_pelajaran_id" x-model="selectedMapelId" :disabled="!selectedGuruId || ['Istirahat', 'Upacara', 'MBG', 'G7', 'Kokurikuler', 'Korikuler'].includes(selectedWaktuKegiatan)" :required="!['Istirahat', 'Upacara', 'MBG', 'G7', 'Kokurikuler', 'Korikuler'].includes(selectedWaktuKegiatan)" class="w-full text-sm font-bold rounded-xl border-indigo-200 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm bg-white px-4 py-3 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors">
+                                    <option value="" x-text="['Istirahat', 'Upacara', 'MBG', 'G7', 'Kokurikuler', 'Korikuler'].includes(selectedWaktuKegiatan) ? '-- Tidak Memerlukan Mata Pelajaran --' : (selectedGuruId ? '-- Pilih Mata Pelajaran --' : '-- Menunggu Guru Dipilih --')"></option>
+                                    <template x-if="selectedGuruData && selectedGuruData.pegawai && selectedGuruData.pegawai.kelas_wali && selectedGuruData.pegawai.kelas_wali.id === {{ $kelas->id }}">
+                                        <option value="wali_kelas" class="font-bold text-rose-700 bg-rose-50">✨ Tugas Pembinaan Wali Kelas ({{ $kelas->nama_kelas }})</option>
+                                    </template>
+                                    <template x-for="mapel in availableMapels" :key="mapel.id">
+                                        <option :value="mapel.id" x-text="'[' + (mapel.singkatan_mapel || '-') + '] ' + mapel.nama_mapel"></option>
+                                    </template>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-dashed border-gray-200 my-2"></div>
+
+                        <div class="grid grid-cols-1 gap-5">
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">Slot Hari & Waktu KBM <span class="text-rose-500">*</span></label>
+                                <select name="waktu_kbm_id" x-model="selectedWaktuId" @change="onWaktuChange()" required class="w-full text-sm font-semibold rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm bg-gray-50 px-4 py-3">
+                                    <option value="">-- Pilih Jadwal Jam Ke --</option>
+                                    @foreach($daftarWaktu as $waktu)
+                                        <option value="{{ $waktu->id }}">
+                                            🗓️ {{ $waktu->hari }} • Jam Ke-{{ $waktu->jam_ke }} ({{ \Carbon\Carbon::parse($waktu->waktu_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($waktu->waktu_selesai)->format('H:i') }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">Lokasi / Ruangan (Opsional)</label>
+                                <select name="ruangan_id" x-model="selectedRuanganId" class="w-full text-sm font-semibold rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm bg-gray-50 px-4 py-3">
+                                    <option value="">-- Bebas Ruangan (Tidak Wajib) --</option>
+                                    @foreach($daftarRuangan as $ruangan)
+                                        <option value="{{ $ruangan->id }}">🏫 Ruang: {{ $ruangan->nama_ruangan }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+                    
+                    <div class="px-8 py-5 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
+                        <button type="button" @click="openEdit = false" class="px-6 py-3 bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 font-bold rounded-xl shadow-sm transition-colors cursor-pointer">
+                            Batal
+                        </button>
+                        <button type="submit" 
+                            :disabled="(!selectedGuruId && !['Istirahat', 'Upacara', 'MBG'].includes(selectedWaktuKegiatan)) || (!selectedMapelId && !['Istirahat', 'Upacara', 'MBG', 'G7', 'Kokurikuler', 'Korikuler'].includes(selectedWaktuKegiatan)) || !selectedWaktuId" 
+                            class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                            💾 Perbarui Jadwal
                         </button>
                     </div>
                 </form>

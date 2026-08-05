@@ -235,6 +235,83 @@ class KelasController extends Controller
     }
 
     /**
+     * Memperbarui Jadwal KBM
+     */
+    public function updateJadwal(Request $request, $id, $jadwal_id)
+    {
+        $kelas = Kelas::aksesSesuaiWali(auth()->user())->findOrFail($id);
+        $jadwal = \App\Models\JadwalPelajaran::where('kelas_id', $id)->findOrFail($jadwal_id);
+        $waktu = WaktuKbm::findOrFail($request->waktu_kbm_id);
+
+        $rules = [
+            'waktu_kbm_id' => 'required|exists:waktu_kbm,id',
+            'ruangan_id'   => 'nullable|exists:ruangan,id',
+        ];
+        
+        $messages = [
+            'waktu_kbm_id.required'      => 'Slot waktu KBM wajib dipilih.',
+            'ruangan_id.required'        => 'Lokasi / ruangan wajib dipilih.',
+            'kode_guru_id.required'      => 'Guru pengampu wajib dipilih.',
+            'mata_pelajaran_id.required' => 'Mata pelajaran wajib dipilih.',
+        ];
+
+        if ($waktu->kegiatan === 'KBM') {
+            $rules['kode_guru_id'] = 'required|exists:kode_guru,id';
+            if ($request->mata_pelajaran_id !== 'wali_kelas') {
+                $rules['mata_pelajaran_id'] = 'required|exists:mata_pelajaran,id';
+            }
+        } elseif (in_array($waktu->kegiatan, ['G7', 'Korikuler', 'Kokurikuler'])) {
+            $rules['kode_guru_id'] = 'required|exists:kode_guru,id';
+            if ($request->mata_pelajaran_id !== 'wali_kelas') {
+                $rules['mata_pelajaran_id'] = 'nullable|exists:mata_pelajaran,id';
+            }
+        } else {
+            $rules['kode_guru_id'] = 'nullable';
+            $rules['mata_pelajaran_id'] = 'nullable';
+        }
+
+        $validated = $request->validate($rules, $messages);
+
+        // Cek 1: Bentrok jam KBM pada kelas ini (kecuali dirinya sendiri)
+        $bentrokKelas = \App\Models\JadwalPelajaran::where('kelas_id', $id)
+            ->where('waktu_kbm_id', $request->waktu_kbm_id)
+            ->where('id', '!=', $jadwal->id)
+            ->first();
+
+        if ($bentrokKelas) {
+            return redirect()->back()->withInput()->withErrors(['error' => 'Slot jam KBM ' . $waktu->hari . ' Jam ke-' . $waktu->jam_ke . ' di kelas ini sudah terisi.']);
+        }
+
+        // Cek 2: Bentrok guru mengajar di kelas lain (kecuali dirinya sendiri)
+        if (!empty($request->kode_guru_id)) {
+            $bentrokGuru = \App\Models\JadwalPelajaran::where('kode_guru_id', $request->kode_guru_id)
+                ->where('waktu_kbm_id', $request->waktu_kbm_id)
+                ->where('id', '!=', $jadwal->id)
+                ->first();
+
+            if ($bentrokGuru) {
+                $kelasBentrok = $bentrokGuru->kelas ? $bentrokGuru->kelas->nama_kelas : 'lain';
+                return redirect()->back()->withInput()->withErrors(['error' => 'Guru yang dipilih sudah mengajar di kelas ' . $kelasBentrok . ' pada slot jam ini.']);
+            }
+        }
+
+        try {
+            $jadwal->update([
+                'hari'              => $waktu->hari,
+                'waktu_kbm_id'      => $request->waktu_kbm_id,
+                'kode_guru_id'      => empty($request->kode_guru_id) ? null : $request->kode_guru_id,
+                'mata_pelajaran_id' => ($request->mata_pelajaran_id === 'wali_kelas' || empty($request->mata_pelajaran_id)) ? null : $request->mata_pelajaran_id,
+                'ruangan_id'        => empty($request->ruangan_id) ? null : $request->ruangan_id,
+            ]);
+
+            return redirect()->route('kesiswaan.kelas.jadwal', $id)
+                ->with('success', 'Jadwal KBM berhasil diperbarui.');
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->withErrors(['error' => 'Gagal memperbarui jadwal: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
      * Menghapus Jadwal KBM dari Kelas
      */
     public function destroyJadwal($id, $jadwal_id)

@@ -206,7 +206,7 @@
                         <div>
                             <label class="block text-sm font-bold text-gray-700 mb-2">Jenis Kegiatan <span class="text-rose-500">*</span></label>
                             <select name="kegiatan" required class="w-full text-base rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm bg-gray-50 px-4 py-3 font-semibold">
-                                @foreach(['KBM', 'Istirahat', 'Upacara', 'G7', 'Korikuler', 'MBG'] as $keg)
+                                @foreach(['KBM', 'Istirahat', 'Upacara', 'G7', 'Korikuler', 'MBG', 'Membaca Al-Qur\'an dan AlKitab'] as $keg)
                                     <option value="{{ $keg }}">{{ $keg }}</option>
                                 @endforeach
                             </select>
@@ -262,7 +262,7 @@
                         <div>
                             <label class="block text-sm font-bold text-gray-700 mb-2">Jenis Kegiatan <span class="text-rose-500">*</span></label>
                             <select name="kegiatan" x-model="editKegiatan" required class="w-full text-base rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm bg-gray-50 px-4 py-3 font-semibold">
-                                @foreach(['KBM', 'Istirahat', 'Upacara', 'G7', 'Korikuler', 'MBG'] as $keg)
+                                @foreach(['KBM', 'Istirahat', 'Upacara', 'G7', 'Korikuler', 'MBG', 'Membaca Al-Qur\'an dan AlKitab'] as $keg)
                                     <option value="{{ $keg }}">{{ $keg }}</option>
                                 @endforeach
                             </select>

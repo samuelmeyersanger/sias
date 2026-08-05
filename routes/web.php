@@ -299,6 +299,7 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         Route::delete('/kelas/anggota/{id}/remove', [KelasController::class, 'removeSiswa'])->name('kelas.anggota.remove');
         Route::get('kelas/{id}/jadwal', [KelasController::class, 'showJadwal'])->name('kelas.jadwal');
         Route::post('kelas/{id}/jadwal', [KelasController::class, 'storeJadwal'])->name('kelas.jadwal.store');
+        Route::put('kelas/{id}/jadwal/{jadwal_id}', [KelasController::class, 'updateJadwal'])->name('kelas.jadwal.update');
         Route::delete('kelas/{id}/jadwal/{jadwal_id}', [KelasController::class, 'destroyJadwal'])->name('kelas.jadwal.destroy');
 
         // (Route Cetak Kartu Siswa telah dipindahkan ke Pusat Download)
