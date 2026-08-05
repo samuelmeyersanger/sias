@@ -122,7 +122,7 @@ class KelasController extends Controller
         $kelas = Kelas::with('waliKelas')->aksesSesuaiWali(auth()->user())->findOrFail($id);
         
         // Ambil data master kode guru beserta relasi Many-to-Many mata pelajaran yang baru
-        $daftarKodeGuru = KodeGuru::with(['pegawai', 'mataPelajarans'])->get();
+        $daftarKodeGuru = KodeGuru::with(['pegawai.kelasWali', 'mataPelajarans'])->get();
 
         // Ambil data master waktu KBM dengan sorting CASE WHEN kustom (Kompatibel PostgreSQL & MySQL)
         $daftarWaktu = WaktuKbm::orderByRaw("
@@ -143,7 +143,7 @@ class KelasController extends Controller
         $daftarRuangan = \App\Models\Ruangan::orderBy('nama_ruangan', 'asc')->get();
 
         // Ambil list jadwal KBM yang sudah ter-plotting pada kelas ini
-        $jadwalList = \App\Models\JadwalPelajaran::with(['waktuKbm', 'kodeGuru.pegawai', 'kodeGuru.mataPelajarans', 'ruangan', 'mataPelajaran'])
+        $jadwalList = \App\Models\JadwalPelajaran::with(['waktuKbm', 'kodeGuru.pegawai.kelasWali', 'kodeGuru.mataPelajarans', 'ruangan', 'mataPelajaran'])
             ->where('kelas_id', $id)
             ->get()
             ->sortBy(function($j) {

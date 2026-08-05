@@ -44,7 +44,10 @@
 
     <div style="margin-bottom: 15px; font-weight: bold; font-size: 14px;">
         Nama Guru : {{ $pegawai->nama_lengkap ?? '___________________________' }} <br>
-        NIP / NUPTK : {{ $pegawai->nip ?? '-' }} / {{ $pegawai->nuptk ?? '-' }}
+        NIP / NUPTK : {{ $pegawai->nip ?? '-' }} / {{ $pegawai->nuptk ?? '-' }} 
+        @if(isset($kelasWali) && $kelasWali)
+            <br>Wali Kelas Reguler : {{ $kelasWali->tingkat }} {{ $kelasWali->nama_kelas }}
+        @endif
     </div>
 
     <table>

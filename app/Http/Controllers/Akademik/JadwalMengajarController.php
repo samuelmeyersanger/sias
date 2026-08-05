@@ -18,11 +18,14 @@ class JadwalMengajarController extends Controller
     {
         // 1. Ambil data pegawai dari user yang sedang login
         $pegawai = Pegawai::where('user_id', auth()->id())->first();
+        $kelasWali = null;
 
         $jadwalPelajaran = collect();
         $daftarWaktu = collect();
 
         if ($pegawai) {
+            // Ambil data kelas jika dia adalah wali kelas
+            $kelasWali = \App\Models\Kelas::where('wali_kelas_id', $pegawai->id)->first();
             // 2. Ambil semua ID Kode Guru milik pegawai ini
             $kodeGuruIds = KodeGuru::where('pegawai_id', $pegawai->id)->pluck('id');
 
@@ -50,7 +53,7 @@ class JadwalMengajarController extends Controller
         }
 
         // Return view diarahkan ke folder akademik
-        return view('akademik.jadwal_mengajar.index', compact('pegawai', 'jadwalPelajaran', 'daftarWaktu'));
+        return view('akademik.jadwal_mengajar.index', compact('pegawai', 'jadwalPelajaran', 'daftarWaktu', 'kelasWali'));
     }
 
         /**
@@ -59,9 +62,11 @@ class JadwalMengajarController extends Controller
     public function downloadPdf(Request $request)
     {
         $pegawai = Pegawai::where('user_id', auth()->id())->first();
+        $kelasWali = null;
         $jadwalPelajaran = collect();
         $daftarWaktu = collect();
         if ($pegawai) {
+            $kelasWali = \App\Models\Kelas::where('wali_kelas_id', $pegawai->id)->first();
             $kodeGuruIds = KodeGuru::where('pegawai_id', $pegawai->id)->pluck('id');
             if ($kodeGuruIds->isNotEmpty()) {
                 // Relasi disesuaikan dengan kode index() milik Anda
@@ -79,6 +84,6 @@ class JadwalMengajarController extends Controller
             }
         }
         // Arahkan ke file cetak
-        return view('akademik.jadwal_mengajar.cetak', compact('pegawai', 'jadwalPelajaran', 'daftarWaktu'));
+        return view('akademik.jadwal_mengajar.cetak', compact('pegawai', 'jadwalPelajaran', 'daftarWaktu', 'kelasWali'));
     }
 }

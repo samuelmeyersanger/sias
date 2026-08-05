@@ -59,6 +59,12 @@ class Pegawai extends Model
         return $this->belongsTo(Semester::class);
     }
 
+    // Kelas yang dibina sebagai Wali Kelas
+    public function kelasWali(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Kelas::class, 'wali_kelas_id');
+    }
+
     // Punya banyak Dokumen
     public function dokumen(): HasMany
     {

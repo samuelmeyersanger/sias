@@ -52,8 +52,15 @@
                 <div class="bg-gradient-to-r from-indigo-900 to-indigo-700 rounded-3xl shadow-lg p-8 text-white flex items-center justify-between mb-8">
                     <div>
                         <p class="text-indigo-200 text-sm font-semibold mb-1 uppercase tracking-wider">Jadwal Aktif Milik</p>
-                        <h3 class="text-3xl font-black mb-2">{{ $pegawai->nama_lengkap }}</h3>
-                        <p class="text-indigo-100 text-sm max-w-xl leading-relaxed">
+                        <h3 class="text-3xl font-black mb-2 flex items-center gap-3">
+                            {{ $pegawai->nama_lengkap }}
+                            @if($kelasWali)
+                                <span class="bg-rose-500 text-white text-xs px-3 py-1 rounded-full font-bold uppercase tracking-widest shadow-sm">
+                                    Wali Kelas Reguler {{ $kelasWali->tingkat }} {{ $kelasWali->nama_kelas }}
+                                </span>
+                            @endif
+                        </h3>
+                        <p class="text-indigo-100 text-sm max-w-xl leading-relaxed mt-2">
                             Pastikan Anda hadir 10 menit sebelum jam pelajaran dimulai. Tetap semangat membagikan ilmu yang bermanfaat bagi siswa-siswi kita!
                         </p>
                     </div>

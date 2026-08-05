@@ -202,6 +202,13 @@
                                         @if($jadwal->kodeGuru)
                                             <span class="font-bold text-indigo-600">[{{ $jadwal->kodeGuru->kode }}]</span>
                                             {{ $jadwal->kodeGuru->pegawai ? $jadwal->kodeGuru->pegawai->nama_lengkap : 'Tanpa Nama' }}
+                                            @if($jadwal->kodeGuru->pegawai && $jadwal->kodeGuru->pegawai->kelasWali)
+                                                <div class="mt-1">
+                                                    <span class="inline-block bg-rose-100 text-rose-700 text-[10px] px-2 py-0.5 rounded font-bold border border-rose-200">
+                                                        Wali Kelas Reguler {{ $jadwal->kodeGuru->pegawai->kelasWali->tingkat }} {{ $jadwal->kodeGuru->pegawai->kelasWali->nama_kelas }}
+                                                    </span>
+                                                </div>
+                                            @endif
                                         @else
                                             @if(in_array($jadwal->waktuKbm->kegiatan ?? '', ['Istirahat', 'Upacara', 'MBG']))
                                                 <span class="text-gray-400 italic font-semibold">- Tanpa Guru -</span>
@@ -264,7 +271,7 @@
                                 <select name="kode_guru_id" x-model="selectedGuruId" @change="onGuruChange()" :disabled="['Istirahat', 'Upacara', 'MBG'].includes(selectedWaktuKegiatan)" :required="!['Istirahat', 'Upacara', 'MBG'].includes(selectedWaktuKegiatan)" class="w-full text-sm font-semibold rounded-xl border-indigo-200 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm bg-white px-4 py-3 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed">
                                     <option value="" x-text="['Istirahat', 'Upacara', 'MBG'].includes(selectedWaktuKegiatan) ? '-- Kegiatan Tanpa Guru --' : '-- Pilih Guru / Kode Pengampu --'"></option>
                                     <template x-for="guru in daftarGuru" :key="guru.id">
-                                        <option :value="guru.id" x-text="'[' + guru.kode + '] ' + (guru.pegawai ? guru.pegawai.nama_lengkap : 'Tanpa Nama')"></option>
+                                        <option :value="guru.id" x-text="'[' + guru.kode + '] ' + (guru.pegawai ? guru.pegawai.nama_lengkap : 'Tanpa Nama') + (guru.pegawai && guru.pegawai.kelas_wali ? ' (Wali Kelas Reguler ' + guru.pegawai.kelas_wali.tingkat + ' ' + guru.pegawai.kelas_wali.nama_kelas + ')' : '')"></option>
                                     </template>
                                 </select>
                             </div>
