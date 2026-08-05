@@ -3,7 +3,6 @@
         <h2 class="font-bold text-2xl text-gray-800 leading-tight flex items-center gap-2">
             <span class="text-3xl">📦</span> {{ __('Inventaris Barang Habis Pakai') }}
         </h2>
-        <p class="text-sm font-medium text-gray-500 mt-1">Kelola data stok masuk dan keluar untuk barang habis pakai.</p>
     </x-slot>
 
     <div class="py-8" x-data="{ 
