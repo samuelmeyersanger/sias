@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-bold text-2xl text-gray-800 leading-tight flex items-center gap-3">
-            <span class="text-3xl">👨‍🏫</span> {{ __('Manajemen Kode Guru & Penugasan') }}
+            <span class="text-3xl">👨‍🏫</span> {{ __('Kode Guru & Penugasan') }}
         </h2>
     </x-slot>
 

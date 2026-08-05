@@ -9,7 +9,6 @@
                     <h2 class="font-bold text-2xl text-gray-800 leading-tight flex items-center gap-2">
                         <span class="text-3xl">🎓</span> {{ __('Profil & Portofolio Siswa') }}
                     </h2>
-                    <p class="text-sm font-medium text-gray-500 mt-1">Kelola data personal, riwayat akademik, hingga arsip digital.</p>
                 </div>
             </div>
         </div>
