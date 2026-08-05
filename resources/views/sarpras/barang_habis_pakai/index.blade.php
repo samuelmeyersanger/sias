@@ -60,6 +60,7 @@
 
             <!-- Table Card -->
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-3xl border border-gray-100">
+                <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-gray-50 border-b border-gray-100">
