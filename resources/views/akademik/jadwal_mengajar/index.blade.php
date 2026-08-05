@@ -1,16 +1,9 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="flex items-center justify-between gap-4">
             <h2 class="font-bold text-2xl text-gray-800 leading-tight flex items-center gap-3">
                 <span class="text-3xl">📅</span> {{ __('Jadwal Mengajar Saya') }}
             </h2>
-            
-            @if($pegawai && !$jadwalPelajaran->isEmpty())
-                <!-- TOMBOL DOWNLOAD PDF DIPINDAH KE HEADER AGAR LEBIH TERLIHAT -->
-                <a href="{{ route('akademik.jadwal_mengajar.download') }}" target="_blank" class="px-5 py-2.5 bg-gray-900 hover:bg-black text-white text-sm font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 transform hover:-translate-y-0.5">
-                    📄 Cetak / Simpan PDF
-                </a>
-            @endif
         </div>
     </x-slot>
 
@@ -63,6 +56,13 @@
                         <p class="text-indigo-100 text-sm max-w-xl leading-relaxed mt-2">
                             Pastikan Anda hadir 10 menit sebelum jam pelajaran dimulai. Tetap semangat membagikan ilmu yang bermanfaat bagi siswa-siswi kita!
                         </p>
+                        
+                        <!-- TOMBOL DOWNLOAD PDF DIPINDAH KESINI AGAR TIDAK TUMPANG TINDIH -->
+                        <div class="mt-6 inline-block">
+                            <a href="{{ route('akademik.jadwal_mengajar.download') }}" target="_blank" class="px-5 py-2.5 bg-white hover:bg-gray-50 text-indigo-900 text-sm font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 transform hover:-translate-y-0.5">
+                                📄 Cetak / Simpan PDF
+                            </a>
+                        </div>
                     </div>
                     <div class="hidden md:block text-6xl opacity-20">
                         👩‍🏫
@@ -97,7 +97,7 @@
                                             <div class="font-black text-gray-900 text-base mb-1">Jam ke-{{ $jamKe }}</div>
                                             <div class="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-100">
                                                 <span>⏱️</span>
-                                                {{ \Carbon\Carbon::parse($contohWaktu->jam_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($contohWaktu->jam_selesai)->format('H:i') }}
+                                                {{ \Carbon\Carbon::parse($contohWaktu->waktu_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($contohWaktu->waktu_selesai)->format('H:i') }}
                                             </div>
                                         </td>
                                         
