@@ -180,10 +180,14 @@ class KelasController extends Controller
 
         if ($waktu->kegiatan === 'KBM') {
             $rules['kode_guru_id'] = 'required|exists:kode_guru,id';
-            $rules['mata_pelajaran_id'] = 'required|exists:mata_pelajaran,id';
+            if ($request->mata_pelajaran_id !== 'wali_kelas') {
+                $rules['mata_pelajaran_id'] = 'required|exists:mata_pelajaran,id';
+            }
         } elseif (in_array($waktu->kegiatan, ['G7', 'Korikuler', 'Kokurikuler'])) {
             $rules['kode_guru_id'] = 'required|exists:kode_guru,id';
-            $rules['mata_pelajaran_id'] = 'nullable';
+            if ($request->mata_pelajaran_id !== 'wali_kelas') {
+                $rules['mata_pelajaran_id'] = 'nullable|exists:mata_pelajaran,id';
+            }
         } else {
             // Istirahat, Upacara, MBG
             $rules['kode_guru_id'] = 'nullable';
@@ -219,7 +223,7 @@ class KelasController extends Controller
                 'hari'              => $waktu->hari,
                 'waktu_kbm_id'      => $request->waktu_kbm_id,
                 'kode_guru_id'      => empty($request->kode_guru_id) ? null : $request->kode_guru_id,
-                'mata_pelajaran_id' => empty($request->mata_pelajaran_id) ? null : $request->mata_pelajaran_id,
+                'mata_pelajaran_id' => ($request->mata_pelajaran_id === 'wali_kelas' || empty($request->mata_pelajaran_id)) ? null : $request->mata_pelajaran_id,
                 'ruangan_id'        => empty($request->ruangan_id) ? null : $request->ruangan_id,
             ]);
 

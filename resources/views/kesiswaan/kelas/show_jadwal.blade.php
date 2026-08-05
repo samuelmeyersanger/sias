@@ -8,7 +8,6 @@
                 <h2 class="font-bold text-2xl text-gray-800 leading-tight flex items-center gap-2">
                     <span class="text-3xl">🗓️</span> {{ __('Jadwal KBM Kelas') }}
                 </h2>
-                <p class="text-sm font-medium text-gray-500 mt-1">Pengaturan jadwal mata pelajaran, guru pengampu, dan ruang belajar.</p>
             </div>
         </div>
     </x-slot>
@@ -22,6 +21,7 @@
         
         // State Form Input
         selectedGuruId: '',
+        selectedGuruData: null,
         selectedMapelId: '',
         selectedWaktuId: '',
         selectedWaktuKegiatan: '',
@@ -35,11 +35,13 @@
             this.selectedMapelId = ''; // Reset mapel terpilih
             if (!this.selectedGuruId) {
                 this.availableMapels = [];
+                this.selectedGuruData = null;
                 return;
             }
             
             // Cari data guru yang cocok di dalam array master daftarGuru
             let guru = this.daftarGuru.find(g => g.id == this.selectedGuruId);
+            this.selectedGuruData = guru;
             
             // Masukkan list mata pelajarans dari relasi Many-to-Many guru tersebut
             this.availableMapels = guru && guru.mata_pelajarans ? guru.mata_pelajarans : [];
@@ -193,6 +195,11 @@
                                                     <span class="px-2 py-0.5 bg-indigo-100 text-indigo-800 rounded font-black text-[10px] uppercase">{{ $mapelTerpilih->singkatan_mapel ?? 'MAPEL' }}</span>
                                                     <span>{{ $mapelTerpilih->nama_mapel }}</span>
                                                 </div>
+                                            @elseif($jadwal->kodeGuru && $jadwal->kodeGuru->pegawai && $jadwal->kodeGuru->pegawai->kelasWali && $jadwal->kodeGuru->pegawai->kelasWali->id === $kelas->id)
+                                                <div class="flex items-center gap-2">
+                                                    <span class="px-2 py-0.5 bg-rose-100 text-rose-800 rounded font-black text-[10px] uppercase">WALI KELAS</span>
+                                                    <span class="font-bold text-rose-700">Tugas Pembinaan Wali Kelas</span>
+                                                </div>
                                             @else
                                                 <span class="text-gray-400 italic">Mata Pelajaran Tidak Terhubung</span>
                                             @endif
@@ -202,13 +209,6 @@
                                         @if($jadwal->kodeGuru)
                                             <span class="font-bold text-indigo-600">[{{ $jadwal->kodeGuru->kode }}]</span>
                                             {{ $jadwal->kodeGuru->pegawai ? $jadwal->kodeGuru->pegawai->nama_lengkap : 'Tanpa Nama' }}
-                                            @if($jadwal->kodeGuru->pegawai && $jadwal->kodeGuru->pegawai->kelasWali)
-                                                <div class="mt-1">
-                                                    <span class="inline-block bg-rose-100 text-rose-700 text-[10px] px-2 py-0.5 rounded font-bold border border-rose-200">
-                                                        Wali Kelas {{ $jadwal->kodeGuru->pegawai->kelasWali->nama_kelas }}
-                                                    </span>
-                                                </div>
-                                            @endif
                                         @else
                                             @if(in_array($jadwal->waktuKbm->kegiatan ?? '', ['Istirahat', 'Upacara', 'MBG']))
                                                 <span class="text-gray-400 italic font-semibold">- Tanpa Guru -</span>
@@ -271,7 +271,7 @@
                                 <select name="kode_guru_id" x-model="selectedGuruId" @change="onGuruChange()" :disabled="['Istirahat', 'Upacara', 'MBG'].includes(selectedWaktuKegiatan)" :required="!['Istirahat', 'Upacara', 'MBG'].includes(selectedWaktuKegiatan)" class="w-full text-sm font-semibold rounded-xl border-indigo-200 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm bg-white px-4 py-3 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed">
                                     <option value="" x-text="['Istirahat', 'Upacara', 'MBG'].includes(selectedWaktuKegiatan) ? '-- Kegiatan Tanpa Guru --' : '-- Pilih Guru / Kode Pengampu --'"></option>
                                     <template x-for="guru in daftarGuru" :key="guru.id">
-                                        <option :value="guru.id" x-text="'[' + guru.kode + '] ' + (guru.pegawai ? guru.pegawai.nama_lengkap : 'Tanpa Nama') + (guru.pegawai && guru.pegawai.kelas_wali ? ' (Wali Kelas ' + guru.pegawai.kelas_wali.nama_kelas + ')' : '')"></option>
+                                        <option :value="guru.id" x-text="'[' + guru.kode + '] ' + (guru.pegawai ? guru.pegawai.nama_lengkap : 'Tanpa Nama')"></option>
                                     </template>
                                 </select>
                             </div>
@@ -280,6 +280,9 @@
                                 <label class="block text-sm font-bold text-indigo-900 mb-2">Mata Pelajaran <span x-show="!['Istirahat', 'Upacara', 'MBG', 'G7', 'Kokurikuler', 'Korikuler'].includes(selectedWaktuKegiatan)" class="text-rose-500">*</span></label>
                                 <select name="mata_pelajaran_id" x-model="selectedMapelId" :disabled="!selectedGuruId || ['Istirahat', 'Upacara', 'MBG', 'G7', 'Kokurikuler', 'Korikuler'].includes(selectedWaktuKegiatan)" :required="!['Istirahat', 'Upacara', 'MBG', 'G7', 'Kokurikuler', 'Korikuler'].includes(selectedWaktuKegiatan)" class="w-full text-sm font-bold rounded-xl border-indigo-200 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm bg-white px-4 py-3 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors">
                                     <option value="" x-text="['Istirahat', 'Upacara', 'MBG', 'G7', 'Kokurikuler', 'Korikuler'].includes(selectedWaktuKegiatan) ? '-- Tidak Memerlukan Mata Pelajaran --' : (selectedGuruId ? '-- Pilih Mata Pelajaran --' : '-- Menunggu Guru Dipilih --')"></option>
+                                    <template x-if="selectedGuruData && selectedGuruData.pegawai && selectedGuruData.pegawai.kelas_wali && selectedGuruData.pegawai.kelas_wali.id === {{ $kelas->id }}">
+                                        <option value="wali_kelas" class="font-bold text-rose-700 bg-rose-50">✨ Tugas Pembinaan Wali Kelas ({{ $kelas->nama_kelas }})</option>
+                                    </template>
                                     <template x-for="mapel in availableMapels" :key="mapel.id">
                                         <option :value="mapel.id" x-text="'[' + (mapel.singkatan_mapel || '-') + '] ' + mapel.nama_mapel"></option>
                                     </template>
