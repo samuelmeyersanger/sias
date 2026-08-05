@@ -205,7 +205,7 @@
                                             @if($jadwal->kodeGuru->pegawai && $jadwal->kodeGuru->pegawai->kelasWali)
                                                 <div class="mt-1">
                                                     <span class="inline-block bg-rose-100 text-rose-700 text-[10px] px-2 py-0.5 rounded font-bold border border-rose-200">
-                                                        Wali Kelas Reguler {{ $jadwal->kodeGuru->pegawai->kelasWali->tingkat }} {{ $jadwal->kodeGuru->pegawai->kelasWali->nama_kelas }}
+                                                        Wali Kelas {{ $jadwal->kodeGuru->pegawai->kelasWali->nama_kelas }}
                                                     </span>
                                                 </div>
                                             @endif
@@ -271,7 +271,7 @@
                                 <select name="kode_guru_id" x-model="selectedGuruId" @change="onGuruChange()" :disabled="['Istirahat', 'Upacara', 'MBG'].includes(selectedWaktuKegiatan)" :required="!['Istirahat', 'Upacara', 'MBG'].includes(selectedWaktuKegiatan)" class="w-full text-sm font-semibold rounded-xl border-indigo-200 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm bg-white px-4 py-3 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed">
                                     <option value="" x-text="['Istirahat', 'Upacara', 'MBG'].includes(selectedWaktuKegiatan) ? '-- Kegiatan Tanpa Guru --' : '-- Pilih Guru / Kode Pengampu --'"></option>
                                     <template x-for="guru in daftarGuru" :key="guru.id">
-                                        <option :value="guru.id" x-text="'[' + guru.kode + '] ' + (guru.pegawai ? guru.pegawai.nama_lengkap : 'Tanpa Nama') + (guru.pegawai && guru.pegawai.kelas_wali ? ' (Wali Kelas Reguler ' + guru.pegawai.kelas_wali.tingkat + ' ' + guru.pegawai.kelas_wali.nama_kelas + ')' : '')"></option>
+                                        <option :value="guru.id" x-text="'[' + guru.kode + '] ' + (guru.pegawai ? guru.pegawai.nama_lengkap : 'Tanpa Nama') + (guru.pegawai && guru.pegawai.kelas_wali ? ' (Wali Kelas ' + guru.pegawai.kelas_wali.nama_kelas + ')' : '')"></option>
                                     </template>
                                 </select>
                             </div>
@@ -279,7 +279,7 @@
                             <div>
                                 <label class="block text-sm font-bold text-indigo-900 mb-2">Mata Pelajaran <span x-show="!['Istirahat', 'Upacara', 'MBG', 'G7', 'Kokurikuler', 'Korikuler'].includes(selectedWaktuKegiatan)" class="text-rose-500">*</span></label>
                                 <select name="mata_pelajaran_id" x-model="selectedMapelId" :disabled="!selectedGuruId || ['Istirahat', 'Upacara', 'MBG', 'G7', 'Kokurikuler', 'Korikuler'].includes(selectedWaktuKegiatan)" :required="!['Istirahat', 'Upacara', 'MBG', 'G7', 'Kokurikuler', 'Korikuler'].includes(selectedWaktuKegiatan)" class="w-full text-sm font-bold rounded-xl border-indigo-200 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm bg-white px-4 py-3 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors">
-                                    <option value="" x-text="['Istirahat', 'Upacara', 'MBG', 'G7', 'Kokurikuler', 'Korikuler'].includes(selectedWaktuKegiatan) ? '-- Tidak Memerlukan Mata Pelajaran --' : '-- Menunggu Guru Dipilih --'"></option>
+                                    <option value="" x-text="['Istirahat', 'Upacara', 'MBG', 'G7', 'Kokurikuler', 'Korikuler'].includes(selectedWaktuKegiatan) ? '-- Tidak Memerlukan Mata Pelajaran --' : (selectedGuruId ? '-- Pilih Mata Pelajaran --' : '-- Menunggu Guru Dipilih --')"></option>
                                     <template x-for="mapel in availableMapels" :key="mapel.id">
                                         <option :value="mapel.id" x-text="'[' + (mapel.singkatan_mapel || '-') + '] ' + mapel.nama_mapel"></option>
                                     </template>

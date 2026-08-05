@@ -46,7 +46,7 @@
         Nama Guru : {{ $pegawai->nama_lengkap ?? '___________________________' }} <br>
         NIP / NUPTK : {{ $pegawai->nip ?? '-' }} / {{ $pegawai->nuptk ?? '-' }} 
         @if(isset($kelasWali) && $kelasWali)
-            <br>Wali Kelas Reguler : {{ $kelasWali->tingkat }} {{ $kelasWali->nama_kelas }}
+            <br>Wali Kelas : {{ $kelasWali->nama_kelas }}
         @endif
     </div>
 

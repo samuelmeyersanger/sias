@@ -56,7 +56,7 @@
                             {{ $pegawai->nama_lengkap }}
                             @if($kelasWali)
                                 <span class="bg-rose-500 text-white text-xs px-3 py-1 rounded-full font-bold uppercase tracking-widest shadow-sm">
-                                    Wali Kelas Reguler {{ $kelasWali->tingkat }} {{ $kelasWali->nama_kelas }}
+                                    Wali Kelas {{ $kelasWali->nama_kelas }}
                                 </span>
                             @endif
                         </h3>
