@@ -83,7 +83,9 @@
                             </thead>
                             <tbody class="divide-y divide-gray-100">
                                 @php
-                                    $waktuPerJam = $daftarWaktu->groupBy('jam_ke');
+                                    $waktuPerJam = $daftarWaktu->sortBy(function($w) {
+                                        return \Carbon\Carbon::parse($w->waktu_mulai)->format('H:i');
+                                    })->groupBy('jam_ke');
                                 @endphp
 
                                 @foreach($waktuPerJam as $jamKe => $waktuList)

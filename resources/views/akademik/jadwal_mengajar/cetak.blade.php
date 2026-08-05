@@ -60,7 +60,11 @@
             </tr>
         </thead>
         <tbody>
-            @php $waktuPerJam = $daftarWaktu->groupBy('jam_ke'); @endphp
+            @php 
+                $waktuPerJam = $daftarWaktu->sortBy(function($w) {
+                    return \Carbon\Carbon::parse($w->waktu_mulai)->format('H:i');
+                })->groupBy('jam_ke'); 
+            @endphp
 
             @forelse($waktuPerJam as $jamKe => $waktuList)
                 @php $contohWaktu = $waktuList->first(); @endphp
@@ -68,8 +72,8 @@
                     <td style="background-color: #f9fafb;">
                         <b>Jam {{ $jamKe }}</b><br>
                         <span style="font-size: 10px; color: #666;">
-                            {{ \Carbon\Carbon::parse($contohWaktu->jam_mulai)->format('H:i') }} - 
-                            {{ \Carbon\Carbon::parse($contohWaktu->jam_selesai)->format('H:i') }}
+                            {{ \Carbon\Carbon::parse($contohWaktu->waktu_mulai)->format('H:i') }} - 
+                            {{ \Carbon\Carbon::parse($contohWaktu->waktu_selesai)->format('H:i') }}
                         </span>
                     </td>
                     
