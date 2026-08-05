@@ -68,13 +68,19 @@
                         <td>
                             @php
                                 $jadwalHariIni = $jadwals->where('hari', $hari)->sortBy(function($j) {
-                                    return $j->waktuKbm ? $j->waktuKbm->jam_ke : 99;
+                                    return $j->waktuKbm ? \Carbon\Carbon::parse($j->waktuKbm->waktu_mulai)->format('H:i') : '99:99';
                                 });
                             @endphp
 
                             @forelse($jadwalHariIni as $j)
                                 <div class="jam-item">
-                                    <span>Jam ke-{{ $j->waktuKbm ? $j->waktuKbm->jam_ke : '-' }}:</span><br>
+                                    <span style="font-weight: bold; color: #333;">Jam ke-{{ $j->waktuKbm ? $j->waktuKbm->jam_ke : '-' }} 
+                                    @if($j->waktuKbm && $j->waktuKbm->waktu_mulai)
+                                        <span style="font-size: 9px; font-weight: normal; color: #666;">
+                                            ({{ \Carbon\Carbon::parse($j->waktuKbm->waktu_mulai)->format('H:i') }}-{{ \Carbon\Carbon::parse($j->waktuKbm->waktu_selesai)->format('H:i') }})
+                                        </span>
+                                    @endif
+                                    :</span><br>
                                     
                                     @php
                                         $nama_mapel = '-';

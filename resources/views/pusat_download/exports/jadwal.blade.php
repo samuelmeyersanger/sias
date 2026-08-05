@@ -48,21 +48,34 @@
                 @endforeach
             </tr>
 
-            @for($jam = 1; $jam <= $maxJam; $jam++)
+            @php 
+                $waktuPerJam = $waktuList->sortBy(function($w) {
+                    return \Carbon\Carbon::parse($w->waktu_mulai)->format('H:i');
+                })->groupBy('jam_ke'); 
+            @endphp
+
+            @foreach($waktuPerJam as $jamKe => $waktus)
+                @php $contohWaktu = $waktus->first(); @endphp
                 <tr>
-                    <td class="text-bold" style="font-size: 14px;">{{ $jam }}</td>
+                    <td class="text-bold" style="font-size: 14px;">
+                        {{ $jamKe }}<br>
+                        <span style="font-size: 9px; font-weight: normal; color: #555;">
+                            {{ \Carbon\Carbon::parse($contohWaktu->waktu_mulai)->format('H:i') }} - 
+                            {{ \Carbon\Carbon::parse($contohWaktu->waktu_selesai)->format('H:i') }}
+                        </span>
+                    </td>
                     
                     @foreach($hariList as $hari)
                         <td>
                             <!-- Menampilkan kegiatan Non-KBM (Misal: Istirahat) -->
-                            @if(isset($kegiatanMatriks[$jam][$hari]))
-                                <div style="font-style: italic; color: #555;">{{ $kegiatanMatriks[$jam][$hari] }}</div>
+                            @if(isset($kegiatanMatriks[$jamKe][$hari]))
+                                <div style="font-style: italic; color: #555;">{{ $kegiatanMatriks[$jamKe][$hari] }}</div>
                             @endif
 
                             <!-- Menampilkan Jadwal Pelajaran -->
-                            @if(isset($matriks[$jam][$hari]))
+                            @if(isset($matriks[$jamKe][$hari]))
                                 @php
-                                    $jadwal = $matriks[$jam][$hari];
+                                    $jadwal = $matriks[$jamKe][$hari];
                                     
                                     // 1. Nama Mata Pelajaran
                                     $mapel = '';
@@ -89,7 +102,7 @@
                         </td>
                     @endforeach
                 </tr>
-            @endfor
+            @endforeach
         </tbody>
     </table>
 

@@ -285,10 +285,14 @@ class PusatDownloadController extends Controller
                         : 'Belum Diset';
         $hariList = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat']; 
         
-        $maxJam = \App\Models\WaktuKbm::max('jam_ke');
-        if (!$maxJam) $maxJam = 10;
-        
-        $waktuList = \App\Models\WaktuKbm::all();
+        $waktuList = \App\Models\WaktuKbm::orderByRaw("
+            CASE hari 
+                WHEN 'Senin' THEN 1 WHEN 'Selasa' THEN 2
+                WHEN 'Rabu' THEN 3 WHEN 'Kamis' THEN 4
+                WHEN 'Jumat' THEN 5 WHEN 'Sabtu' THEN 6
+                ELSE 7 
+            END
+        ")->orderBy('waktu_mulai', 'asc')->orderBy('waktu_selesai', 'asc')->get();
         $kegiatanMatriks = [];
         foreach($waktuList as $w) {
             if (strtoupper($w->kegiatan) != 'KBM' && !empty($w->kegiatan)) {
@@ -312,7 +316,7 @@ class PusatDownloadController extends Controller
             'nama_sekolah' => $nama_sekolah,
             'tahun_ajaran' => $tahun_ajaran,
             'hariList' => $hariList,
-            'maxJam' => $maxJam,
+            'waktuList' => $waktuList,
             'matriks' => $matriks,
             'kegiatanMatriks' => $kegiatanMatriks,
         ];
