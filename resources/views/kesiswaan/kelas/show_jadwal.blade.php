@@ -325,7 +325,7 @@
                                     <option value="">-- Pilih Jadwal Jam Ke --</option>
                                     @foreach($daftarWaktu as $waktu)
                                         <option value="{{ $waktu->id }}">
-                                            🗓️ {{ $waktu->hari }} • Jam Ke-{{ $waktu->jam_ke }} ({{ \Carbon\Carbon::parse($waktu->waktu_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($waktu->waktu_selesai)->format('H:i') }})
+                                            🗓️ {{ $waktu->hari }} • Jam Ke-{{ $waktu->jam_ke }} ({{ \Carbon\Carbon::parse($waktu->waktu_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($waktu->waktu_selesai)->format('H:i') }})@if($waktu->kegiatan && $waktu->kegiatan !== 'KBM') — {{ $waktu->kegiatan }}@endif
                                         </option>
                                     @endforeach
                                 </select>
@@ -410,7 +410,7 @@
                                     <option value="">-- Pilih Jadwal Jam Ke --</option>
                                     @foreach($daftarWaktu as $waktu)
                                         <option value="{{ $waktu->id }}">
-                                            🗓️ {{ $waktu->hari }} • Jam Ke-{{ $waktu->jam_ke }} ({{ \Carbon\Carbon::parse($waktu->waktu_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($waktu->waktu_selesai)->format('H:i') }})
+                                            🗓️ {{ $waktu->hari }} • Jam Ke-{{ $waktu->jam_ke }} ({{ \Carbon\Carbon::parse($waktu->waktu_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($waktu->waktu_selesai)->format('H:i') }})@if($waktu->kegiatan && $waktu->kegiatan !== 'KBM') — {{ $waktu->kegiatan }}@endif
                                         </option>
                                     @endforeach
                                 </select>
