@@ -642,6 +642,7 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         Route::get('/hasil-skm', [\App\Http\Controllers\PusatDownloadController::class, 'downloadHasilSkm'])->name('hasil_skm');
         Route::get('/rekap-absensi-qr', [\App\Http\Controllers\PusatDownloadController::class, 'downloadRekapAbsensiQr'])->name('rekap_absensi_qr');
         Route::get('/kartu-siswa-cetak', [\App\Http\Controllers\PusatDownloadController::class, 'cetakKartuSiswa'])->name('kartu_siswa_cetak');
+        Route::get('/absensi-bk', [\App\Http\Controllers\PusatDownloadController::class, 'downloadAbsensiBK'])->name('absensi_bk');
     });
     
     /*

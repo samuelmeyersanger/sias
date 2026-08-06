@@ -6,6 +6,7 @@ use App\Models\Kelas;
 use App\Models\Semester;
 use App\Models\AnggotaKelas;
 use App\Models\Ekstrakurikuler;
+use App\Models\KodeGuru;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\AbsensiKelasExport;
@@ -19,7 +20,9 @@ class PusatDownloadController extends Controller
         $daftarKelas = Kelas::orderBy('tingkat', 'asc')->orderBy('nama_kelas', 'asc')->get();
         $daftarEkskul = Ekstrakurikuler::orderBy('nama', 'asc')->get();
         $daftarKelasWali = \App\Models\KelasWali::orderBy('tingkat', 'asc')->orderBy('nama_kelas', 'asc')->get();
-        return view('pusat_download.index', compact('daftarKelas', 'daftarEkskul', 'daftarKelasWali'));
+        // Ambil daftar Kode Guru untuk pilihan Guru BK di form Absensi BK
+        $daftarKodeGuru = KodeGuru::with('pegawai')->get()->filter(fn($kg) => $kg->pegawai)->sortBy(fn($kg) => $kg->pegawai->nama_lengkap);
+        return view('pusat_download.index', compact('daftarKelas', 'daftarEkskul', 'daftarKelasWali', 'daftarKodeGuru'));
     }
 
     // =========================================================================
@@ -608,5 +611,43 @@ class PusatDownloadController extends Controller
                       ->get();
 
         return view('kesiswaan.kartu_siswa.cetak', compact('kelas', 'siswa'));
+    }
+
+    // =========================================================================
+    // FITUR: DOWNLOAD ABSENSI BK (31 HARI + TTD GURU BK)
+    // =========================================================================
+    public function downloadAbsensiBK(Request $request)
+    {
+        $request->validate([
+            'kelas_id'     => 'required|exists:kelas,id',
+            'kode_guru_id' => 'required|exists:kode_guru,id',
+        ]);
+
+        $kelas         = Kelas::with('waliKelas')->findOrFail($request->kelas_id);
+        $guruBk        = KodeGuru::with('pegawai')->findOrFail($request->kode_guru_id);
+        $semesterAktif = Semester::with('tahunAjaran')->where('is_aktif', true)->first();
+
+        $anggota = AnggotaKelas::with('siswa')
+            ->where('kelas_id', $kelas->id)
+            ->where('semester_id', $semesterAktif->id ?? null)
+            ->orderBy('id', 'asc')
+            ->get();
+
+        $nama_sekolah = 'SMPN 4 CIBITUNG';
+        $tahun_ajaran = $semesterAktif && $semesterAktif->tahunAjaran
+                        ? $semesterAktif->tahunAjaran->nama_tahun_ajaran
+                        : 'Belum Diset';
+
+        $data = [
+            'kelas'        => $kelas,
+            'guruBk'       => $guruBk,
+            'anggota'      => $anggota,
+            'nama_sekolah' => $nama_sekolah,
+            'tahun_ajaran' => $tahun_ajaran,
+            'laki_laki'    => $anggota->filter(fn($a) => in_array($a->siswa->jenis_kelamin ?? '', ['Laki-Laki', 'Laki-laki', 'L']))->count(),
+            'perempuan'    => $anggota->filter(fn($a) => in_array($a->siswa->jenis_kelamin ?? '', ['Perempuan', 'P']))->count(),
+        ];
+
+        return view('pusat_download.exports.absensi_bk', $data);
     }
 }

@@ -245,6 +245,37 @@
                         </div>
                     </div>
 
+                    {{-- Card: Absensi BK (31 Hari) --}}
+                    <div class="bg-white rounded-[2rem] p-6 shadow-xl shadow-slate-200/40 border border-slate-100 flex flex-col justify-between hover:-translate-y-1 hover:shadow-2xl hover:shadow-violet-200/30 transition-all duration-300 relative overflow-hidden group">
+                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-violet-500"></div>
+                        <div class="pl-2">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="text-3xl">🧑‍💼</span>
+                                <h4 class="font-black text-slate-900 text-base leading-tight">Absensi BK (31 Hari)</h4>
+                            </div>
+                            <p class="text-[11px] font-medium text-slate-500 leading-relaxed mb-4 h-8">Cetak format presensi bulanan 31 hari khusus Guru BK. Ada TTD Guru BK & Wali Kelas.</p>
+                            
+                            <form action="{{ route('pusat_download.absensi_bk') }}" method="GET" target="_blank" class="space-y-3">
+                                @csrf
+                                <select name="kelas_id" required class="w-full text-sm font-bold text-slate-700 rounded-xl border-slate-200 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 bg-slate-50 py-3 shadow-inner">
+                                    <option value="">-- Pilih Ruang Kelas --</option>
+                                    @foreach($daftarKelas as $kelas)
+                                        <option value="{{ $kelas->id }}">{{ $kelas->tingkat }} - {{ $kelas->nama_kelas }}</option>
+                                    @endforeach
+                                </select>
+                                <select name="kode_guru_id" required class="w-full text-sm font-bold text-slate-700 rounded-xl border-slate-200 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 bg-slate-50 py-3 shadow-inner">
+                                    <option value="">-- Pilih Guru BK --</option>
+                                    @foreach($daftarKodeGuru as $kg)
+                                        <option value="{{ $kg->id }}">{{ $kg->pegawai->nama_lengkap }} ({{ $kg->kode }})</option>
+                                    @endforeach
+                                </select>
+                                <button type="submit" class="w-full px-3 py-3 bg-violet-600 hover:bg-violet-700 text-white text-[11px] font-black uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-violet-500/30 hover:-translate-y-0.5 flex justify-center items-center gap-2">
+                                    <span>📄</span> Cetak PDF BK 31 Hari
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
                     {{-- Card: Jadwal Perkelas --}}
                     <div class="bg-white rounded-[2rem] p-6 shadow-xl shadow-slate-200/40 border border-slate-100 flex flex-col justify-between hover:-translate-y-1 hover:shadow-2xl hover:shadow-emerald-200/30 transition-all duration-300 relative overflow-hidden group">
                         <div class="absolute left-0 top-0 bottom-0 w-2 bg-emerald-400"></div>
