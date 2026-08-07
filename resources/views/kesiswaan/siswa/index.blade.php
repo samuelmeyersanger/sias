@@ -100,7 +100,7 @@
                     @if(auth()->user()->hasPermission('kesiswaan.siswa.store'))
                     <div class="border-t border-gray-200/60 my-2"></div>
                     <div class="bg-gradient-to-br from-white to-slate-50/50 p-4 border border-gray-200/80 rounded-2xl shadow-sm flex flex-col md:flex-row md:items-center gap-4 transition-all hover:shadow-md">
-                        <div class="flex items-start gap-3 md:max-w-[240px]">
+                        <div class="flex items-start gap-3 md:max-w-xs">
                             <div class="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-lg shadow-inner flex-shrink-0 border border-emerald-100">
                                 📊
                             </div>
@@ -116,6 +116,7 @@
                                         🔄 Export Data Saat Ini
                                     </a>
                                 </div>
+                            </div>
                         </div>
                         
                         <div class="hidden md:block h-10 w-px bg-gray-200"></div>
