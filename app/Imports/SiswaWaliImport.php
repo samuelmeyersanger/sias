@@ -189,22 +189,31 @@ class SiswaDataImportSheet implements \Maatwebsite\Excel\Concerns\ToModel
             foreach ($kategoriWali as $hubungan => $data) {
                 if (empty($data['nama'])) { continue; }
 
-                $wali = \App\Models\WaliSiswa::create([
-                    'nama_lengkap'   => $data['nama'],
-                    'pekerjaan'      => $data['pekerjaan'],
-                    'jenis_kelamin'  => $data['jk'],
-                    'nik'            => null,
-                    'nomor_hp'       => null,
-                    'alamat_lengkap' => $siswa->alamat_lengkap,
-                ]);
+                $existingWali = $siswa->wali()->wherePivot('hubungan', $hubungan)->first();
 
-                $siswa->wali()->syncWithoutDetaching([
-                    $wali->id => [
+                if ($existingWali) {
+                    // Update data wali yang sudah ada
+                    $existingWali->update([
+                        'nama_lengkap'   => $data['nama'],
+                        'pekerjaan'      => $data['pekerjaan'],
+                    ]);
+                } else {
+                    // Buat wali baru jika belum ada
+                    $wali = \App\Models\WaliSiswa::create([
+                        'nama_lengkap'   => $data['nama'],
+                        'pekerjaan'      => $data['pekerjaan'],
+                        'jenis_kelamin'  => $data['jk'],
+                        'nik'            => null,
+                        'nomor_hp'       => null,
+                        'alamat_lengkap' => $siswa->alamat_lengkap,
+                    ]);
+
+                    $siswa->wali()->attach($wali->id, [
                         'hubungan'   => $hubungan,
                         'created_at' => now(),
                         'updated_at' => now(),
-                    ]
-                ]);
+                    ]);
+                }
             }
 
             \Illuminate\Support\Facades\DB::commit();
