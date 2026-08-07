@@ -265,6 +265,7 @@ Route::middleware(['auth', CheckApproval::class])->group(function () {
         // Route untuk Generate Massal (Semua siswa yang belum punya akun)
         Route::post('kesiswaan/siswa/generate-akun-massal', [SiswaController::class, 'generateAkunMassal'])->name('siswa.generateMassal');
         Route::get('siswa/download-template', [SiswaController::class, 'downloadTemplate'])->name('siswa.downloadTemplate');
+        Route::get('siswa/export-data-existing', [SiswaController::class, 'exportDataExisting'])->name('siswa.exportDataExisting');
         Route::post('siswa/import-lengkap', [SiswaController::class, 'importSiswaWali'])->name('siswa.importLengkap');
         Route::get('/siswa', [SiswaController::class, 'index'])->name('siswa');
         Route::post('/siswa', [SiswaController::class, 'store'])->name('siswa.store');

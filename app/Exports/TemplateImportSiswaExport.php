@@ -14,10 +14,17 @@ use Laravolt\Indonesia\Models\Province;
 
 class TemplateImportSiswaExport implements WithMultipleSheets
 {
+    protected $withData;
+
+    public function __construct($withData = false)
+    {
+        $this->withData = $withData;
+    }
+
     public function sheets(): array
     {
         return [
-            'Template'  => new MainTemplateSheet(),
+            'Template'  => new MainTemplateSheet($this->withData),
             'Referensi' => new ReferenceDataSheet(),
         ];
     }
@@ -25,6 +32,13 @@ class TemplateImportSiswaExport implements WithMultipleSheets
 
 class MainTemplateSheet implements FromArray, WithHeadings, ShouldAutoSize, WithEvents, WithTitle
 {
+    protected $withData;
+
+    public function __construct($withData = false)
+    {
+        $this->withData = $withData;
+    }
+
     public function title(): string
     {
         return 'Template';
@@ -32,8 +46,59 @@ class MainTemplateSheet implements FromArray, WithHeadings, ShouldAutoSize, With
 
     public function array(): array
     {
-        // 28 kolom setelah ditambah 'no_peserta_un'
-        return array_fill(0, 5, array_fill(0, 28, ''));
+        if (!$this->withData) {
+            // 28 kolom
+            return array_fill(0, 5, array_fill(0, 28, ''));
+        }
+
+        $siswaList = \App\Models\Siswa::with('wali')->orderBy('nama_lengkap', 'asc')->get();
+        
+        if ($siswaList->isEmpty()) {
+            return array_fill(0, 5, array_fill(0, 28, ''));
+        }
+
+        $data = [];
+        foreach ($siswaList as $s) {
+            $ayah = $s->wali->firstWhere('pivot.hubungan', 'Ayah');
+            $ibu = $s->wali->firstWhere('pivot.hubungan', 'Ibu');
+            $wali = $s->wali->firstWhere('pivot.hubungan', 'Wali');
+
+            $data[] = [
+                $s->nama_lengkap, 
+                $s->nik, 
+                $s->nipd, 
+                $s->nisn, 
+                $s->jenis_kelamin, 
+                $s->tempat_lahir, 
+                $s->tanggal_lahir ? $s->tanggal_lahir->format('d/m/Y') : '', 
+                $s->agama, 
+                $s->nomor_hp, 
+                $s->asal_sekolah, 
+                $s->no_peserta_un,
+                $s->provinsi, 
+                $s->kota, 
+                $s->kecamatan, 
+                $s->kelurahan_desa, 
+                $s->alamat_lengkap, 
+                $s->rt, 
+                $s->rw, 
+                $s->kode_pos, 
+                $s->tingkat, 
+                $s->diterima_pada_tanggal ? $s->diterima_pada_tanggal->format('d/m/Y') : '', 
+                $s->anak_ke,
+                
+                $ayah->nama_lengkap ?? '', 
+                $ayah->pekerjaan ?? '',
+                
+                $ibu->nama_lengkap ?? '', 
+                $ibu->pekerjaan ?? '',
+                
+                $wali->nama_lengkap ?? '', 
+                $wali->pekerjaan ?? ''
+            ];
+        }
+
+        return $data;
     }
 
     public function headings(): array
@@ -76,8 +141,11 @@ class MainTemplateSheet implements FromArray, WithHeadings, ShouldAutoSize, With
                 $validationProv->setShowDropDown(true);
                 $validationProv->setFormula1("Referensi!\$A\$1:\$A\$" . $totalProvinces);
 
-                // Duplikasi dropdown untuk baris 2 sampai 100
-                for ($i = 2; $i <= 100; $i++) {
+                // Duplikasi dropdown untuk seluruh baris (minimal 100 baris atau sesuai jumlah data)
+                $rowCount = count($sheet->toArray());
+                $maxRow = max($rowCount, 100);
+                
+                for ($i = 2; $i <= $maxRow; $i++) {
                     $sheet->getCell("E{$i}")->setDataValidation(clone $validationJK);
                     $sheet->getCell("L{$i}")->setDataValidation(clone $validationProv);
                 }

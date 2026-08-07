@@ -107,11 +107,15 @@
                             <div class="space-y-0.5">
                                 <h5 class="text-xs font-bold text-gray-800 uppercase tracking-wider">Import Kolektif</h5>
                                 <p class="text-[10px] text-gray-400 leading-relaxed mb-1">Unggah satu file Excel/CSV untuk entri data masal siswa & wali sekaligus.</p>
-                                
-                                <a href="{{ route('kesiswaan.siswa.downloadTemplate') }}" class="inline-flex items-center gap-1 text-[10px] text-indigo-600 hover:text-indigo-800 font-bold transition-colors underline decoration-dashed">
-                                    📄 Unduh Format Excel (.xlsx)
-                                </a>
-                            </div>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <a href="{{ route('kesiswaan.siswa.downloadTemplate') }}" class="inline-flex items-center gap-1 text-[10px] text-indigo-600 hover:text-indigo-800 font-bold transition-colors underline decoration-dashed">
+                                        📄 Unduh Format Excel (.xlsx)
+                                    </a>
+                                    <span class="text-gray-300">|</span>
+                                    <a href="{{ route('kesiswaan.siswa.exportDataExisting') }}" class="inline-flex items-center gap-1 text-[10px] text-amber-600 hover:text-amber-800 font-bold transition-colors underline decoration-dashed" title="Export seluruh data siswa saat ini untuk diedit dan diimport kembali">
+                                        🔄 Export Data Saat Ini
+                                    </a>
+                                </div>
                         </div>
                         
                         <div class="hidden md:block h-10 w-px bg-gray-200"></div>
@@ -1798,7 +1802,7 @@
                     if (el.tagName === 'SELECT') {
                         el.value = v;
                     } else if (el.type === 'date') {
-                        el.value = v.indexOf('T') !== -1 ? v.split('T')[0] : v;
+                        el.value = v.substring(0, 10);
                     } else {
                         el.value = v;
                     }

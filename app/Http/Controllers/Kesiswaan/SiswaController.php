@@ -438,7 +438,15 @@ class SiswaController extends Controller
      */
     public function downloadTemplate()
     {
-        return Excel::download(new TemplateImportSiswaExport, 'template_import_siswa_dan_wali.xlsx');
+        return Excel::download(new TemplateImportSiswaExport(false), 'template_import_siswa_dan_wali.xlsx');
+    }
+
+    /**
+     * Mengunduh seluruh data siswa saat ini dalam format template import
+     */
+    public function exportDataExisting()
+    {
+        return Excel::download(new TemplateImportSiswaExport(true), 'export_data_siswa_dan_wali.xlsx');
     }
 
     // 1. GENERATE INDIVIDU
