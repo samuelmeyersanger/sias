@@ -8,8 +8,10 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithTitle;
+use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Cell\DataValidation;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use Laravolt\Indonesia\Models\Province;
 
 class TemplateImportSiswaExport implements WithMultipleSheets
@@ -30,7 +32,7 @@ class TemplateImportSiswaExport implements WithMultipleSheets
     }
 }
 
-class MainTemplateSheet implements FromArray, WithHeadings, ShouldAutoSize, WithEvents, WithTitle
+class MainTemplateSheet implements FromArray, WithHeadings, ShouldAutoSize, WithEvents, WithTitle, WithColumnFormatting
 {
     protected $withData;
 
@@ -42,6 +44,60 @@ class MainTemplateSheet implements FromArray, WithHeadings, ShouldAutoSize, With
     public function title(): string
     {
         return 'Template';
+    }
+
+    /**
+     * Format kolom agar NIK, NIPD, NISN, No HP, dll tidak jadi scientific notation
+     */
+    public function columnFormats(): array
+    {
+        return [
+            'B' => NumberFormat::FORMAT_TEXT, // nik
+            'C' => NumberFormat::FORMAT_TEXT, // nipd
+            'D' => NumberFormat::FORMAT_TEXT, // nisn
+            'I' => NumberFormat::FORMAT_TEXT, // nomor_hp
+            'K' => NumberFormat::FORMAT_TEXT, // no_peserta_un
+            'Q' => NumberFormat::FORMAT_TEXT, // rt
+            'R' => NumberFormat::FORMAT_TEXT, // rw
+            'S' => NumberFormat::FORMAT_TEXT, // kode_pos
+        ];
+    }
+
+    /**
+     * Konversi kode angka wilayah menjadi nama teks
+     */
+    private function resolveWilayah($value, $type, $parentCode = null)
+    {
+        if (empty($value)) return '';
+        
+        // Jika sudah berupa teks nama (bukan angka murni), langsung kembalikan
+        if (!is_numeric($value)) {
+            return ucwords(strtolower(trim($value)));
+        }
+
+        // Jika masih angka (kode), cari nama dari database Laravolt
+        $code = trim($value);
+        
+        switch ($type) {
+            case 'provinsi':
+                $record = \Laravolt\Indonesia\Models\Province::where('code', $code)->first();
+                return $record ? ucwords(strtolower($record->name)) : $value;
+
+            case 'kota':
+                $record = \Laravolt\Indonesia\Models\City::where('code', $code)->first();
+                return $record ? ucwords(strtolower($record->name)) : $value;
+
+            case 'kecamatan':
+                $record = \Laravolt\Indonesia\Models\District::where('code', $code)->first();
+                return $record ? ucwords(strtolower($record->name)) : $value;
+
+            case 'kelurahan':
+                $record = \Laravolt\Indonesia\Models\Village::where('code', $code)->first();
+                return $record ? ucwords(strtolower($record->name)) : $value;
+
+            default:
+                return $value;
+        }
     }
 
     public function array(): array
@@ -75,10 +131,10 @@ class MainTemplateSheet implements FromArray, WithHeadings, ShouldAutoSize, With
                 $s->nomor_hp, 
                 $s->asal_sekolah, 
                 $s->no_peserta_un,
-                $s->provinsi, 
-                $s->kota, 
-                $s->kecamatan, 
-                $s->kelurahan_desa, 
+                $this->resolveWilayah($s->provinsi, 'provinsi'), 
+                $this->resolveWilayah($s->kota, 'kota'), 
+                $this->resolveWilayah($s->kecamatan, 'kecamatan'), 
+                $this->resolveWilayah($s->kelurahan_desa, 'kelurahan'), 
                 $s->alamat_lengkap, 
                 $s->rt, 
                 $s->rw, 
@@ -107,7 +163,7 @@ class MainTemplateSheet implements FromArray, WithHeadings, ShouldAutoSize, With
             // Data Utama Siswa (Kolom A - V)
             'nama_lengkap', 'nik', 'nipd', 'nisn', 'jenis_kelamin', 
             'tempat_lahir', 'tanggal_lahir', 'agama', 'nomor_hp', 
-            'asal_sekolah', 'no_peserta_un', // 🆕 Tambah di sini
+            'asal_sekolah', 'no_peserta_un',
             'provinsi', 'kota', 'kecamatan', 'kelurahan_desa', 'alamat_lengkap', 
             'rt', 'rw', 'kode_pos', 'tingkat', 'diterima_pada_tanggal', 'anak_ke',
             
@@ -132,16 +188,16 @@ class MainTemplateSheet implements FromArray, WithHeadings, ShouldAutoSize, With
                 $validationJK->setShowDropDown(true);
                 $validationJK->setFormula1('"Laki-laki,Perempuan"');
 
-                // ---- DROPDOWN PROVINSI (Kolom L - Bergeser karena ada kolom baru) ----
+                // ---- DROPDOWN PROVINSI (Kolom L) ----
                 $totalProvinces = Province::count();
-                $validationProv = $sheet->getCell('L2')->getDataValidation(); // Kolom K bergeser ke L
+                $validationProv = $sheet->getCell('L2')->getDataValidation();
                 $validationProv->setType(DataValidation::TYPE_LIST);
                 $validationProv->setErrorStyle(DataValidation::STYLE_STOP);
                 $validationProv->setAllowBlank(true);
                 $validationProv->setShowDropDown(true);
                 $validationProv->setFormula1("Referensi!\$A\$1:\$A\$" . $totalProvinces);
 
-                // Duplikasi dropdown untuk seluruh baris (minimal 100 baris atau sesuai jumlah data)
+                // Duplikasi dropdown untuk seluruh baris
                 $rowCount = count($sheet->toArray());
                 $maxRow = max($rowCount, 100);
                 
