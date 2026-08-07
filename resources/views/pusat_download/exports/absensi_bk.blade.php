@@ -4,10 +4,24 @@
     <meta charset="UTF-8">
     <title>Daftar Hadir BK - {{ $kelas->nama_kelas }}</title>
     <style>
-        @page { margin: 0.4cm; size: 13in 8.5in landscape; }
+        @page { 
+            margin: 0.4cm; 
+            margin-top: 3.8cm; /* Ruang untuk header tetap di setiap halaman */
+            size: 13in 8.5in landscape; 
+        }
         body { font-family: Arial, sans-serif; font-size: 8.5px; }
-        .header { text-align: center; margin-bottom: 5px; border-bottom: 2px solid #000; padding-bottom: 2px; }
         
+        /* ============================================
+         * HEADER TETAP: Muncul di SETIAP halaman cetak
+         * ============================================ */
+        .page-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3.4cm;
+        }
+
         .info-table { width: 100%; margin-bottom: 6px; font-weight: bold; font-size: 9px; }
         .info-table td { padding: 1px 2px; }
         
@@ -25,6 +39,11 @@
 
         /* Menyembunyikan tombol saat dicetak */
         @media print { .btn-print { display: none !important; } }
+
+        /* Di layar (non-print), tampilkan header secara normal */
+        @media screen { 
+            .page-header { position: relative; height: auto; }
+        }
     </style>
 </head>
 <body>
@@ -41,47 +60,52 @@
         $logoPemda   = $logoSetting && $logoSetting->logo_pemda   ? asset('storage/' . $logoSetting->logo_pemda)   : null;
         $logoSekolah = $logoSetting && $logoSetting->logo_sekolah ? asset('storage/' . $logoSetting->logo_sekolah) : null;
     @endphp
-    
-    <table style="width: 100%; border-bottom: 2px solid #000; margin-bottom: 8px; padding-bottom: 4px;">
-        <tr>
-            <td style="width: 10%; text-align: left; vertical-align: middle;">
-                @if($logoPemda)
-                    <img src="{{ $logoPemda }}" style="max-height: 55px; max-width: 60px; object-fit: contain;">
-                @endif
-            </td>
-            <td style="width: 80%; text-align: center; vertical-align: middle;">
-                <h2 style="margin: 1px 0; font-size: 14px; text-transform: uppercase;">DAFTAR HADIR BULANAN SISWA (BIMBINGAN KONSELING)</h2>
-                <h3 style="margin: 1px 0; font-size: 12px; text-transform: uppercase;">{{ $nama_sekolah }}</h3>
-                <p style="margin: 1px 0; font-size: 10px;">Tahun Ajaran {{ $tahun_ajaran ?? '-' }}</p>
-            </td>
-            <td style="width: 10%; text-align: right; vertical-align: middle;">
-                @if($logoSekolah)
-                    <img src="{{ $logoSekolah }}" style="max-height: 55px; max-width: 60px; object-fit: contain;">
-                @endif
-            </td>
-        </tr>
-    </table>
 
-    <table class="info-table">
-        <tr>
-            <td width="10%">Kelas / Rombel</td>
-            <td width="30%">: {{ $kelas->nama_kelas }} (Tingkat {{ $kelas->tingkat }})</td>
-            <td width="10%">Bulan / Tahun</td>
-            <td width="50%">: ............................................................ {{ date('Y') }}</td>
-        </tr>
-        <tr>
-            <td>Wali Kelas</td>
-            <td>: {{ $kelas->waliKelas ? $kelas->waliKelas->nama_lengkap : '-' }}</td>
-            <td>Jumlah Siswa</td>
-            <td>: {{ $anggota->count() }} (Laki-laki: {{ $laki_laki }}, Perempuan: {{ $perempuan }})</td>
-        </tr>
-        <tr>
-            <td>Guru BK</td>
-            <td>: {{ $guruBk->pegawai ? $guruBk->pegawai->nama_lengkap : '-' }}</td>
-            <td></td>
-            <td></td>
-        </tr>
-    </table>
+    {{-- ============================================
+         HEADER TETAP: Akan muncul di SETIAP halaman
+         ============================================ --}}
+    <div class="page-header">
+        <table style="width: 100%; border-bottom: 2px solid #000; margin-bottom: 8px; padding-bottom: 4px;">
+            <tr>
+                <td style="width: 10%; text-align: left; vertical-align: middle;">
+                    @if($logoPemda)
+                        <img src="{{ $logoPemda }}" style="max-height: 55px; max-width: 60px; object-fit: contain;">
+                    @endif
+                </td>
+                <td style="width: 80%; text-align: center; vertical-align: middle;">
+                    <h2 style="margin: 1px 0; font-size: 14px; text-transform: uppercase;">DAFTAR HADIR BULANAN SISWA (BIMBINGAN KONSELING)</h2>
+                    <h3 style="margin: 1px 0; font-size: 12px; text-transform: uppercase;">{{ $nama_sekolah }}</h3>
+                    <p style="margin: 1px 0; font-size: 10px;">Tahun Ajaran {{ $tahun_ajaran ?? '-' }}</p>
+                </td>
+                <td style="width: 10%; text-align: right; vertical-align: middle;">
+                    @if($logoSekolah)
+                        <img src="{{ $logoSekolah }}" style="max-height: 55px; max-width: 60px; object-fit: contain;">
+                    @endif
+                </td>
+            </tr>
+        </table>
+
+        <table class="info-table">
+            <tr>
+                <td width="10%">Kelas / Rombel</td>
+                <td width="30%">: {{ $kelas->nama_kelas }} (Tingkat {{ $kelas->tingkat }})</td>
+                <td width="10%">Bulan / Tahun</td>
+                <td width="50%">: ............................................................ {{ date('Y') }}</td>
+            </tr>
+            <tr>
+                <td>Wali Kelas</td>
+                <td>: {{ $kelas->waliKelas ? $kelas->waliKelas->nama_lengkap : '-' }}</td>
+                <td>Jumlah Siswa</td>
+                <td>: {{ $anggota->count() }} (Laki-laki: {{ $laki_laki }}, Perempuan: {{ $perempuan }})</td>
+            </tr>
+            <tr>
+                <td>Guru BK</td>
+                <td>: {{ $guruBk->pegawai ? $guruBk->pegawai->nama_lengkap : '-' }}</td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
 
     <table class="data-table">
         <thead>
@@ -170,3 +194,4 @@
 
 </body>
 </html>
+
